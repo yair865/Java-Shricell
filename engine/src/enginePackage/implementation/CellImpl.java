@@ -1,6 +1,6 @@
-package engine.implementations;
+package enginePackage.implementation;
 
-import engine.interfaces.Cell;
+import enginePackage.interfaces.Cell;
 
 import java.util.ArrayList;
 import java.util.List;

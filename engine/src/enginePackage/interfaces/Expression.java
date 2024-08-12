@@ -1,4 +1,4 @@
-package engine.interfaces;
+package enginePackage.interfaces;
 
 public interface Expression {
         /**

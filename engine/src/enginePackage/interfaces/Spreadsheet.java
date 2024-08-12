@@ -1,4 +1,4 @@
-package engine.interfaces;
+package enginePackage.interfaces;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public interface Spreadsheet {
      * @param column The column of the cell.
      * @return The value of the cell.
      */
-    String getCellValue(int row, char column);
+    String getCellValue(int row, int column);
 
     /**
      * Updates the value of a specific cell.
