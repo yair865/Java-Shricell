@@ -4,7 +4,7 @@ import enginePackage.interfaces.Expression;
 
 public class Text implements Expression<String> {
 
-    private String text;
+    private final String text;
 
     public Text(String text) {
         this.text = text;
@@ -12,5 +12,4 @@ public class Text implements Expression<String> {
 
     @Override
     public String evaluate() {return text;}
-
 }

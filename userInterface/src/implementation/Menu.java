@@ -4,43 +4,47 @@ import interfaces.UI;
 
 public enum Menu  {
 
-    LOAD_SPREADSHEET {
+    LOAD_SPREADSHEET("Load Spreadsheet from XML File") {
         @Override
         void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleLoadFile();
         }
     },
-    DISPLAY_SPREADSHEET {
+    DISPLAY_SPREADSHEET("Display Current Spreadsheet") {
         @Override
         void invoke(UI consoleUserInterface) {
-            consoleUserInterface.displaySpreadSheet();;
+            consoleUserInterface.displaySpreadSheet();
         }
     },
-    DISPLAY_CELL_VALUE {
+    DISPLAY_CELL_VALUE("Display Cell Value") {
         @Override
         void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleDisplayCell();
         }
     },
-    UPDATE_CELL_VALUE {
+    UPDATE_CELL_VALUE("Update Cell Value") {
         @Override
         void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleUpdateCell();
         }
     },
-    DISPLAY_VERSION_HISTORY {
+    DISPLAY_VERSION_HISTORY("Display Version History") {
         @Override
         void invoke(UI consoleUserInterface) {
             consoleUserInterface.displayVersions();
         }
     },
-    EXIT {
+    EXIT("Exit") {
         @Override
         void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleExit();
         }
     };
 
+    private final String menuOption;
+    Menu(String commandToExecute) {
+        this.menuOption = commandToExecute;
+    }
     abstract void invoke(UI consoleUserInterface);
-};
+}
 

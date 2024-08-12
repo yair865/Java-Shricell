@@ -15,6 +15,55 @@ public class ConsoleUI implements UI {
     private Scanner scanner;
 
     @Override
+    public void executeProgram()
+    {
+        while (true)
+        {
+            displayMenu();
+            String command = scanner.nextLine();
+            processCommand(command);
+        }
+    }
+
+    @Override
+    public void displayMenu()
+    {
+        System.out.println("Shticell Menu:");
+        for (Menu option : Menu.values()) {
+            System.out.println(option.ordinal() + 1 + ". " + option);
+        }
+    }
+
+    @Override
+    public void processCommand(String command)
+    {
+        int choice = getUserChoice();
+
+        while (choice < 1 || choice > Menu.values().length)
+        {
+            System.out.println("Invalid choice. Please enter a number between 1 and " + Menu.values().length + ".");
+            choice = getUserChoice();
+        }
+        Menu selectedOption = Menu.values()[choice - 1];
+        selectedOption.invoke(this);
+    }
+
+    @Override
+    public int getUserChoice() {
+        System.out.print("Enter your choice (1-6): ");
+        while (true) {
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Clear the buffer
+                return choice;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear the invalid input
+            }
+        }
+    }
+
+    @Override
     public void displaySpreadSheet() {
         SpreadsheetDTO currentSpreadsheet = engine.getSpreadsheetState();
 
@@ -42,7 +91,6 @@ public class ConsoleUI implements UI {
         int numRows = SpreadsheetToPrint.cells().size();
         int numCols = numRows > 0 ? SpreadsheetToPrint.cells().getFirst().size() : 0;
 
-        // Print column headers
         System.out.print("   ");
         for (int col = 0; col < numCols; col++) {
             char colLetter = (char) ('A' + col);
@@ -50,71 +98,17 @@ public class ConsoleUI implements UI {
         }
         System.out.println();
 
-        // Print rows with row numbers
         for (int row = 0; row < numRows; row++) {
             System.out.printf("%02d ", row + 1);
             List<CellDTO> rowCells = SpreadsheetToPrint.cells().get(row);
             for (CellDTO cell : rowCells) {
-                String cellValue = cell.originalValue(); // or cell.effectiveValue() if preferred
+                String cellValue = cell.originalValue();
                 System.out.printf("| %-3s ", cellValue.isEmpty() ? " " : cellValue);
             }
             System.out.println("|");
         }
     }
 
-    @Override
-    public void executeProgram()
-    {
-        while (true)
-        {
-            displayMenu();
-            String command = scanner.nextLine();
-            processCommand(command);
-        }
-    }
-
-    @Override
-    public void displayMenu()
-    {
-        // Print menu header
-        System.out.println("Shticell Menu:");
-        // Print each menu option
-        System.out.println("1. Load Spreadsheet from XML File");
-        System.out.println("2. Display Current Spreadsheet");
-        System.out.println("3. Display Single Cell Value");
-        System.out.println("4. Update Single Cell Value");
-        System.out.println("5. Display Version History");
-        System.out.println("6. Exit");
-    }
-
-    @Override
-    public void processCommand(String command)
-    {
-            int choice = getUserChoice();
-
-            while (choice < 1 || choice > Menu.values().length)
-            {
-                System.out.println("Invalid choice. Please enter a number between 1 and " + Menu.values().length + ".");
-                choice = getUserChoice();
-            }
-            Menu selectedOption = Menu.values()[choice - 1];
-            selectedOption.invoke(this);
-    }
-
-    @Override
-    public int getUserChoice() {
-        System.out.print("Enter your choice (1-6): ");
-        while (true) {
-            try {
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the buffer
-                return choice;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Clear the invalid input
-            }
-        }
-    }
 
     @Override
     public void displayVersions() {

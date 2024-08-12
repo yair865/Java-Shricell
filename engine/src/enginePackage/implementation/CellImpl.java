@@ -5,9 +5,9 @@ import enginePackage.interfaces.Cell;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CellImpl implements Cell {
+public class CellImpl<T> implements Cell {
     private String originalValue;
-    private String effectiveValue;
+    private T effectiveValue;
     private int lastModifiedVersion;
     private List<Cell> dependencies;
     private List<Cell> dependents;

@@ -2,16 +2,14 @@ package enginePackage.implementation.expression.type;
 
 import enginePackage.interfaces.Expression;
 
-public class Boolean implements Expression<java.lang.Boolean> {
+public class Bool implements Expression<Boolean> {
+    private final boolean boolValue;
 
-    private boolean boolValue;
-
-    public Boolean(boolean boolValue) {
+    public Bool(boolean boolValue) {
         this.boolValue = boolValue;
     }
-
     @Override
-    public java.lang.Boolean evaluate() {
+    public Boolean evaluate() {
         return boolValue;
     }
 }
