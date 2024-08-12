@@ -3,12 +3,14 @@ package enginePackage.implementation;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import enginePackage.interfaces.Engine;
-
+import enginePackage.interfaces.Spreadsheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class EngineImpl implements Engine {
+
+    private SpreadsheetImpl currentSpreadsheet;
     private SpreadsheetDTO spreadsheetDTO;
 
     @Override

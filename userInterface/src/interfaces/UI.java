@@ -5,8 +5,6 @@ import dtoPackage.SpreadsheetDTO;
 
 public interface UI {
 
-    void displayCellInfo(CellDTO cellDTO);
-
     void displayCellInfo(String cellId);
 
     void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint);
@@ -16,6 +14,8 @@ public interface UI {
     void displayMenu();
 
     void processCommand(String command);
+
+    int getUserChoice();
 
     void displayVersions();
 
@@ -27,5 +27,5 @@ public interface UI {
 
     void displaySpreadSheet();
 
-
+    void handleExit();
 }

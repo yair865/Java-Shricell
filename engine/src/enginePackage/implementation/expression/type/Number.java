@@ -1,8 +1,8 @@
-package enginePackage.implementation.expressions;
+package enginePackage.implementation.expression.type;
 
 import enginePackage.interfaces.Expression;
 
-public class Number implements Expression {
+public class Number implements Expression<Double> {
 
     private double num;
 
@@ -11,13 +11,8 @@ public class Number implements Expression {
     }
 
     @Override
-    public double evaluate() {
+    public Double evaluate() {
         return num;
-    }
-
-    @Override
-    public String getOperationSign() {
-        return "";
     }
 
     @Override
