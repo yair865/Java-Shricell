@@ -1,10 +1,10 @@
-package enginePackage.interfaces;
+package enginePackage.api;
 
 import java.util.List;
 
 public interface Cell {
     String getOriginalValue();
-    String getEffectiveValue();
+    EffectiveValue getEffectiveValue();
     int getLastModifiedVersion();
     List<Cell> getDependencies();
     List<Cell> getDependents();

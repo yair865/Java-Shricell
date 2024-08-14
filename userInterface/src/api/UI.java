@@ -1,6 +1,5 @@
-package interfaces;
+package api;
 
-import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 
 public interface UI {

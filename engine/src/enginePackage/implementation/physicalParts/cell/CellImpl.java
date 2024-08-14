@@ -1,6 +1,7 @@
-package enginePackage.implementation;
+package enginePackage.implementation.physicalParts.cell;
 
-import enginePackage.interfaces.Cell;
+import enginePackage.api.Cell;
+import enginePackage.api.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,13 @@ public class CellImpl<T> implements Cell {
         return originalValue;
     }
 
+    public List<String> functionParser() {
+        List<String> functions = new ArrayList<>();
+        return null;
+    }
+
     @Override
-    public String getEffectiveValue() {
+    public Expression<?> getEffectiveValue() {
         return effectiveValue;
     }
 

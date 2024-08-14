@@ -1,6 +1,8 @@
-package enginePackage.implementation;
+package enginePackage.implementation.physicalParts;
 
-import enginePackage.interfaces.Spreadsheet;
+import enginePackage.api.Spreadsheet;
+import enginePackage.implementation.physicalParts.cell.CellImpl;
+
 import java.util.List;
 
 public class SpreadsheetImpl implements Spreadsheet {

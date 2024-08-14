@@ -1,4 +1,4 @@
-package enginePackage.interfaces;
+package enginePackage.api;
 
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;

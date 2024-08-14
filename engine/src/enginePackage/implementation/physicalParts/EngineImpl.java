@@ -1,11 +1,10 @@
-package enginePackage.implementation;
+package enginePackage.implementation.physicalParts;
 
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import enginePackage.interfaces.Engine;
-import enginePackage.interfaces.Spreadsheet;
+import enginePackage.api.Engine;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EngineImpl implements Engine {

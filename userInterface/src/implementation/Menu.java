@@ -1,42 +1,42 @@
 package implementation;
 
-import interfaces.UI;
+import api.UI;
 
 public enum Menu  {
 
     LOAD_SPREADSHEET("Load Spreadsheet from XML File") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleLoadFile();
         }
     },
     DISPLAY_SPREADSHEET("Display Current Spreadsheet") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.displaySpreadSheet();
         }
     },
     DISPLAY_CELL_VALUE("Display Cell Value") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleDisplayCell();
         }
     },
     UPDATE_CELL_VALUE("Update Cell Value") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleUpdateCell();
         }
     },
     DISPLAY_VERSION_HISTORY("Display Version History") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.displayVersions();
         }
     },
     EXIT("Exit") {
         @Override
-        void invoke(UI consoleUserInterface) {
+       public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleExit();
         }
     };
@@ -45,6 +45,7 @@ public enum Menu  {
     Menu(String commandToExecute) {
         this.menuOption = commandToExecute;
     }
-    abstract void invoke(UI consoleUserInterface);
+
+    public abstract void invoke(UI consoleUserInterface);
 }
 

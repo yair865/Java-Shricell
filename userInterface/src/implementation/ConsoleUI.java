@@ -2,8 +2,8 @@ package implementation;
 
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import enginePackage.interfaces.Engine;
-import interfaces.UI;
+import enginePackage.api.Engine;
+import api.UI;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
@@ -64,25 +64,25 @@ public class ConsoleUI implements UI {
     }
 
     @Override
+    public void handleLoadFile() {
+        System.out.println("Enter file path:");
+        String filePath = scanner.nextLine();
+        try {
+            engine.loadSpreadsheet(filePath);
+        } catch (Exception e) {
+            System.out.println("Error loading file: " + e.getMessage());
+        }
+    }
+
+    "{PLUS,{MINUS,4,5},}"
+
+    @Override
     public void displaySpreadSheet() {
         SpreadsheetDTO currentSpreadsheet = engine.getSpreadsheetState();
 
         System.out.println("The current version of the spreadsheet is: " + currentSpreadsheet.version());
         System.out.println("The title of the spreadsheet is: " + currentSpreadsheet.name());
         printSpreadSheet(currentSpreadsheet);
-    }
-
-    @Override
-    public void displayCellInfo(String cellId)
-    {
-        CellDTO currentCell = engine.getCellInfo(cellId);
-
-        System.out.println("Cell ID: " + cellId);
-        System.out.println("Original Value: " + currentCell.originalValue());
-        System.out.println("Effective Value: " + currentCell.effectiveValue());
-        System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion());
-        System.out.println("Dependent Cells: " + currentCell.dependentCells());
-        System.out.println("Influencing Cells: " + currentCell.influencingCells());
     }
 
     @Override
@@ -109,7 +109,59 @@ public class ConsoleUI implements UI {
         }
     }
 
+    @Override
+    public void handleDisplayCell() {
+        System.out.println("Enter cell identifier (e.g., A1):");
+        String cellIdentifier = scanner.nextLine();
+        displayCellInfo(cellIdentifier);
+    }
 
+    @Override
+    public void displayCellInfo(String cellId)
+    {
+        CellDTO currentCell = engine.getCellInfo(cellId);
+
+        System.out.println("Cell ID: " + cellId);
+        System.out.println("Original Value: " + currentCell.originalValue());
+        System.out.println("Effective Value: " + currentCell.effectiveValue());
+        System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion());
+        System.out.println("Dependent Cells: " + currentCell.dependentCells());
+        System.out.println("Influencing Cells: " + currentCell.influencingCells());
+    }
+
+
+    @Override
+    public void handleUpdateCell()
+    {
+        CellDTO currentCell;
+
+        System.out.println("Enter cell identifier (e.g., A1):");
+        String cellIdentifier = scanner.nextLine().trim();
+        currentCell = engine.getCellInfo(cellIdentifier);
+
+        System.out.println("Cell Identifier: " + currentCell.cellId());
+        System.out.println("Original Value: " + currentCell.originalValue());
+        System.out.println("Effective Value: " + currentCell.effectiveValue());
+
+        try {
+        System.out.println("Enter new value (or leave blank to clear the cell):");
+        String newValue = scanner.nextLine().trim();
+        if(engine.valueIsValid(newValue)) // TODO
+        {
+            // Update the cell with the new value
+            engine.updateCell(cellIdentifier,newValue);
+            System.out.println("Cell updated successfully.");
+            displaySpreadSheet();
+        }
+        else
+        {
+            System.out.println("Failed to update cell. The new value might be invalid.");
+        }
+        } catch (Exception e) {
+            // Handle and display any errors that occur during the update
+            System.out.println("An error occurred while updating the cell: " + e.getMessage());
+        }
+    }
     @Override
     public void displayVersions() {
         // Step 1: Display version history
@@ -147,56 +199,6 @@ public class ConsoleUI implements UI {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid number or 'q' to quit.");
             }
-        }
-    }
-
-
-    @Override
-    public void handleLoadFile() {
-        System.out.println("Enter file path:");
-        String filePath = scanner.nextLine();
-        try {
-            engine.loadSpreadsheet(filePath);
-        } catch (Exception e) {
-            System.out.println("Error loading file: " + e.getMessage());
-        }
-    }
-    @Override
-    public void handleDisplayCell() {
-        System.out.println("Enter cell identifier (e.g., A1):");
-        String cellIdentifier = scanner.nextLine();
-        displayCellInfo(cellIdentifier);
-    }
-    @Override
-    public void handleUpdateCell()
-    {
-        CellDTO currentCell;
-
-        System.out.println("Enter cell identifier (e.g., A1):");
-        String cellIdentifier = scanner.nextLine().trim();
-        currentCell = engine.getCellInfo(cellIdentifier);
-
-        System.out.println("Cell Identifier: " + currentCell.cellId());
-        System.out.println("Original Value: " + currentCell.originalValue());
-        System.out.println("Effective Value: " + currentCell.effectiveValue());
-
-        try {
-        System.out.println("Enter new value (or leave blank to clear the cell):");
-        String newValue = scanner.nextLine().trim();
-        if(engine.valueIsValid(newValue)) // TODO
-        {
-            // Update the cell with the new value
-            engine.updateCell(cellIdentifier,newValue);
-            System.out.println("Cell updated successfully.");
-            displaySpreadSheet();
-        }
-        else
-        {
-            System.out.println("Failed to update cell. The new value might be invalid.");
-        }
-        } catch (Exception e) {
-            // Handle and display any errors that occur during the update
-            System.out.println("An error occurred while updating the cell: " + e.getMessage());
         }
     }
     @Override
