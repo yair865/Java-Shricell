@@ -1,14 +1,16 @@
 package enginePackage.api;
 
+import enginePackage.implementation.physicalParts.coordinate.Coordinate;
+
 import java.util.List;
 
 public interface Cell {
+    Coordinate getCoordinate();
     String getOriginalValue();
+    void setCellOriginalValue(String value);
     EffectiveValue getEffectiveValue();
-    int getLastModifiedVersion();
-    List<Cell> getDependencies();
-    List<Cell> getDependents();
-
-    void setOriginalValue(String value);
-    void updateEffectiveValue(String value) throws Exception;
+    void calculateEffectiveValue();
+    int getVersion();
+    List<Cell> getDependsOn();
+    List<Cell> getInfluencingOn();
 }

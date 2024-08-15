@@ -16,6 +16,7 @@ public class Plus extends BinaryExpression {
     public EffectiveValue evaluate(Expression left, Expression right) {
         EffectiveValue leftValue = left.evaluate();
         EffectiveValue rightValue = right.evaluate();
+
         // do some checking... error handling...
 
         double result = leftValue.extractValueWithExpectation(Double.class) + rightValue.extractValueWithExpectation(Double.class);

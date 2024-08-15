@@ -2,6 +2,8 @@ package enginePackage.implementation.expression.type;
 
 import enginePackage.api.EffectiveValue;
 import enginePackage.api.Expression;
+import enginePackage.implementation.physicalParts.cell.EffectiveValueImpl;
+import enginePackage.implementation.utils.CellType;
 
 public class Number implements Expression {
     private final double num;
@@ -12,6 +14,7 @@ public class Number implements Expression {
 
     @Override
     public EffectiveValue evaluate() {
-        return num;
-    } //FIX
+
+        return new EffectiveValueImpl(CellType.NUMERIC, num);
+    }
 }

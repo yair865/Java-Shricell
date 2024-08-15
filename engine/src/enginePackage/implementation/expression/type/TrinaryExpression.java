@@ -1,23 +1,24 @@
 package enginePackage.implementation.expression.type;
 
+import enginePackage.api.EffectiveValue;
 import enginePackage.api.Expression;
 
-public abstract class TrinaryExpression<T,R> implements Expression<T> {
+public abstract class TrinaryExpression implements Expression {
 
-    private final Expression<T> expression1;
-    private final Expression<T> expression2;
-    private final Expression<R> expression3;
+    private final Expression expression1;
+    private final Expression expression2;
+    private final Expression expression3;
 
-    public TrinaryExpression(Expression<T> expression1, Expression<T> expression2 , Expression<R> expression3) {
+    public TrinaryExpression(Expression expression1, Expression expression2 , Expression expression3) {
         this.expression1 = expression1;
         this.expression2 = expression2;
         this.expression3 = expression3;
     }
 
     @Override
-    public T evaluate() {
-        return evaluate(expression1.evaluate(), expression2.evaluate() , expression3.evaluate());
+    public EffectiveValue evaluate() {
+        return evaluate(expression1, expression2 , expression3);
     }
 
-    abstract protected T evaluate(T evaluate, T evaluate2 , R evaluate3);
+    abstract protected EffectiveValue evaluate(Expression evaluate, Expression evaluate2 , Expression evaluate3);
 }

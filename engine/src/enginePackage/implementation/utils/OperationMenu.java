@@ -1,8 +1,10 @@
 package enginePackage.implementation.utils;
 
-import enginePackage.implementation.expression.function.math.*;
-import enginePackage.implementation.expression.function.string.*;
 import enginePackage.api.Expression;
+import enginePackage.implementation.expression.function.math.*;
+import enginePackage.implementation.expression.function.string.Concat;
+import enginePackage.implementation.expression.function.string.Sub;
+
 import java.util.List;
 
 public enum OperationMenu {

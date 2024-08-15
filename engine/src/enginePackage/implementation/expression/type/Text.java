@@ -2,6 +2,8 @@ package enginePackage.implementation.expression.type;
 
 import enginePackage.api.EffectiveValue;
 import enginePackage.api.Expression;
+import enginePackage.implementation.physicalParts.cell.EffectiveValueImpl;
+import enginePackage.implementation.utils.CellType;
 
 public class Text implements Expression {
 
@@ -12,5 +14,7 @@ public class Text implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {return text;} //FIX
+    public EffectiveValue evaluate() {
+        return new EffectiveValueImpl(CellType.STRING, text);
+    }
 }

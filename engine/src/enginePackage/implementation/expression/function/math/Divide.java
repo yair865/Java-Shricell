@@ -15,9 +15,15 @@ public class Divide extends BinaryExpression {
     public EffectiveValue evaluate(Expression left, Expression right) {
         EffectiveValue leftValue = left.evaluate();
         EffectiveValue rightValue = right.evaluate();
-        // do some checking... error handling...
 
-        double result = leftValue.extractValueWithExpectation(Double.class) / rightValue.extractValueWithExpectation(Double.class); // divide by zero check
+        double numerator = leftValue.extractValueWithExpectation(Double.class);
+        double denominator = leftValue.extractValueWithExpectation(Double.class);
+
+        if(denominator == 0){
+            return new EffectiveValueImpl(CellType.NUMERIC , Double.NaN);
+        }
+
+        double result = numerator / denominator; // divide by zero check
 
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }

@@ -1,21 +1,34 @@
 package enginePackage.implementation.physicalParts.cell;
 
 import enginePackage.api.Cell;
+import enginePackage.api.EffectiveValue;
 import enginePackage.api.Expression;
+import enginePackage.implementation.physicalParts.coordinate.Coordinate;
+import enginePackage.implementation.physicalParts.coordinate.CoordinateImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CellImpl<T> implements Cell {
-    private String originalValue;
-    private T effectiveValue;
-    private int lastModifiedVersion;
-    private List<Cell> dependencies;
-    private List<Cell> dependents;
+public class CellImpl implements Cell {
 
-    public CellImpl() {
-        dependencies = new ArrayList<>();
-        dependents = new ArrayList<>();
+    private final Coordinate coordinate;
+    private String originalValue;
+    private EffectiveValue effectiveValue;
+    private int version;
+    private final List<Cell> dependsOn;
+    private final List<Cell> influencingOn;
+
+    public CellImpl(int row, int column, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> dependsOn, List<Cell> influencingOn) {
+        this.coordinate = new CoordinateImpl(row, column);
+        this.originalValue = originalValue;
+        this.effectiveValue = effectiveValue;
+        this.version = version;
+        this.dependsOn = dependsOn;
+        this.influencingOn = influencingOn;
+    }
+    @Override
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
     @Override
@@ -23,38 +36,39 @@ public class CellImpl<T> implements Cell {
         return originalValue;
     }
 
-    public List<String> functionParser() {
-        List<String> functions = new ArrayList<>();
-        return null;
-    }
-
     @Override
-    public Expression<?> getEffectiveValue() {
-        return effectiveValue;
-    }
-
-    @Override
-    public int getLastModifiedVersion() {
-        return lastModifiedVersion;
-    }
-
-    @Override
-    public List<Cell> getDependencies() {
-        return dependencies;
-    }
-
-    @Override
-    public List<Cell> getDependents() {
-        return dependents;
-    }
-
-    @Override
-    public void setOriginalValue(String value) {
+    public void setCellOriginalValue(String value) {
         this.originalValue = value;
     }
 
     @Override
-    public void updateEffectiveValue(String value) throws Exception {
-        // Implementation for updating the effective value
+    public EffectiveValue getEffectiveValue() {
+        return effectiveValue;
+    }
+
+    @Override
+    public void calculateEffectiveValue() {
+        // build the expression object out of the original value...
+        // it can be {PLUS, 4, 5} OR {CONCAT, "hello", "world"}
+
+        Expression expression;
+
+        // second question: what is the return type of eval() ?
+        //effectiveValue = expression.eval();
+    }
+
+    @Override
+    public int getVersion() {
+        return version;
+    }
+
+    @Override
+    public List<Cell> getDependsOn() {
+        return dependsOn;
+    }
+
+    @Override
+    public List<Cell> getInfluencingOn() {
+        return influencingOn;
     }
 }
