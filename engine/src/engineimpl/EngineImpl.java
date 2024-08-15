@@ -3,24 +3,86 @@ package engineimpl;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import api.Engine;
-import sheetimpl.cellimpl.SpreadsheetImpl;
-
+import generated.STLCell;
+import generated.STLSheet;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import sheetimpl.SpreadsheetImpl;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class EngineImpl implements Engine {
 
     private SpreadsheetImpl currentSpreadsheet;
     private SpreadsheetDTO spreadsheetDTO;
 
+    @lombok.SneakyThrows
     @Override
-    public void loadSpreadsheet(String filePath) {
-        // Logic to load the spreadsheet from an XML file
-        // For example purposes, we use mock data
-        List<List<CellDTO>> cells = new ArrayList<>();
-        cells.add(List.of(new CellDTO("1A", "", "", 0, new ArrayList<>(), new ArrayList<>())));
-        this.spreadsheetDTO = new SpreadsheetDTO("MySpreadsheet", 1, cells);
+    public void loadSpreadsheet(String filePath) { // try catch should be in UI side ?
+            validateXmlFile(filePath);
+            STLSheet loadedSheetFromXML = loadXmlFile(filePath);
+            validateSTLSheet(loadedSheetFromXML);
+            convertSTLSheet2SpreadSheet(loadedSheetFromXML);
     }
+
+    private void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
+
+    }
+
+    private void validateSTLSheet(STLSheet loadedSheetFromXML) {
+        int rows = loadedSheetFromXML.getSTLLayout().getRows();
+        int columns = loadedSheetFromXML.getSTLLayout().getColumns();
+        /* 4.התאים המגדירים שימוש בפונקציות מכווינים לתאים המכילים מידע שמתאים לארגומנטים של הפונקציה */
+
+        validateSheetLimits(rows,columns);
+        validateAllCellsInBound(loadedSheetFromXML);
+
+    }
+
+    private void validateSheetLimits(int rows, int columns) {
+        if (rows < 1 || rows > 50) {
+            throw new IllegalArgumentException("Invalid number of rows: " + rows + ". Rows must be between 1 and 50.");
+        }
+
+        if (columns < 1 || columns > 20) {
+            throw new IllegalArgumentException("Invalid number of columns: " + columns + ". Columns must be between 1 and 20.");
+        }
+    }
+
+    private void validateAllCellsInBound(STLSheet loadedSheetFromXML) {
+        int maxRows = loadedSheetFromXML.getSTLLayout().getRows();
+        int maxColumns = loadedSheetFromXML.getSTLLayout().getColumns();
+
+        for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
+            int cellRow = cell.getRow();
+            int cellColumn = convertColumnLetterToNumber(cell.getColumn());
+
+            if (cellRow < 1 || cellRow > maxRows || cellColumn < 1 || cellColumn > maxColumns) {
+                throw new IllegalArgumentException("Cell at position (" + cellRow + ", " + cellColumn +
+                        ") is outside the sheet boundaries: max rows = " + maxRows +
+                        ", max columns = " + maxColumns);
+            }
+        }
+    }
+
+    private static void validateXmlFile(String filePath) throws Exception {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new Exception("File not found.");
+        }
+        if (!filePath.endsWith(".xml")) {
+            throw new Exception("File is not an XML file.");
+        }
+    }
+
+    private static STLSheet loadXmlFile(String filePath) throws JAXBException {
+        File file = new File(filePath);
+        JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        return (STLSheet) jaxbUnmarshaller.unmarshal(file);
+    }
+
 
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
@@ -57,4 +119,8 @@ public class EngineImpl implements Engine {
         // Example: returning mock version history
         return Arrays.asList(new Version(1, 5), new Version(2, 3));
     }*/
+
+    public static int convertColumnLetterToNumber(String columnAsLetter) {
+        return columnAsLetter.charAt(0) - 'A' + 1;
+    }
 }

@@ -1,4 +1,4 @@
-package sheetimpl;
+package implementation;
 
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
@@ -74,7 +74,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    "{PLUS,{MINUS,4,5},}"
+
 
     @Override
     public void displaySpreadSheet() {
@@ -88,8 +88,8 @@ public class ConsoleUI implements UI {
     @Override
     public void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint)
     {
-        int numRows = SpreadsheetToPrint.cells().size();
-        int numCols = numRows > 0 ? SpreadsheetToPrint.cells().getFirst().size() : 0;
+        int numRows = SpreadsheetToPrint.cell().size();
+        int numCols = numRows > 0 ? SpreadsheetToPrint.cell().getFirst().size() : 0;
 
         System.out.print("   ");
         for (int col = 0; col < numCols; col++) {
@@ -100,7 +100,7 @@ public class ConsoleUI implements UI {
 
         for (int row = 0; row < numRows; row++) {
             System.out.printf("%02d ", row + 1);
-            List<CellDTO> rowCells = SpreadsheetToPrint.cells().get(row);
+            List<CellDTO> rowCells = SpreadsheetToPrint.cell().get(row);
             for (CellDTO cell : rowCells) {
                 String cellValue = cell.originalValue();
                 System.out.printf("| %-3s ", cellValue.isEmpty() ? " " : cellValue);

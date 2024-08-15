@@ -21,7 +21,7 @@ public class ExpressionParser {
 //        System.out.println(tokenizeExpression("5"));
 //        System.out.println(tokenizeExpression("BLABLBALLBA"));
 
-        Node tokenized = tokenizeExpression("{PLUS,1000,4.757}");
+        Node tokenized = tokenizeExpression("  BLABLB ALLBA  ");
         Expression exp = buildExpression(tokenized);
 
         System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
@@ -44,13 +44,13 @@ public class ExpressionParser {
             return children;
         }
 
-        @Override
+/*        @Override
         public String toString() {
             return "{" +
                     "value=" + value +
                     ", children=" + children +
                     '}';
-        }
+        }*/
     }
 
     public static Expression buildExpression(Node expression) {
@@ -93,14 +93,14 @@ public class ExpressionParser {
     }
 
     public static Node tokenizeExpression(String input) {
-        input = input.trim();
+        input = input;
 
         if (input.startsWith("{") && input.endsWith("}")) {
             int commaIndex = input.indexOf(',');
-            String function = input.substring(1, commaIndex).trim();
+            String function = input.substring(1, commaIndex);
             Node root = new Node(function, new ArrayList<>());
 
-            return tokenizeSubExpression(root, input.substring(1, input.length() - 1).trim());
+            return tokenizeSubExpression(root, input.substring(1, input.length() - 1));
         } else {
             return new Node(input, null);
         }
@@ -116,13 +116,13 @@ public class ExpressionParser {
             } else if (input.charAt(i) == '}') {
                 bracketCounter--;
             } else if (input.charAt(i) == ',' && bracketCounter == 0) {
-                argument = input.substring(commaIndex + 1, i).trim();
+                argument = input.substring(commaIndex + 1, i);
                 commaIndex = i;
                 root.children.add(tokenizeExpression(argument));
             }
         }
 
-        argument = input.substring(commaIndex + 1).trim();
+        argument = input.substring(commaIndex + 1);
         root.children.add(tokenizeExpression(argument));
 
         return root;
