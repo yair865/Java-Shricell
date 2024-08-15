@@ -17,9 +17,9 @@ public class EngineImpl implements Engine {
     private SpreadsheetImpl currentSpreadsheet;
     private SpreadsheetDTO spreadsheetDTO;
 
-    @lombok.SneakyThrows
+
     @Override
-    public void loadSpreadsheet(String filePath) { // try catch should be in UI side ?
+    public void loadSpreadsheet(String filePath) throws Exception { //throws what ?
             validateXmlFile(filePath);
             STLSheet loadedSheetFromXML = loadXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
@@ -27,7 +27,7 @@ public class EngineImpl implements Engine {
     }
 
     private void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-
+    // TODO
     }
 
     private void validateSTLSheet(STLSheet loadedSheetFromXML) {

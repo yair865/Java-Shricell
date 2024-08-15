@@ -69,10 +69,10 @@ public class ConsoleUI implements UI {
         String filePath = scanner.nextLine();
         try {
             engine.loadSpreadsheet(filePath);
-        } catch (Exception e) {
+        } catch (Exception e) { //more catch types for different Exceptions?
             System.out.println("Error loading file: " + e.getMessage());
         }
-    }
+    } // don`t end on Exception , continue the program.
 
 
 
