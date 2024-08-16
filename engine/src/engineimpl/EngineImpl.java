@@ -1,5 +1,6 @@
 package engineimpl;
 
+import api.Cell;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import api.Engine;
@@ -9,11 +10,18 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
+import sheetimpl.cellimpl.CellImpl;
+import sheetimpl.cellimpl.coordinate.Coordinate;
+
 import java.io.File;
 import java.util.ArrayList;
 
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+
 public class EngineImpl implements Engine {
 
+   // private Map<Integer , SpreadsheetDTO> spreadsheetsByVersions;
     private SpreadsheetImpl currentSpreadsheet;
     private SpreadsheetDTO spreadsheetDTO;
 
@@ -21,26 +29,33 @@ public class EngineImpl implements Engine {
     @Override
     public void loadSpreadsheet(String filePath) throws Exception { //throws what ?
             validateXmlFile(filePath);
-            STLSheet loadedSheetFromXML = loadXmlFile(filePath);
+            STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
             convertSTLSheet2SpreadSheet(loadedSheetFromXML);
     }
+    @Override
+    public void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
+        String sheetName = loadedSheetFromXML.getName();
 
-    private void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-    // TODO
+        this.currentSpreadsheet.setTitle(sheetName);
+        for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
+            int cellRow = cell.getRow();
+            int cellColumn = convertColumnLetterToNumber(cell.getColumn());
+            String originalValue = cell.getSTLOriginalValue();
+            this.currentSpreadsheet.setCell(cellRow, cellColumn, originalValue);
+        }
     }
-
-    private void validateSTLSheet(STLSheet loadedSheetFromXML) {
+    @Override
+    public void validateSTLSheet(STLSheet loadedSheetFromXML) {
         int rows = loadedSheetFromXML.getSTLLayout().getRows();
         int columns = loadedSheetFromXML.getSTLLayout().getColumns();
-        /* 4.התאים המגדירים שימוש בפונקציות מכווינים לתאים המכילים מידע שמתאים לארגומנטים של הפונקציה */
 
         validateSheetLimits(rows,columns);
         validateAllCellsInBound(loadedSheetFromXML);
 
     }
-
-    private void validateSheetLimits(int rows, int columns) {
+    @Override
+    public void validateSheetLimits(int rows, int columns) {
         if (rows < 1 || rows > 50) {
             throw new IllegalArgumentException("Invalid number of rows: " + rows + ". Rows must be between 1 and 50.");
         }
@@ -49,8 +64,8 @@ public class EngineImpl implements Engine {
             throw new IllegalArgumentException("Invalid number of columns: " + columns + ". Columns must be between 1 and 20.");
         }
     }
-
-    private void validateAllCellsInBound(STLSheet loadedSheetFromXML) {
+    @Override
+    public void validateAllCellsInBound(STLSheet loadedSheetFromXML) {
         int maxRows = loadedSheetFromXML.getSTLLayout().getRows();
         int maxColumns = loadedSheetFromXML.getSTLLayout().getColumns();
 
@@ -66,7 +81,8 @@ public class EngineImpl implements Engine {
         }
     }
 
-    private static void validateXmlFile(String filePath) throws Exception {
+    @Override
+    public void validateXmlFile(String filePath) throws Exception {
         File file = new File(filePath);
         if (!file.exists()) {
             throw new Exception("File not found.");
@@ -76,24 +92,36 @@ public class EngineImpl implements Engine {
         }
     }
 
-    private static STLSheet loadXmlFile(String filePath) throws JAXBException {
-        File file = new File(filePath);
-        JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        return (STLSheet) jaxbUnmarshaller.unmarshal(file);
+    @Override
+    public STLSheet loadSheetFromXmlFile(String filePath) {
+        try {
+            File file = new File(filePath);
+            JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            return (STLSheet) jaxbUnmarshaller.unmarshal(file);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e); // consider creating special Exception to throw.
+        }
     }
 
+    @Override
+    public void createSpreadsheetDTO() {
+        String SpreadSheetDtoName = this.currentSpreadsheet.getSheetName();
+
+    }
 
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
+
         return this.spreadsheetDTO;
     }
 
     @Override
     public CellDTO getCellInfo(String cellId) {
-        // Logic to get cell information
-        // For simplicity, returning a mock CellDTO
-        return new CellDTO(cellId, "originalValue", "effectiveValue", 1, new ArrayList<>(), new ArrayList<>());
+        Coordinate cellCoordinate = createCoordinate(cellId);
+        Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate.row(), cellCoordinate.column());
+
+        return new CellDTO(cellToDTO.getOriginalValue(),cellToDTO.getEffectiveValue(),cellToDTO.getVersion(),cellToDTO.getDependsOn(),cellToDTO.getInfluencingOn());
     }
 
     @Override
@@ -119,8 +147,4 @@ public class EngineImpl implements Engine {
         // Example: returning mock version history
         return Arrays.asList(new Version(1, 5), new Version(2, 3));
     }*/
-
-    public static int convertColumnLetterToNumber(String columnAsLetter) {
-        return columnAsLetter.charAt(0) - 'A' + 1;
-    }
 }

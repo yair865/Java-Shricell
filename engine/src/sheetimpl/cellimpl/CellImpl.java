@@ -70,4 +70,9 @@ public class CellImpl implements Cell {
     public List<Cell> getInfluencingOn() {
         return influencingOn;
     }
+
+    @Override
+    public void advanceVersion() {
+        this.version++;
+    }
 }

@@ -13,4 +13,5 @@ public interface Cell {
     int getVersion();
     List<Cell> getDependsOn();
     List<Cell> getInfluencingOn();
+    void advanceVersion();
 }

@@ -1,5 +1,8 @@
 package dtoPackage;
 
-import java.util.List;
+import sheetimpl.cellimpl.coordinate.Coordinate;
 
-public record SpreadsheetDTO(String name, int version, List<List<CellDTO>> cell) {}
+import java.util.List;
+import java.util.Map;
+
+public record SpreadsheetDTO(String name, int version, Map<Coordinate , CellDTO> cells) {}

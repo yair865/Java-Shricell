@@ -4,6 +4,8 @@ import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import api.Engine;
 import api.UI;
+import sheetimpl.cellimpl.coordinate.Coordinate;
+
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +131,6 @@ public class ConsoleUI implements UI {
         System.out.println("Influencing Cells: " + currentCell.influencingCells());
     }
 
-
     @Override
     public void handleUpdateCell()
     {
@@ -139,7 +140,7 @@ public class ConsoleUI implements UI {
         String cellIdentifier = scanner.nextLine().trim();
         currentCell = engine.getCellInfo(cellIdentifier);
 
-        System.out.println("Cell Identifier: " + currentCell.cellId());
+        System.out.println("Cell Identifier: " + cellIdentifier);
         System.out.println("Original Value: " + currentCell.originalValue());
         System.out.println("Effective Value: " + currentCell.effectiveValue());
 
