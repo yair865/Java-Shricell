@@ -70,7 +70,7 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Ref.class, parameters);
-            return null;
+            return new Ref(parameters.getFirst());
         }
     };
 

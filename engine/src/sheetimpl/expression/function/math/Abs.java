@@ -1,6 +1,8 @@
 package sheetimpl.expression.function.math;
 
 import api.EffectiveValue;
+import api.Spreadsheet;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.expression.type.UnaryExpression;
 import api.Expression;
 import sheetimpl.cellimpl.EffectiveValueImpl;
@@ -13,9 +15,9 @@ public class Abs extends UnaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression expression) {
+    public EffectiveValue evaluate(Expression expression, SpreadsheetDTO spreadsheetDTO) {
 
-        EffectiveValue expressionValue = expression.evaluate();
+        EffectiveValue expressionValue = expression.evaluate(spreadsheetDTO);
 
         // do some checking... error handling...
 

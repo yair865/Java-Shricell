@@ -20,15 +20,16 @@ public interface Engine {
 
     void validateXmlFile(String filePath) throws Exception;
 
-    public STLSheet loadSheetFromXmlFile(String filePath);
-
-    void createSpreadsheetDTO();
-
+     STLSheet loadSheetFromXmlFile(String filePath);
 
     SpreadsheetDTO getSpreadsheetState();
+
     CellDTO getCellInfo(String cellId);
+
     void updateCell(String cellId, String newValue);
-    void exit();
+
+    void exitProgram();
+
     int getCurrentVersion();
 
     //List<Version> getVersionHistory();

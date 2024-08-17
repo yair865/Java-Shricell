@@ -1,6 +1,7 @@
 package sheetimpl.expression.function.string;
 
 import api.EffectiveValue;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.expression.type.TrinaryExpression;
 import api.Expression;
 import sheetimpl.cellimpl.EffectiveValueImpl;
@@ -13,10 +14,10 @@ public class Sub extends TrinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(Expression sourceString, Expression startIndex, Expression endIndex) {
-        EffectiveValue sourceStringValue = sourceString.evaluate();
-        EffectiveValue startIndexValue = startIndex.evaluate();
-        EffectiveValue endIndexValue = endIndex.evaluate();
+    protected EffectiveValue evaluate(Expression sourceString, Expression startIndex, Expression endIndex , SpreadsheetDTO spreadsheetDTO) {
+        EffectiveValue sourceStringValue = sourceString.evaluate(spreadsheetDTO);
+        EffectiveValue startIndexValue = startIndex.evaluate(spreadsheetDTO);
+        EffectiveValue endIndexValue = endIndex.evaluate(spreadsheetDTO);
 
         String source = sourceStringValue.extractValueWithExpectation(String.class);
         int start = startIndexValue.extractValueWithExpectation(Double.class).intValue();

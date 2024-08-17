@@ -1,10 +1,9 @@
 package implementation;
 
-import dtoPackage.CellDTO;
-import dtoPackage.SpreadsheetDTO;
 import api.Engine;
 import api.UI;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import dtoPackage.CellDTO;
+import dtoPackage.SpreadsheetDTO;
 
 import java.util.InputMismatchException;
 import java.util.List;
@@ -203,9 +202,7 @@ public class ConsoleUI implements UI {
         }
     }
     @Override
-    public void handleExit()
-    {
-        engine.exit();
-        System.exit(0);
+    public void handleExit() {
+        engine.exitProgram();
     }
 }

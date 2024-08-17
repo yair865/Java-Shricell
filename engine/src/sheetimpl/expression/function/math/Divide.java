@@ -1,6 +1,7 @@
 package sheetimpl.expression.function.math;
 
 import api.EffectiveValue;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.expression.type.BinaryExpression;
 import api.Expression;
 import sheetimpl.cellimpl.EffectiveValueImpl;
@@ -12,9 +13,9 @@ public class Divide extends BinaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression left, Expression right) {
-        EffectiveValue leftValue = left.evaluate();
-        EffectiveValue rightValue = right.evaluate();
+    public EffectiveValue evaluate(Expression left, Expression right , SpreadsheetDTO spreadsheetDTO) {
+        EffectiveValue leftValue = left.evaluate(spreadsheetDTO);
+        EffectiveValue rightValue = right.evaluate(spreadsheetDTO);
 
         double numerator = leftValue.extractValueWithExpectation(Double.class);
         double denominator = leftValue.extractValueWithExpectation(Double.class);

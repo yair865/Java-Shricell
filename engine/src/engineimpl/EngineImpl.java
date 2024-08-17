@@ -11,10 +11,12 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static sheetimpl.SpreadsheetImpl.validateCoordinateInbound;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
@@ -36,8 +38,17 @@ public class EngineImpl implements Engine {
     @Override
     public void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
         String sheetName = loadedSheetFromXML.getName();
+        int rows = loadedSheetFromXML.getSTLLayout().getRows();
+        int columns = loadedSheetFromXML.getSTLLayout().getColumns();
+        int rowHeightUnits = loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits();
+        int columWidthUnits = loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits();
 
         this.currentSpreadsheet.setTitle(sheetName);
+        this.currentSpreadsheet.setRows(rows);
+        this.currentSpreadsheet.setColumns(columns);
+        this.currentSpreadsheet.setRowHeightUnits(rowHeightUnits);
+        this.currentSpreadsheet.setColumnWidthUnits(columWidthUnits);
+
         for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             int cellRow = cell.getRow();
             int cellColumn = convertColumnLetterToNumber(cell.getColumn());
@@ -72,14 +83,10 @@ public class EngineImpl implements Engine {
         for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             int cellRow = cell.getRow();
             int cellColumn = convertColumnLetterToNumber(cell.getColumn());
-
-            if (cellRow < 1 || cellRow > maxRows || cellColumn < 1 || cellColumn > maxColumns) {
-                throw new IllegalArgumentException("Cell at position (" + cellRow + ", " + cellColumn +
-                        ") is outside the sheet boundaries: max rows = " + maxRows +
-                        ", max columns = " + maxColumns);
+            Coordinate coordinate = createCoordinate(cellRow, cellColumn);
+            validateCoordinateInbound(coordinate , maxRows, maxColumns);
             }
         }
-    }
 
     @Override
     public void validateXmlFile(String filePath) throws Exception {
@@ -108,27 +115,36 @@ public class EngineImpl implements Engine {
     public SpreadsheetDTO getSpreadsheetState() {
         String spreadsheetDtoName = this.currentSpreadsheet.getSheetName();
         int spreadsheetVersion = this.currentSpreadsheet.getVersion();
+        int sheetNumberOfRows = this.currentSpreadsheet.getRows();
+        int sheetNumberOfColumns = this.currentSpreadsheet.getColumns();
+        int sheetRowHeightUnits = this.currentSpreadsheet.getRowHeightUnits();
+        int columnWidthUnits = this.currentSpreadsheet.getColumnWidthUnits();
 
-        Map<Coordinate, CellDTO> cellDTOMap = new HashMap<>();
+        Map<Coordinate, CellDTO> cellsDtoMap = new HashMap<>();
 
         for (Map.Entry<Coordinate, Cell> entry : this.currentSpreadsheet.getActiveCells().entrySet()) {
             Coordinate coordinate = entry.getKey();
             Cell cell = entry.getValue();
 
-            CellDTO cellDTO = getCellInfo()
-
+            CellDTO cellDTO = new CellDTO(
+                    cell.getOriginalValue(),
+                    cell.getEffectiveValue(),
+                    cell.getVersion(),
+                    cell.getDependsOn(),
+                    cell.getInfluencingOn()
             );
 
-            cellDTOMap.put(coordinate, cellDTO);
+            cellsDtoMap.put(coordinate, cellDTO);
         }
 
-        return spreadsheetDTO;
+        return new SpreadsheetDTO(spreadsheetDtoName, spreadsheetVersion, cellsDtoMap, sheetNumberOfRows, sheetNumberOfColumns,sheetRowHeightUnits,columnWidthUnits);
     }
 
     @Override
     public CellDTO getCellInfo(String cellId) {
+
         Coordinate cellCoordinate = createCoordinate(cellId);
-        Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate.row(), cellCoordinate.column());
+        Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate);
 
         return new CellDTO(cellToDTO.getOriginalValue(),cellToDTO.getEffectiveValue(),cellToDTO.getVersion(),cellToDTO.getDependsOn(),cellToDTO.getInfluencingOn());
     }
@@ -141,8 +157,9 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void exit() {
-
+    public void exitProgram() {
+        System.out.println("Shticell closed");
+        System.exit(0);
     }
 
     @Override

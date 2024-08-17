@@ -2,6 +2,8 @@ package sheetimpl.expression.type;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.Spreadsheet;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.utils.CellType;
 
@@ -14,7 +16,7 @@ public class Text implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {
+    public EffectiveValue evaluate(SpreadsheetDTO spreadSheet) {
         return new EffectiveValueImpl(CellType.STRING, text);
     }
 }

@@ -23,7 +23,7 @@ public class ExpressionParser {
 
        Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
 
-        System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
+        //System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
     }
     public static Expression buildExpressionFromString(String someExpression){
         Node tokenized = tokenizeExpression(someExpression.trim());

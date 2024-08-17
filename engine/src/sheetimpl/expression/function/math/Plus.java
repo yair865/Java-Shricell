@@ -1,5 +1,6 @@
 package sheetimpl.expression.function.math;
 
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.expression.type.BinaryExpression;
 import api.Expression;
 import api.EffectiveValue;
@@ -13,9 +14,9 @@ public class Plus extends BinaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression left, Expression right) {
-        EffectiveValue leftValue = left.evaluate();
-        EffectiveValue rightValue = right.evaluate();
+    public EffectiveValue evaluate(Expression left, Expression right , SpreadsheetDTO spreadsheetDTO) {
+        EffectiveValue leftValue = left.evaluate(spreadsheetDTO);
+        EffectiveValue rightValue = right.evaluate(spreadsheetDTO);
 
         // do some checking... error handling...
 
