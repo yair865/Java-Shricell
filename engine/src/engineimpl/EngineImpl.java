@@ -1,20 +1,19 @@
 package engineimpl;
 
 import api.Cell;
+import api.Engine;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import api.Engine;
 import generated.STLCell;
 import generated.STLSheet;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
-import sheetimpl.cellimpl.CellImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
-
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -27,10 +26,11 @@ public class EngineImpl implements Engine {
 
 
     @Override
-    public void loadSpreadsheet(String filePath) throws Exception { //throws what ?
+    public void loadSpreadsheet(String filePath) throws Exception {
             validateXmlFile(filePath);
             STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
+            //validateRefExpressions()
             convertSTLSheet2SpreadSheet(loadedSheetFromXML);
     }
     @Override
@@ -105,15 +105,24 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void createSpreadsheetDTO() {
-        String SpreadSheetDtoName = this.currentSpreadsheet.getSheetName();
-
-    }
-
-    @Override
     public SpreadsheetDTO getSpreadsheetState() {
+        String spreadsheetDtoName = this.currentSpreadsheet.getSheetName();
+        int spreadsheetVersion = this.currentSpreadsheet.getVersion();
 
-        return this.spreadsheetDTO;
+        Map<Coordinate, CellDTO> cellDTOMap = new HashMap<>();
+
+        for (Map.Entry<Coordinate, Cell> entry : this.currentSpreadsheet.getActiveCells().entrySet()) {
+            Coordinate coordinate = entry.getKey();
+            Cell cell = entry.getValue();
+
+            CellDTO cellDTO = getCellInfo()
+
+            );
+
+            cellDTOMap.put(coordinate, cellDTO);
+        }
+
+        return spreadsheetDTO;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package api;
 
+import dtoPackage.SpreadsheetDTO;
+
 public interface Expression
 {
-        EffectiveValue evaluate();
+        EffectiveValue evaluate(SpreadsheetDTO spreadsheetDTO);
 }
 

@@ -21,13 +21,17 @@ public class ExpressionParser {
 //        System.out.println(tokenizeExpression("5"));
 //        System.out.println(tokenizeExpression("BLABLBALLBA"));
 
-        Node tokenized = tokenizeExpression("  BLABLB ALLBA  ");
-        Expression exp = buildExpression(tokenized);
+       Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
 
         System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
     }
+    public static Expression buildExpressionFromString(String someExpression){
+        Node tokenized = tokenizeExpression(someExpression.trim());
+        return buildExpression(tokenized);
+    }
 
-    public static class Node {
+
+    private static class Node {
         String value;
         List<Node> children;
 

@@ -30,7 +30,7 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     @Override
     public int getVersion() {
-        return 0;
+        return sheetVersion;
     }
 
     @Override
@@ -41,17 +41,12 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public void setCell(int row, int column, String value) {
         Coordinate coordinate = CoordinateFactory.createCoordinate(row, column);
-        Cell cell = activeCells.get(coordinate);
-
-        // If the cell doesn't exist at the given coordinate, create a new one and add it to the map.
-        if (cell == null) {
-            cell = new CellImpl(row,column,value,null,1,null,null); // Assuming CellImpl is your implementation of the Cell interface
-            activeCells.put(coordinate, cell);
-        }
-
+        Cell cell = activeCells.computeIfAbsent(coordinate, c -> new CellImpl(c, value, null, 1, null, null));
         cell.setCellOriginalValue(value);
         cell.advanceVersion();
-
     }
 
+    public Map<Coordinate, Cell> getActiveCells() {
+        return activeCells;
     }
+}

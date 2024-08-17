@@ -8,6 +8,8 @@ import sheetimpl.cellimpl.coordinate.CoordinateImpl;
 
 import java.util.List;
 
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+
 public class CellImpl implements Cell {
 
     private final Coordinate coordinate;
@@ -17,8 +19,8 @@ public class CellImpl implements Cell {
     private final List<Cell> dependsOn;
     private final List<Cell> influencingOn;
 
-    public CellImpl(int row, int column, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> dependsOn, List<Cell> influencingOn) {
-        this.coordinate = new CoordinateImpl(row, column);
+    public CellImpl(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> dependsOn, List<Cell> influencingOn) {
+        this.coordinate = coordinate;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.version = version;
