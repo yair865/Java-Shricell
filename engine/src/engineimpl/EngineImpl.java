@@ -11,11 +11,11 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
+import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
+import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.SpreadsheetImpl.validateCoordinateInbound;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -24,36 +24,29 @@ public class EngineImpl implements Engine {
 
    // private Map<Integer , SpreadsheetDTO> spreadsheetsByVersions;
     private SpreadsheetImpl currentSpreadsheet;
-    private SpreadsheetDTO spreadsheetDTO;
-
 
     @Override
     public void loadSpreadsheet(String filePath) throws Exception {
             validateXmlFile(filePath);
             STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
-            //validateRefExpressions()
+            //validateRefExpressions() //TODO
             convertSTLSheet2SpreadSheet(loadedSheetFromXML);
     }
     @Override
     public void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-        String sheetName = loadedSheetFromXML.getName();
-        int rows = loadedSheetFromXML.getSTLLayout().getRows();
-        int columns = loadedSheetFromXML.getSTLLayout().getColumns();
-        int rowHeightUnits = loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits();
-        int columWidthUnits = loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits();
-
-        this.currentSpreadsheet.setTitle(sheetName);
-        this.currentSpreadsheet.setRows(rows);
-        this.currentSpreadsheet.setColumns(columns);
-        this.currentSpreadsheet.setRowHeightUnits(rowHeightUnits);
-        this.currentSpreadsheet.setColumnWidthUnits(columWidthUnits);
+        this.currentSpreadsheet.clearSpreadSheet();
+        this.currentSpreadsheet.setTitle(loadedSheetFromXML.getName());
+        this.currentSpreadsheet.setRows(loadedSheetFromXML.getSTLLayout().getRows());
+        this.currentSpreadsheet.setColumns(loadedSheetFromXML.getSTLLayout().getColumns());
+        this.currentSpreadsheet.setRowHeightUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits());
+        this.currentSpreadsheet.setColumnWidthUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits());
 
         for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
-            int cellRow = cell.getRow();
-            int cellColumn = convertColumnLetterToNumber(cell.getColumn());
+
             String originalValue = cell.getSTLOriginalValue();
-            this.currentSpreadsheet.setCell(cellRow, cellColumn, originalValue);
+            Coordinate coordinate = CoordinateFactory.createCoordinate(cell.getRow() , convertColumnLetterToNumber(cell.getColumn()));
+            this.currentSpreadsheet.setCell(coordinate, originalValue);
         }
     }
     @Override
@@ -113,31 +106,7 @@ public class EngineImpl implements Engine {
 
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
-        String spreadsheetDtoName = this.currentSpreadsheet.getSheetName();
-        int spreadsheetVersion = this.currentSpreadsheet.getVersion();
-        int sheetNumberOfRows = this.currentSpreadsheet.getRows();
-        int sheetNumberOfColumns = this.currentSpreadsheet.getColumns();
-        int sheetRowHeightUnits = this.currentSpreadsheet.getRowHeightUnits();
-        int columnWidthUnits = this.currentSpreadsheet.getColumnWidthUnits();
-
-        Map<Coordinate, CellDTO> cellsDtoMap = new HashMap<>();
-
-        for (Map.Entry<Coordinate, Cell> entry : this.currentSpreadsheet.getActiveCells().entrySet()) {
-            Coordinate coordinate = entry.getKey();
-            Cell cell = entry.getValue();
-
-            CellDTO cellDTO = new CellDTO(
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue(),
-                    cell.getVersion(),
-                    cell.getDependsOn(),
-                    cell.getInfluencingOn()
-            );
-
-            cellsDtoMap.put(coordinate, cellDTO);
-        }
-
-        return new SpreadsheetDTO(spreadsheetDtoName, spreadsheetVersion, cellsDtoMap, sheetNumberOfRows, sheetNumberOfColumns,sheetRowHeightUnits,columnWidthUnits);
+        return convertSheetToDTO(this.currentSpreadsheet);
     }
 
     @Override
@@ -146,14 +115,15 @@ public class EngineImpl implements Engine {
         Coordinate cellCoordinate = createCoordinate(cellId);
         Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate);
 
-        return new CellDTO(cellToDTO.getOriginalValue(),cellToDTO.getEffectiveValue(),cellToDTO.getVersion(),cellToDTO.getDependsOn(),cellToDTO.getInfluencingOn());
+        return new CellDTO(cellToDTO.getOriginalValue(),
+                cellToDTO.getEffectiveValue(),
+                cellToDTO.getLastModifiedVersionVersion());
     }
 
     @Override
     public void updateCell(String cellId, String newValue) {
-        // Logic to update a cell value
-        // Example: update the cell in spreadsheetDTO
-        // For simplicity, no actual update in the mock
+        Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
+        this.currentSpreadsheet.setCell(coordinate,newValue);
     }
 
     @Override

@@ -1,18 +1,23 @@
 package sheetimpl;
 
 import api.Cell;
+import api.EffectiveValue;
 import api.Spreadsheet;
 import sheetimpl.cellimpl.CellImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
-import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static converter.SheetConverter.convertSheetToDTO;
+import static sheetimpl.utils.ExpressionParser.buildExpressionFromString;
 
 public class SpreadsheetImpl implements Spreadsheet {
     private String sheetName;
     private int sheetVersion;
     private Map<Coordinate, Cell> activeCells;
+    private Map<Coordinate, List<Coordinate>> dependencies;
     private int rows;
     private int columns;
     private int rowHeightUnits;
@@ -68,11 +73,13 @@ public class SpreadsheetImpl implements Spreadsheet {
     }
 
     @Override
-    public void setCell(int row, int column, String value) {
-        Coordinate coordinate = CoordinateFactory.createCoordinate(row, column);
-        Cell cell = activeCells.computeIfAbsent(coordinate, c -> new CellImpl(c, value, null, 1, null, null));
+    public void setCell(Coordinate coordinate , String value) {
+        Cell cell = getCell(coordinate);
+        EffectiveValue effectiveValue = buildExpressionFromString(value).evaluate(convertSheetToDTO(this));
         cell.setCellOriginalValue(value);
-        cell.advanceVersion();
+        cell.setEffectiveValue(buildExpressionFromString(value).evaluate(convertSheetToDTO(this)));
+        cell.setLastModifiedVersion(sheetVersion);
+        cell = activeCells.computeIfAbsent(coordinate, c -> new CellImpl(value, effectiveValue, sheetVersion));
     }
 
     @Override
@@ -84,20 +91,26 @@ public class SpreadsheetImpl implements Spreadsheet {
     public void setColumns(int columns) {
         this.columns = columns;
     }
-
+    @Override
     public int getRowHeightUnits() {
         return rowHeightUnits;
     }
-
+    @Override
     public void setRowHeightUnits(int rowHeightUnits) {
         this.rowHeightUnits = rowHeightUnits;
     }
-
+    @Override
     public int getColumnWidthUnits() {
         return columnWidthUnits;
     }
-
+    @Override
     public void setColumnWidthUnits(int columnWidthUnits) {
         this.columnWidthUnits = columnWidthUnits;
+    }
+
+    @Override
+    public void clearSpreadSheet() {
+        activeCells.clear();
+        dependencies.clear();
     }
 }

@@ -1,5 +1,6 @@
 package implementation;
 
+import api.EffectiveValue;
 import api.Engine;
 import api.UI;
 import dtoPackage.CellDTO;
@@ -89,8 +90,8 @@ public class ConsoleUI implements UI {
     @Override
     public void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint)
     {
-        int numRows = SpreadsheetToPrint.cell().size();
-        int numCols = numRows > 0 ? SpreadsheetToPrint.cell().getFirst().size() : 0;
+        int numRows = SpreadsheetToPrint.rowHeightUnits();
+        int numCols = SpreadsheetToPrint.columnWidthUnits();
 
         System.out.print("   ");
         for (int col = 0; col < numCols; col++) {
@@ -101,10 +102,10 @@ public class ConsoleUI implements UI {
 
         for (int row = 0; row < numRows; row++) {
             System.out.printf("%02d ", row + 1);
-            List<CellDTO> rowCells = SpreadsheetToPrint.cell().get(row);
+            List<CellDTO> rowCells = SpreadsheetToPrint.cells().get();
             for (CellDTO cell : rowCells) {
-                String cellValue = cell.originalValue();
-                System.out.printf("| %-3s ", cellValue.isEmpty() ? " " : cellValue);
+                EffectiveValue cellValue = cell.effectiveValue();
+                System.out.printf("| %-3s ", cellValue.getValue());
             }
             System.out.println("|");
         }

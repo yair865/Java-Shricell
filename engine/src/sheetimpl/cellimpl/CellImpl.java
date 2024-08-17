@@ -2,30 +2,17 @@ package sheetimpl.cellimpl;
 
 import api.Cell;
 import api.EffectiveValue;
-import api.Expression;
-import sheetimpl.cellimpl.coordinate.Coordinate;
-import sheetimpl.cellimpl.coordinate.CoordinateImpl;
-
-import java.util.List;
-
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 public class CellImpl implements Cell {
 
-    //private final Coordinate coordinate;
     private String originalValue;
     private EffectiveValue effectiveValue;
-    private int version;
-    private final List<Cell> dependsOn;
-    private final List<Cell> influencingOn;
+    private int lastModifiedVersion;
 
-    public CellImpl(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> dependsOn, List<Cell> influencingOn) {
-        //this.coordinate = coordinate;
+    public CellImpl(String originalValue, EffectiveValue effectiveValue, int version) {
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
-        this.version = version;
-        this.dependsOn = dependsOn;
-        this.influencingOn = influencingOn;
+        this.lastModifiedVersion = version;
     }
 /*    @Override
     public Coordinate getCoordinate() {
@@ -48,33 +35,17 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void calculateEffectiveValue() {
-        // build the expression object out of the original value...
-        // it can be {PLUS, 4, 5} OR {CONCAT, "hello", "world"}
-
-        Expression expression;
-
-        // second question: what is the return type of eval() ?
-        //effectiveValue = expression.eval();
+    public int getLastModifiedVersionVersion() {
+        return lastModifiedVersion;
     }
 
     @Override
-    public int getVersion() {
-        return version;
+    public void setEffectiveValue(EffectiveValue effectiveValue) {
+        this.effectiveValue = effectiveValue;
     }
 
     @Override
-    public List<Cell> getDependsOn() {
-        return dependsOn;
-    }
-
-    @Override
-    public List<Cell> getInfluencingOn() {
-        return influencingOn;
-    }
-
-    @Override
-    public void advanceVersion() {
-        this.version++;
+    public void setLastModifiedVersion(int sheetVersion) {
+        this.lastModifiedVersion = sheetVersion;
     }
 }
