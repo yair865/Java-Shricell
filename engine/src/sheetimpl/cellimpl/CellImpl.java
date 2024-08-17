@@ -12,7 +12,7 @@ import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 public class CellImpl implements Cell {
 
-    private final Coordinate coordinate;
+    //private final Coordinate coordinate;
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int version;
@@ -20,17 +20,17 @@ public class CellImpl implements Cell {
     private final List<Cell> influencingOn;
 
     public CellImpl(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> dependsOn, List<Cell> influencingOn) {
-        this.coordinate = coordinate;
+        //this.coordinate = coordinate;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.version = version;
         this.dependsOn = dependsOn;
         this.influencingOn = influencingOn;
     }
-    @Override
+/*    @Override
     public Coordinate getCoordinate() {
         return coordinate;
-    }
+    }*/
 
     @Override
     public String getOriginalValue() {
