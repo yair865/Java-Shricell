@@ -86,7 +86,7 @@ public class ConsoleUI implements UI {
                 }
                 engine.loadSpreadsheet(userInput);
             } catch (Exception e) { //more catch types for different Exceptions?
-                System.out.println("Error loading file: " + e.getMessage() + "please try loading the sheet first.");
+                System.out.println("Error loading file: " + e.getMessage() + " please try to load again.");
             }
         }
     }
@@ -98,7 +98,7 @@ public class ConsoleUI implements UI {
             System.out.println("The title of the spreadsheet is: " + currentSpreadsheet.name());
             printSpreadSheet(currentSpreadsheet);
         }catch (Exception e) {
-            System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage());
+            System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage() + " please try again.");
         }
 
     }
@@ -160,7 +160,7 @@ public class ConsoleUI implements UI {
         System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion());
 
     }catch (Exception e) {
-            System.out.println("Could not display cell because of an error: " + e.getMessage());
+            System.out.println("Could not display cell because of an error: " + e.getMessage() + " please try again");
         }
     }
 
@@ -186,7 +186,7 @@ public class ConsoleUI implements UI {
             displaySpreadSheet();
         } catch (Exception e) {
             // Handle and display any errors that occur during the update
-            System.out.println("An error occurred while updating the cell: " + e.getMessage());
+            System.out.println("An error occurred while updating the cell: " + e.getMessage() + "please try again.");
         }
     }
 /*    @Override

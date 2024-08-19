@@ -1,15 +1,20 @@
 package sheetimpl.utils;
 
 import api.Expression;
-import sheetimpl.expression.type.Text;
-import sheetimpl.expression.type.Number;
+import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.expression.type.Bool;
+import sheetimpl.expression.type.Number;
+import sheetimpl.expression.type.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class ExpressionParser {
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+
+public class ExpressionUtils {
     public static void main(String[] args) {
 //        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
 //        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
@@ -20,10 +25,14 @@ public class ExpressionParser {
 //        System.out.println(tokenizeExpression("{MOD,4, 2}")); // Output: 0
 //        System.out.println(tokenizeExpression("5"));
 //        System.out.println(tokenizeExpression("BLABLBALLBA"));
+//        Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
+//        System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
 
-       Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
+        String str = "{PLUS,{REF,A4},{MINUS,{REF,A5},6}}";
 
-        //System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
+        List<Coordinate> coordinates = extractRefCoordinates(str);
+
+        System.out.println(coordinates);
     }
     public static Expression buildExpressionFromString(String someExpression){
         Node tokenized = tokenizeExpression(someExpression.trim());
@@ -123,5 +132,23 @@ public class ExpressionParser {
         root.children.add(tokenizeExpression(argument));
 
         return root;
+    }
+
+    public static List<Coordinate> extractRefCoordinates(String expression) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        // Regular expression to match patterns like {REF,A4}
+        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
+        Matcher matcher = pattern.matcher(expression);
+
+        // Find all matches in the expression
+        while (matcher.find()) {
+            String cellId = matcher.group(1);
+            // Convert the coordinate string to a Coordinate object
+            Coordinate coordinate = createCoordinate(cellId);
+            coordinates.add(coordinate);
+        }
+
+        return coordinates;
     }
 }

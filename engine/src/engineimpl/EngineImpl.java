@@ -5,6 +5,7 @@ import api.Engine;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import generated.STLCell;
+import generated.STLCells;
 import generated.STLSheet;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -15,6 +16,7 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
 import java.lang.reflect.InaccessibleObjectException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +25,13 @@ import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.SpreadsheetImpl.validateCoordinateInbound;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static sheetimpl.utils.ExpressionUtils.extractRefCoordinates;
 
 public class EngineImpl implements Engine {
 
 public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         Engine engine = new EngineImpl();
 
         try {
@@ -51,7 +54,7 @@ public static final int MAX_ROWS = 50;
             System.out.println("\t" + entry.getValue().originalValue());
             System.out.println("\t" + entry.getValue().effectiveValue());
         }
-    }
+    }*/
 
    // private Map<Integer , SpreadsheetDTO> spreadsheetsByVersions;
     private SpreadsheetImpl currentSpreadsheet;
@@ -61,7 +64,7 @@ public static final int MAX_ROWS = 50;
             validateXmlFile(filePath);
             STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
-            //validateRefExpressions() //TODO
+            validateRefExpressions(loadedSheetFromXML);  //TODO
             convertSTLSheet2SpreadSheet(loadedSheetFromXML);
     }
     @Override
@@ -122,7 +125,7 @@ public static final int MAX_ROWS = 50;
             throw new Exception("File not found.");
         }
         if (!filePath.endsWith(".xml")) {
-            throw new Exception(file.getName() +" is not an XML file, please try again.\n");
+            throw new Exception(file.getName() +" is not an XML file.\n");
         }
     }
 
@@ -164,13 +167,13 @@ public static final int MAX_ROWS = 50;
 
     @Override
     public void exitProgram() {
-        System.out.println("Shticell closed");
         System.exit(0);
     }
 
     @Override
     public int getCurrentVersion() {
         validateSheetIsLoaded();
+        //TODO
         return 0;
     }
 
@@ -180,6 +183,27 @@ public static final int MAX_ROWS = 50;
             throw new InaccessibleObjectException("File is not loaded yet.\n");
         }
     }
+
+    private void validateRefExpressions(STLSheet loadedSheetFromXML) {
+        Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList = new HashMap<>();
+        STLCells cells = loadedSheetFromXML.getSTLCells();
+        List<STLCell> cellList = cells.getSTLCell();
+
+        for (STLCell cell : cellList) {
+            Coordinate cellCoordinate = CoordinateFactory.createCoordinate(cell.getRow() , convertColumnLetterToNumber(cell.getColumn()));
+            List<Coordinate> coordinateList = extractRefCoordinates(cell.getSTLOriginalValue());
+
+            for (Coordinate coordinate : coordinateList) {
+                List<Coordinate> neighbors = dependenciesAdjacencyList.getOrDefault(coordinate,new ArrayList<>());
+
+                neighbors.add(cellCoordinate);
+                dependenciesAdjacencyList.put(coordinate, neighbors);
+            }
+        }
+
+        //implement topoligical sort on dependenciesAdjacencyList.
+    }
+
 
 /*   @Override
     public List<Version> getVersionHistory() {

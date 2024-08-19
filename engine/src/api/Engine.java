@@ -10,6 +10,8 @@ public interface Engine {
 
     void loadSpreadsheet(String filePath) throws Exception;
 
+    void validateRefExpressions();
+
     void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML);
 
     void validateSTLSheet(STLSheet loadedSheetFromXML);
