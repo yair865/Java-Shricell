@@ -1,7 +1,6 @@
 package sheetimpl.utils;
 
 import api.Expression;
-import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.expression.type.Bool;
 import sheetimpl.expression.type.Number;
 import sheetimpl.expression.type.Text;
@@ -9,10 +8,6 @@ import sheetimpl.expression.type.Text;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 public class ExpressionUtils {
     public static void main(String[] args) {
@@ -28,11 +23,6 @@ public class ExpressionUtils {
 //        Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
 //        System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
 
-        String str = "{PLUS,{REF,A4},{MINUS,{REF,A5},6}}";
-
-        List<Coordinate> coordinates = extractRefCoordinates(str);
-
-        System.out.println(coordinates);
     }
     public static Expression buildExpressionFromString(String someExpression){
         Node tokenized = tokenizeExpression(someExpression.trim());
@@ -133,22 +123,6 @@ public class ExpressionUtils {
 
         return root;
     }
-
-    public static List<Coordinate> extractRefCoordinates(String expression) {
-        List<Coordinate> coordinates = new ArrayList<>();
-
-        // Regular expression to match patterns like {REF,A4}
-        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
-        Matcher matcher = pattern.matcher(expression);
-
-        // Find all matches in the expression
-        while (matcher.find()) {
-            String cellId = matcher.group(1);
-            // Convert the coordinate string to a Coordinate object
-            Coordinate coordinate = createCoordinate(cellId);
-            coordinates.add(coordinate);
-        }
-
-        return coordinates;
-    }
 }
+
+

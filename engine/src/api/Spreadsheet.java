@@ -1,5 +1,6 @@
 package api;
 
+import generated.STLSheet;
 import sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.util.Map;
@@ -37,4 +38,8 @@ public interface Spreadsheet {
     void setColumnWidthUnits(int columnWidthUnits);
 
     void clearSpreadSheet();
+
+    void recalculateCellsValue();
+
+    void init(STLSheet loadedSheetFromXML);
 }

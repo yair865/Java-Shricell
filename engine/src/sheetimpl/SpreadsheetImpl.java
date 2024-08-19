@@ -3,27 +3,33 @@ package sheetimpl;
 import api.Cell;
 import api.EffectiveValue;
 import api.Spreadsheet;
+import generated.STLCell;
+import generated.STLSheet;
 import sheetimpl.cellimpl.CellImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
+import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static converter.SheetConverter.convertSheetToDTO;
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
 public class SpreadsheetImpl implements Spreadsheet {
     private String sheetName;
     private int sheetVersion;
     private Map<Coordinate, Cell> activeCells;
-    private Map<Coordinate, List<Coordinate>> dependencies;
+    private Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList;
     private int rows;
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
 
-    public SpreadsheetImpl() {
-        this.activeCells = new HashMap<>();
-    }
+    public SpreadsheetImpl() { }
 
     public SpreadsheetImpl(String name, int rows, int columns, int rowsHeightUnits,
                            int columnWidthUnits, HashMap<Coordinate, Cell> activeCells,
@@ -31,7 +37,7 @@ public class SpreadsheetImpl implements Spreadsheet {
         this.sheetName = name;
         this.sheetVersion = 0;
         this.activeCells = activeCells;
-        this.dependencies = dependencies;
+        this.dependenciesAdjacencyList = dependencies;
         this.rows = rows;
         this.columns = columns;
         this.rowHeightUnits = rowsHeightUnits;
@@ -51,17 +57,17 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public Cell getCell(Coordinate coordinate) {
 
-        validateCoordinateInbound(coordinate , rows, columns);
+        validateCoordinateInbound(coordinate);
         return activeCells.computeIfAbsent(coordinate,key->new CellImpl() {
         });
     }
 
-    public static void validateCoordinateInbound(Coordinate coordinate, int rowsLimit, int columnsLimit){
+    private void validateCoordinateInbound(Coordinate coordinate){
 
-        if (coordinate.row() < 1 || coordinate.row() > rowsLimit || coordinate.column() < 1 || coordinate.column() > columnsLimit) {
+        if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
             throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
-                    ") is outside the sheet boundaries: max rows = " + rowsLimit +
-                    ", max columns = " + columnsLimit);
+                    ") is outside the sheet boundaries: max rows = " + rows +
+                    ", max columns = " + columns);
         }
     }
 
@@ -87,14 +93,21 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     @Override
     public void setCell(Coordinate coordinate , String value) {
-        Cell cell = getCell(coordinate);
-        EffectiveValue effectiveValue = buildExpressionFromString(value).evaluate(convertSheetToDTO(this));
-        cell.setCellOriginalValue(value);
-        cell.setEffectiveValue(buildExpressionFromString(value).evaluate(convertSheetToDTO(this)));
-        cell.setLastModifiedVersion(sheetVersion);
-        cell = activeCells.computeIfAbsent(coordinate, c -> new CellImpl(value, effectiveValue, sheetVersion));
+        Cell cellToCalculate = getCell(coordinate);
+
+        String originalValue = cellToCalculate.getOriginalValue();
+
+        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
+
+        cellToCalculate.setEffectiveValue(effectiveValue);
+        cellToCalculate.setLastModifiedVersion(sheetVersion);
+        cellToCalculate.setCellOriginalValue(value);
+        cellToCalculate = activeCells.computeIfAbsent(coordinate, c -> new CellImpl());
     }
 
+    private void calculateCellEffectiveValue(Cell cellToCalculate) {
+
+    }
     @Override
     public void setRows(int rows) {
         this.rows = rows;
@@ -124,7 +137,30 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public void clearSpreadSheet() {
         activeCells.clear();
-        dependencies.clear();
+        dependenciesAdjacencyList.clear();
+    }
+
+    @Override
+    public void recalculateCellsValue() {
+
+    }
+
+    @Override
+    public void init(STLSheet loadedSheetFromXML) {
+        this.setTitle(loadedSheetFromXML.getName());
+        this.setRows(loadedSheetFromXML.getSTLLayout().getRows());
+        this.setColumns(loadedSheetFromXML.getSTLLayout().getColumns());
+        this.setRowHeightUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits());
+        this.setColumnWidthUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits());
+
+        for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
+            String originalValue = stlCell.getSTLOriginalValue();
+            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow() , convertColumnLetterToNumber(stlCell.getColumn()));
+            Cell cell = getCell(coordinate);
+            activeCells.put(coordinate, cell);
+        }
+
+        calculateEffectiveValues();
     }
 
     private List<Coordinate> topologicalSort(Map<Coordinate, List<Coordinate>> dependencyGraph) {
@@ -171,4 +207,51 @@ public class SpreadsheetImpl implements Spreadsheet {
 
         return sortedList;
     }
+
+    private List<Coordinate> extractRefCoordinates(String expression) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        // Regular expression to match patterns like {REF,A4}
+        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
+        Matcher matcher = pattern.matcher(expression);
+
+        // Find all matches in the expression
+        while (matcher.find()) {
+            String cellId = matcher.group(1);
+            // Convert the coordinate string to a Coordinate object
+            Coordinate coordinate = createCoordinate(cellId);
+            coordinates.add(coordinate);
+        }
+
+        return coordinates;
+    }
+
+    private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
+        Map<Coordinate, List<Coordinate>> dependencyGraph = new HashMap<>();
+
+        for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
+            Coordinate cellCoordinate = entry.getKey();
+            Cell cell = entry.getValue();
+
+            List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
+
+            for (Coordinate coordinate : coordinateList) {
+                List<Coordinate> neighborsList = dependencyGraph.getOrDefault(coordinate, new ArrayList<>());
+                neighborsList.add(cellCoordinate);
+                dependencyGraph.put(coordinate, neighborsList);
+            }
+
+        }
+    }
+
+    private void calculateEffectiveValues() {
+        Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
+
+        List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
+        for (Coordinate coordinate : calculationOrder) {
+            Cell cell = getCell(coordinate);
+            calculateCellEffectiveValue(cell);
+        }
+    }
 }
+

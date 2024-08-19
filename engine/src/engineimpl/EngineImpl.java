@@ -2,10 +2,10 @@ package engineimpl;
 
 import api.Cell;
 import api.Engine;
+import api.Spreadsheet;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import generated.STLCell;
-import generated.STLCells;
 import generated.STLSheet;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -16,16 +16,13 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
 import java.lang.reflect.InaccessibleObjectException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static converter.SheetConverter.convertSheetToDTO;
-import static sheetimpl.SpreadsheetImpl.validateCoordinateInbound;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
-import static sheetimpl.utils.ExpressionUtils.extractRefCoordinates;
+
 
 public class EngineImpl implements Engine {
 
@@ -64,39 +61,27 @@ public static final int MAX_ROWS = 50;
             validateXmlFile(filePath);
             STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
-            validateRefExpressions(loadedSheetFromXML);  //TODO
-            convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+            Spreadsheet spreadsheetConverted = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+            spreadsheetConverted.validateRefExpressions();  //TODO
+            this.currentSpreadsheet = spreadsheetConverted;
     }
-    @Override
-    public void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-        this.currentSpreadsheet = new SpreadsheetImpl(
-                loadedSheetFromXML.getName(),
-                loadedSheetFromXML.getSTLLayout().getRows(),
-                loadedSheetFromXML.getSTLLayout().getColumns(),
-                loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits(),
-                loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits(),
-                new HashMap<Coordinate,Cell>(),
-                new HashMap<Coordinate, List<Coordinate>>()
-        );
 
-        for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
+    private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
+        Spreadsheet spreadsheet = new SpreadsheetImpl();
+        spreadsheet.init(loadedSheetFromXML);
 
-            String originalValue = cell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(cell.getRow() , convertColumnLetterToNumber(cell.getColumn()));
-            this.currentSpreadsheet.setCell(coordinate, originalValue);
-        }
+
+        return spreadsheet;
     }
-    @Override
-    public void validateSTLSheet(STLSheet loadedSheetFromXML) {
+
+
+    private void validateSTLSheet(STLSheet loadedSheetFromXML) {
         int rows = loadedSheetFromXML.getSTLLayout().getRows();
         int columns = loadedSheetFromXML.getSTLLayout().getColumns();
-
         validateSheetLimits(rows,columns);
-        validateAllCellsInBound(loadedSheetFromXML);
-
     }
-    @Override
-    public void validateSheetLimits(int rows, int columns) {
+
+    private void validateSheetLimits(int rows, int columns) {
         if (rows < 1 || rows > MAX_ROWS) {
             throw new IllegalArgumentException("Invalid number of rows: " + rows + ". Rows must be between 1 and 50.");
         }
@@ -105,21 +90,9 @@ public static final int MAX_ROWS = 50;
             throw new IllegalArgumentException("Invalid number of columns: " + columns + ". Columns must be between 1 and 20.");
         }
     }
-    @Override
-    public void validateAllCellsInBound(STLSheet loadedSheetFromXML) {
-        int maxRows = loadedSheetFromXML.getSTLLayout().getRows();
-        int maxColumns = loadedSheetFromXML.getSTLLayout().getColumns();
 
-        for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
-            int cellRow = cell.getRow();
-            int cellColumn = convertColumnLetterToNumber(cell.getColumn());
-            Coordinate coordinate = createCoordinate(cellRow, cellColumn);
-            validateCoordinateInbound(coordinate , maxRows, maxColumns);
-            }
-        }
 
-    @Override
-    public void validateXmlFile(String filePath) throws Exception {
+    private void validateXmlFile(String filePath) throws Exception {
         File file = new File(filePath);
         if (!file.exists()) {
             throw new Exception("File not found.");
@@ -129,8 +102,8 @@ public static final int MAX_ROWS = 50;
         }
     }
 
-    @Override
-    public STLSheet loadSheetFromXmlFile(String filePath) {
+
+    private STLSheet loadSheetFromXmlFile(String filePath) {
         try {
             File file = new File(filePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
@@ -177,32 +150,12 @@ public static final int MAX_ROWS = 50;
         return 0;
     }
 
-    @Override
-    public void validateSheetIsLoaded() {
+    private void validateSheetIsLoaded() {
         if (this.currentSpreadsheet == null) {
             throw new InaccessibleObjectException("File is not loaded yet.\n");
         }
     }
 
-    private void validateRefExpressions(STLSheet loadedSheetFromXML) {
-        Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList = new HashMap<>();
-        STLCells cells = loadedSheetFromXML.getSTLCells();
-        List<STLCell> cellList = cells.getSTLCell();
-
-        for (STLCell cell : cellList) {
-            Coordinate cellCoordinate = CoordinateFactory.createCoordinate(cell.getRow() , convertColumnLetterToNumber(cell.getColumn()));
-            List<Coordinate> coordinateList = extractRefCoordinates(cell.getSTLOriginalValue());
-
-            for (Coordinate coordinate : coordinateList) {
-                List<Coordinate> neighbors = dependenciesAdjacencyList.getOrDefault(coordinate,new ArrayList<>());
-
-                neighbors.add(cellCoordinate);
-                dependenciesAdjacencyList.put(coordinate, neighbors);
-            }
-        }
-
-        //implement topoligical sort on dependenciesAdjacencyList.
-    }
 
 
 /*   @Override
