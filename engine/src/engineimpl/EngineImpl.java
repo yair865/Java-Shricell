@@ -14,6 +14,10 @@ import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
+import java.lang.reflect.InaccessibleObjectException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.SpreadsheetImpl.validateCoordinateInbound;
@@ -21,6 +25,33 @@ import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLette
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 public class EngineImpl implements Engine {
+
+public static final int MAX_ROWS = 50;
+    public static final int MAX_COLUMNS = 20;
+    public static void main(String[] args) {
+        Engine engine = new EngineImpl();
+
+        try {
+            engine.loadSpreadsheet("D:\\Users\\yair8\\Downloads\\basic.xml");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        SpreadsheetDTO sheet = engine.getSpreadsheetState();
+        Map<Coordinate, CellDTO> cells = sheet.cells();
+
+        System.out.println(sheet.name());
+        System.out.println(sheet.rows());
+        System.out.println(sheet.columns());
+        System.out.println(sheet.rowHeightUnits());
+        System.out.println(sheet.columnWidthUnits());
+
+        for(Map.Entry<Coordinate, CellDTO> entry : cells.entrySet()) {
+            System.out.println("\t" + entry.getKey());
+            System.out.println("\t" + entry.getValue().originalValue());
+            System.out.println("\t" + entry.getValue().effectiveValue());
+        }
+    }
 
    // private Map<Integer , SpreadsheetDTO> spreadsheetsByVersions;
     private SpreadsheetImpl currentSpreadsheet;
@@ -35,12 +66,15 @@ public class EngineImpl implements Engine {
     }
     @Override
     public void convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-        this.currentSpreadsheet.clearSpreadSheet();
-        this.currentSpreadsheet.setTitle(loadedSheetFromXML.getName());
-        this.currentSpreadsheet.setRows(loadedSheetFromXML.getSTLLayout().getRows());
-        this.currentSpreadsheet.setColumns(loadedSheetFromXML.getSTLLayout().getColumns());
-        this.currentSpreadsheet.setRowHeightUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits());
-        this.currentSpreadsheet.setColumnWidthUnits(loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits());
+        this.currentSpreadsheet = new SpreadsheetImpl(
+                loadedSheetFromXML.getName(),
+                loadedSheetFromXML.getSTLLayout().getRows(),
+                loadedSheetFromXML.getSTLLayout().getColumns(),
+                loadedSheetFromXML.getSTLLayout().getSTLSize().getRowsHeightUnits(),
+                loadedSheetFromXML.getSTLLayout().getSTLSize().getColumnWidthUnits(),
+                new HashMap<Coordinate,Cell>(),
+                new HashMap<Coordinate, List<Coordinate>>()
+        );
 
         for (STLCell cell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
 
@@ -60,11 +94,11 @@ public class EngineImpl implements Engine {
     }
     @Override
     public void validateSheetLimits(int rows, int columns) {
-        if (rows < 1 || rows > 50) {
+        if (rows < 1 || rows > MAX_ROWS) {
             throw new IllegalArgumentException("Invalid number of rows: " + rows + ". Rows must be between 1 and 50.");
         }
 
-        if (columns < 1 || columns > 20) {
+        if (columns < 1 || columns > MAX_COLUMNS) {
             throw new IllegalArgumentException("Invalid number of columns: " + columns + ". Columns must be between 1 and 20.");
         }
     }
@@ -88,7 +122,7 @@ public class EngineImpl implements Engine {
             throw new Exception("File not found.");
         }
         if (!filePath.endsWith(".xml")) {
-            throw new Exception("File is not an XML file.");
+            throw new Exception(file.getName() +" is not an XML file, please try again.\n");
         }
     }
 
@@ -106,12 +140,13 @@ public class EngineImpl implements Engine {
 
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
+        validateSheetIsLoaded();
         return convertSheetToDTO(this.currentSpreadsheet);
     }
 
     @Override
     public CellDTO getCellInfo(String cellId) {
-
+        validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
         Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate);
 
@@ -122,6 +157,7 @@ public class EngineImpl implements Engine {
 
     @Override
     public void updateCell(String cellId, String newValue) {
+        validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
         this.currentSpreadsheet.setCell(coordinate,newValue);
     }
@@ -134,10 +170,18 @@ public class EngineImpl implements Engine {
 
     @Override
     public int getCurrentVersion() {
+        validateSheetIsLoaded();
         return 0;
     }
 
- /*   @Override
+    @Override
+    public void validateSheetIsLoaded() {
+        if (this.currentSpreadsheet == null) {
+            throw new InaccessibleObjectException("File is not loaded yet.\n");
+        }
+    }
+
+/*   @Override
     public List<Version> getVersionHistory() {
         // Logic to get version history
         // Example: returning mock version history

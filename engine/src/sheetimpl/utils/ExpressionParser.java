@@ -48,13 +48,6 @@ public class ExpressionParser {
             return children;
         }
 
-/*        @Override
-        public String toString() {
-            return "{" +
-                    "value=" + value +
-                    ", children=" + children +
-                    '}';
-        }*/
     }
 
     public static Expression buildExpression(Node expression) {
@@ -66,7 +59,7 @@ public class ExpressionParser {
                 argumentsList.add(buildExpression(expression.children.get(i)));
             }
 
-            OperationMenu operation = OperationMenu.valueOf(expression.value);
+            OperationMenu operation = OperationMenu.valueOf(expression.value.toUpperCase());
             resultExpression = operation.createExpression(argumentsList);
         } else { // IM A LEAF
             resultExpression = parseExpression(expression.value);

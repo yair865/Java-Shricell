@@ -47,5 +47,10 @@ public enum Menu  {
     }
 
     public abstract void invoke(UI consoleUserInterface);
+
+    @Override
+    public String toString() {
+        return menuOption;
+    }
 }
 

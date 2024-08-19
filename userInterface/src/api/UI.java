@@ -12,7 +12,7 @@ public interface UI {
 
     void displayMenu();
 
-    void processCommand(String command);
+    void processCommand();
 
     int getUserChoice();
 

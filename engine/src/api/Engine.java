@@ -32,5 +32,7 @@ public interface Engine {
 
     int getCurrentVersion();
 
+    void validateSheetIsLoaded();
+
     //List<Version> getVersionHistory();
 }

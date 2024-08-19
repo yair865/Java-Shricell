@@ -27,6 +27,19 @@ public class SpreadsheetImpl implements Spreadsheet {
         this.activeCells = new HashMap<>();
     }
 
+    public SpreadsheetImpl(String name, int rows, int columns, int rowsHeightUnits,
+                           int columnWidthUnits, HashMap<Coordinate, Cell> activeCells,
+                           HashMap<Coordinate, List<Coordinate>> dependencies) {
+        this.sheetName = name;
+        this.sheetVersion = 0;
+        this.activeCells = activeCells;
+        this.dependencies = dependencies;
+        this.rows = rows;
+        this.columns = columns;
+        this.rowHeightUnits = rowsHeightUnits;
+        this.columnWidthUnits = columnWidthUnits;
+    }
+
     @Override
     public String getSheetName() {
         return this.sheetName;
@@ -39,12 +52,14 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     @Override
     public Cell getCell(Coordinate coordinate) {
-        validateCoordinateInbound(coordinate , rows, columns);
 
-        return activeCells.get(coordinate);
+        validateCoordinateInbound(coordinate , rows, columns);
+        return activeCells.computeIfAbsent(coordinate,key->new CellImpl() {
+        });
     }
 
     public static void validateCoordinateInbound(Coordinate coordinate, int rowsLimit, int columnsLimit){
+
         if (coordinate.row() < 1 || coordinate.row() > rowsLimit || coordinate.column() < 1 || coordinate.column() > columnsLimit) {
             throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
                     ") is outside the sheet boundaries: max rows = " + rowsLimit +

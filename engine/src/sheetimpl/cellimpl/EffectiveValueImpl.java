@@ -31,4 +31,9 @@ public class EffectiveValueImpl implements EffectiveValue {
         // error handling... exception ? return null ?
         return null;
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

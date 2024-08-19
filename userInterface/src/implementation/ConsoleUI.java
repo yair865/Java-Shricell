@@ -1,14 +1,14 @@
 package implementation;
 
-import api.EffectiveValue;
 import api.Engine;
 import api.UI;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
+import engineimpl.EngineImpl;
+import sheetimpl.cellimpl.coordinate.Coordinate;
+import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -19,11 +19,12 @@ public class ConsoleUI implements UI {
     @Override
     public void executeProgram()
     {
-        while (true)
-        {
+        engine = new EngineImpl();
+        scanner = new Scanner(System.in);
+
+        while (true) {
             displayMenu();
-            String command = scanner.nextLine();
-            processCommand(command);
+            processCommand();
         }
     }
 
@@ -37,7 +38,7 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void processCommand(String command)
+    public void processCommand()
     {
         int choice = getUserChoice();
 
@@ -50,62 +51,92 @@ public class ConsoleUI implements UI {
         selectedOption.invoke(this);
     }
 
+
     @Override
     public int getUserChoice() {
-        System.out.print("Enter your choice (1-6): ");
+        System.out.print("Enter your choice 1 - " + Menu.values().length + ": ");
         while (true) {
             try {
                 int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the buffer
+                scanner.nextLine();
                 return choice;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Clear the invalid input
+                scanner.nextLine();
             }
         }
     }
 
     @Override
-    public void handleLoadFile() {
-        System.out.println("Enter file path:");
-        String filePath = scanner.nextLine();
-        try {
-            engine.loadSpreadsheet(filePath);
-        } catch (Exception e) { //more catch types for different Exceptions?
-            System.out.println("Error loading file: " + e.getMessage());
-        }
-    } // don`t end on Exception , continue the program.
-
-
-
-    @Override
-    public void displaySpreadSheet() {
-        SpreadsheetDTO currentSpreadsheet = engine.getSpreadsheetState();
-
-        System.out.println("The current version of the spreadsheet is: " + currentSpreadsheet.version());
-        System.out.println("The title of the spreadsheet is: " + currentSpreadsheet.name());
-        printSpreadSheet(currentSpreadsheet);
+    public void displayVersions() {
+        System.out.println("Not implemented yet");
     }
 
     @Override
-    public void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint)
-    {
-        int numRows = SpreadsheetToPrint.rowHeightUnits();
-        int numCols = SpreadsheetToPrint.columnWidthUnits();
+    public void handleLoadFile() {
 
-        System.out.print("   ");
+        while(true) {
+            System.out.println("Enter file path or Q button to return to the main menu:");
+            String userInput = scanner.nextLine();
+
+            try {
+                if (userInput.equals("q".toUpperCase())) {
+                    System.out.println("Returning to main menu");
+                    break;
+                }
+                engine.loadSpreadsheet(userInput);
+            } catch (Exception e) { //more catch types for different Exceptions?
+                System.out.println("Error loading file: " + e.getMessage() + "please try loading the sheet first.");
+            }
+        }
+    }
+    @Override
+    public void displaySpreadSheet() {
+        try {
+            SpreadsheetDTO currentSpreadsheet = engine.getSpreadsheetState();
+            System.out.println("The current version of the spreadsheet is: " + currentSpreadsheet.version());
+            System.out.println("The title of the spreadsheet is: " + currentSpreadsheet.name());
+            printSpreadSheet(currentSpreadsheet);
+        }catch (Exception e) {
+            System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void printSpreadSheet(SpreadsheetDTO spreadsheet) {
+        int numRows = spreadsheet.rows();
+        int numCols = spreadsheet.columns();
+        int rowHeightUnits = spreadsheet.rowHeightUnits();
+        int columnWidthUnits = spreadsheet.columnWidthUnits();
+
+        // Print column headers
+        System.out.print("     "); // Initial spacing for row numbers
         for (int col = 0; col < numCols; col++) {
+
             char colLetter = (char) ('A' + col);
-            System.out.printf("%-4s", colLetter);
+            System.out.printf("%-" + columnWidthUnits + "s" + " ", colLetter);
         }
         System.out.println();
 
+        // Print each row
         for (int row = 0; row < numRows; row++) {
+            // Print row number
             System.out.printf("%02d ", row + 1);
-            List<CellDTO> rowCells = SpreadsheetToPrint.cells().get();
-            for (CellDTO cell : rowCells) {
-                EffectiveValue cellValue = cell.effectiveValue();
-                System.out.printf("| %-3s ", cellValue.getValue());
+
+            for (int col = 0; col < numCols; col++) {
+                // First, print an empty cell
+                String cellValue = "";
+
+                // Check if there's a corresponding cell in the map
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row+1, col+1);
+                if (spreadsheet.cells().containsKey(coordinate)) {
+                    CellDTO cell = spreadsheet.cells().get(coordinate);
+                    cellValue = String.valueOf(cell.effectiveValue().extractValueWithExpectation(cell.effectiveValue().getCellType().getType()));
+                }
+
+                // Print the cell value
+                System.out.printf("| %-" + (columnWidthUnits - 1) + "s", cellValue);
             }
             System.out.println("|");
         }
@@ -121,14 +152,16 @@ public class ConsoleUI implements UI {
     @Override
     public void displayCellInfo(String cellId)
     {
+        try{
         CellDTO currentCell = engine.getCellInfo(cellId);
-
         System.out.println("Cell ID: " + cellId);
         System.out.println("Original Value: " + currentCell.originalValue());
         System.out.println("Effective Value: " + currentCell.effectiveValue());
         System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion());
-        System.out.println("Dependent Cells: " + currentCell.dependentCells());
-        System.out.println("Influencing Cells: " + currentCell.influencingCells());
+
+    }catch (Exception e) {
+            System.out.println("Could not display cell because of an error: " + e.getMessage());
+        }
     }
 
     @Override
@@ -147,23 +180,16 @@ public class ConsoleUI implements UI {
         try {
         System.out.println("Enter new value (or leave blank to clear the cell):");
         String newValue = scanner.nextLine().trim();
-        if(engine.valueIsValid(newValue)) // TODO
-        {
-            // Update the cell with the new value
+
             engine.updateCell(cellIdentifier,newValue);
             System.out.println("Cell updated successfully.");
             displaySpreadSheet();
-        }
-        else
-        {
-            System.out.println("Failed to update cell. The new value might be invalid.");
-        }
         } catch (Exception e) {
             // Handle and display any errors that occur during the update
             System.out.println("An error occurred while updating the cell: " + e.getMessage());
         }
     }
-    @Override
+/*    @Override
     public void displayVersions() {
         // Step 1: Display version history
         Map<Integer, Integer> versionHistory = engine.getVersionHistory(); // TODO
@@ -201,7 +227,7 @@ public class ConsoleUI implements UI {
                 System.out.println("Invalid input. Please enter a valid number or 'q' to quit.");
             }
         }
-    }
+    }*/
     @Override
     public void handleExit() {
         engine.exitProgram();

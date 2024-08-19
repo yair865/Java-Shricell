@@ -2,6 +2,7 @@ package sheetimpl.cellimpl;
 
 import api.Cell;
 import api.EffectiveValue;
+import sheetimpl.utils.CellType;
 
 public class CellImpl implements Cell {
 
@@ -13,6 +14,12 @@ public class CellImpl implements Cell {
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.lastModifiedVersion = version;
+    }
+
+    public CellImpl() {
+        this.originalValue = "";
+        this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
+        this.lastModifiedVersion = 0;
     }
 /*    @Override
     public Coordinate getCoordinate() {
