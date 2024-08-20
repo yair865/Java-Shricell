@@ -15,12 +15,20 @@ public class Plus extends BinaryExpression {
 
     @Override
     public EffectiveValue evaluate(Expression left, Expression right , SpreadsheetDTO spreadsheetDTO) {
-        EffectiveValue leftValue = left.evaluate(spreadsheetDTO);
-        EffectiveValue rightValue = right.evaluate(spreadsheetDTO);
+        EffectiveValue leftEffectiveValue = left.evaluate(spreadsheetDTO);
+        EffectiveValue rightEffectiveValue = right.evaluate(spreadsheetDTO);
 
-        // do some checking... error handling...
+        Double leftNumber = leftEffectiveValue.extractValueWithExpectation(Double.class);
+        Double rightNumber = rightEffectiveValue.extractValueWithExpectation(Double.class);
 
-        double result = leftValue.extractValueWithExpectation(Double.class) + rightValue.extractValueWithExpectation(Double.class);
+
+        if(leftNumber == null || rightNumber == null) {
+            throw new IllegalArgumentException("Invalid arguments in function " + this.getClass().getSimpleName() + ".\n"
+                    + "the arguments expected are from type " + Number.class.getSimpleName() + " but the first argument is from type - " + leftEffectiveValue.getCellType()
+                    + ", and the second argument is from type - " + rightEffectiveValue.getCellType() + ".");
+        }
+
+        double result = leftNumber + rightNumber;
 
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }

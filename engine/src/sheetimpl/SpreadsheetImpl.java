@@ -12,7 +12,6 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
@@ -29,19 +28,9 @@ public class SpreadsheetImpl implements Spreadsheet {
     private int rowHeightUnits;
     private int columnWidthUnits;
 
-    public SpreadsheetImpl() { }
-
-    public SpreadsheetImpl(String name, int rows, int columns, int rowsHeightUnits,
-                           int columnWidthUnits, HashMap<Coordinate, Cell> activeCells,
-                           HashMap<Coordinate, List<Coordinate>> dependencies) {
-        this.sheetName = name;
-        this.sheetVersion = 0;
-        this.activeCells = activeCells;
-        this.dependenciesAdjacencyList = dependencies;
-        this.rows = rows;
-        this.columns = columns;
-        this.rowHeightUnits = rowsHeightUnits;
-        this.columnWidthUnits = columnWidthUnits;
+    public SpreadsheetImpl() {
+        activeCells = new HashMap<>();
+        dependenciesAdjacencyList = new HashMap<>();
     }
 
     @Override
@@ -56,14 +45,12 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     @Override
     public Cell getCell(Coordinate coordinate) {
-
         validateCoordinateInbound(coordinate);
-        return activeCells.computeIfAbsent(coordinate,key->new CellImpl() {
+        return activeCells.computeIfAbsent(coordinate, key->new CellImpl() {
         });
     }
 
     private void validateCoordinateInbound(Coordinate coordinate){
-
         if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
             throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
                     ") is outside the sheet boundaries: max rows = " + rows +
@@ -95,19 +82,28 @@ public class SpreadsheetImpl implements Spreadsheet {
     public void setCell(Coordinate coordinate , String value) {
         Cell cellToCalculate = getCell(coordinate);
 
-        String originalValue = cellToCalculate.getOriginalValue();
+        String originalValueBackup = cellToCalculate.getOriginalValue();
+        EffectiveValue effectiveValueBackup = cellToCalculate.getEffectiveValue();
 
-        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
+        try {
+            cellToCalculate.setCellOriginalValue(value);
+            calculateSheetEffectiveValues();
+            cellToCalculate.setLastModifiedVersion(sheetVersion);
+        } catch (Exception e) {
+            cellToCalculate.setCellOriginalValue(originalValueBackup);
+            cellToCalculate.setEffectiveValue(effectiveValueBackup);
 
-        cellToCalculate.setEffectiveValue(effectiveValue);
-        cellToCalculate.setLastModifiedVersion(sheetVersion);
-        cellToCalculate.setCellOriginalValue(value);
-        cellToCalculate = activeCells.computeIfAbsent(coordinate, c -> new CellImpl());
+            throw e;
+        }
     }
 
     private void calculateCellEffectiveValue(Cell cellToCalculate) {
+        String originalValue = cellToCalculate.getOriginalValue();
 
+        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
+        cellToCalculate.setEffectiveValue(effectiveValue);
     }
+
     @Override
     public void setRows(int rows) {
         this.rows = rows;
@@ -157,10 +153,11 @@ public class SpreadsheetImpl implements Spreadsheet {
             String originalValue = stlCell.getSTLOriginalValue();
             Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow() , convertColumnLetterToNumber(stlCell.getColumn()));
             Cell cell = getCell(coordinate);
+            cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
         }
 
-        calculateEffectiveValues();
+        calculateSheetEffectiveValues();
     }
 
     private List<Coordinate> topologicalSort(Map<Coordinate, List<Coordinate>> dependencyGraph) {
@@ -202,7 +199,8 @@ public class SpreadsheetImpl implements Spreadsheet {
 
         // Step 4: Check for cycles (i.e., if sortedList doesn't contain all nodes)
         if (sortedList.size() != inDegree.size()) {
-            throw new IllegalStateException("The graph has at least one cycle. Topological sorting is not possible.");
+            throw new IllegalStateException("This update may result circular dependency, " +
+                    "thus, can`t use this value to update the cell.");
         }
 
         return sortedList;
@@ -232,26 +230,34 @@ public class SpreadsheetImpl implements Spreadsheet {
         for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             Coordinate cellCoordinate = entry.getKey();
             Cell cell = entry.getValue();
-
+            if(!dependencyGraph.containsKey(cellCoordinate)) {
+                dependencyGraph.put(cellCoordinate,new LinkedList<>());
+            }
             List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
 
             for (Coordinate coordinate : coordinateList) {
-                List<Coordinate> neighborsList = dependencyGraph.getOrDefault(coordinate, new ArrayList<>());
-                neighborsList.add(cellCoordinate);
-                dependencyGraph.put(coordinate, neighborsList);
-            }
+                if(!dependencyGraph.containsKey(coordinate)) {
+                    dependencyGraph.put(coordinate,new LinkedList<>());
+                }
 
+                List<Coordinate> neighborsList = dependencyGraph.get(coordinate);
+                neighborsList.add(cellCoordinate);
+            }
         }
+
+        return dependencyGraph;
     }
 
-    private void calculateEffectiveValues() {
+    private void calculateSheetEffectiveValues() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
-
         List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
+
         for (Coordinate coordinate : calculationOrder) {
             Cell cell = getCell(coordinate);
             calculateCellEffectiveValue(cell);
         }
+
+        dependenciesAdjacencyList = dependencyGraph;
     }
 }
 

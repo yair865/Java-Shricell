@@ -35,6 +35,7 @@ public class ConsoleUI implements UI {
         for (Menu option : Menu.values()) {
             System.out.println(option.ordinal() + 1 + ". " + option);
         }
+        System.out.println();
     }
 
     @Override
@@ -44,13 +45,12 @@ public class ConsoleUI implements UI {
 
         while (choice < 1 || choice > Menu.values().length)
         {
-            System.out.println("Invalid choice. Please enter a number between 1 and " + Menu.values().length + ".");
+            System.out.print("Invalid choice. Please enter a number between 1 and " + Menu.values().length + ".\n");
             choice = getUserChoice();
         }
         Menu selectedOption = Menu.values()[choice - 1];
         selectedOption.invoke(this);
     }
-
 
     @Override
     public int getUserChoice() {
@@ -61,7 +61,7 @@ public class ConsoleUI implements UI {
                 scanner.nextLine();
                 return choice;
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a number between 1 and " + Menu.values().length + ".\n");
                 scanner.nextLine();
             }
         }
@@ -76,20 +76,23 @@ public class ConsoleUI implements UI {
     public void handleLoadFile() {
 
         while(true) {
-            System.out.println("Enter file path or Q button to return to the main menu:");
+            System.out.print("Enter file path or 'Q' button to return to the main menu:");
             String userInput = scanner.nextLine();
 
             try {
-                if (userInput.equals("q".toUpperCase())) {
-                    System.out.println("Returning to main menu");
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
                     break;
                 }
                 engine.loadSpreadsheet(userInput);
+                System.out.println("File successfully loaded!\n");
+                break;
             } catch (Exception e) { //more catch types for different Exceptions?
-                System.out.println("Error loading file: " + e.getMessage() + " please try to load again.");
+                System.out.println("Error loading file: " + e.getMessage() + " please try to load again.\n");
             }
         }
     }
+
     @Override
     public void displaySpreadSheet() {
         try {
@@ -98,7 +101,7 @@ public class ConsoleUI implements UI {
             System.out.println("The title of the spreadsheet is: " + currentSpreadsheet.name());
             printSpreadSheet(currentSpreadsheet);
         }catch (Exception e) {
-            System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage() + " please try again.");
+            System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage() + " please try again.\n");
         }
 
     }
@@ -110,8 +113,7 @@ public class ConsoleUI implements UI {
         int rowHeightUnits = spreadsheet.rowHeightUnits();
         int columnWidthUnits = spreadsheet.columnWidthUnits();
 
-        // Print column headers
-        System.out.print("     "); // Initial spacing for row numbers
+        System.out.print("     ");
         for (int col = 0; col < numCols; col++) {
 
             char colLetter = (char) ('A' + col);
@@ -119,23 +121,18 @@ public class ConsoleUI implements UI {
         }
         System.out.println();
 
-        // Print each row
         for (int row = 0; row < numRows; row++) {
-            // Print row number
             System.out.printf("%02d ", row + 1);
 
             for (int col = 0; col < numCols; col++) {
-                // First, print an empty cell
                 String cellValue = "";
 
-                // Check if there's a corresponding cell in the map
                 Coordinate coordinate = CoordinateFactory.createCoordinate(row+1, col+1);
                 if (spreadsheet.cells().containsKey(coordinate)) {
                     CellDTO cell = spreadsheet.cells().get(coordinate);
                     cellValue = String.valueOf(cell.effectiveValue().extractValueWithExpectation(cell.effectiveValue().getCellType().getType()));
                 }
 
-                // Print the cell value
                 System.out.printf("| %-" + (columnWidthUnits - 1) + "s", cellValue);
             }
             System.out.println("|");
@@ -144,49 +141,59 @@ public class ConsoleUI implements UI {
 
     @Override
     public void handleDisplayCell() {
-        System.out.println("Enter cell identifier (e.g., A1):");
-        String cellIdentifier = scanner.nextLine();
-        displayCellInfo(cellIdentifier);
+        while (true) {
+            System.out.print("Enter cell identifier (e.g., A1) , or 'Q' button to return to the main menu:");
+            String userInput = scanner.nextLine();
+            try {
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
+                    break;
+                }
+                displayCellInfo(userInput);
+                break;
+
+            }catch (Exception e) {
+                System.out.println("Could not display cell because of an error: " + e.getMessage() + " please try again.\n");
+            }
+        }
     }
 
     @Override
     public void displayCellInfo(String cellId)
     {
-        try{
         CellDTO currentCell = engine.getCellInfo(cellId);
         System.out.println("Cell ID: " + cellId);
         System.out.println("Original Value: " + currentCell.originalValue());
         System.out.println("Effective Value: " + currentCell.effectiveValue());
-        System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion());
-
-    }catch (Exception e) {
-            System.out.println("Could not display cell because of an error: " + e.getMessage() + " please try again");
-        }
+        System.out.println("Last Modified Version: " + currentCell.lastModifiedVersion()+"\n");
     }
 
     @Override
-    public void handleUpdateCell()
-    {
+    public void handleUpdateCell() {
         CellDTO currentCell;
+        while (true) {
+            System.out.print("Enter cell identifier (e.g., A1) , or 'q' to return to the main menu:");
+            String userInput = scanner.nextLine().trim();
 
-        System.out.println("Enter cell identifier (e.g., A1):");
-        String cellIdentifier = scanner.nextLine().trim();
-        currentCell = engine.getCellInfo(cellIdentifier);
-
-        System.out.println("Cell Identifier: " + cellIdentifier);
-        System.out.println("Original Value: " + currentCell.originalValue());
-        System.out.println("Effective Value: " + currentCell.effectiveValue());
-
-        try {
-        System.out.println("Enter new value (or leave blank to clear the cell):");
-        String newValue = scanner.nextLine().trim();
-
-            engine.updateCell(cellIdentifier,newValue);
-            System.out.println("Cell updated successfully.");
-            displaySpreadSheet();
-        } catch (Exception e) {
-            // Handle and display any errors that occur during the update
-            System.out.println("An error occurred while updating the cell: " + e.getMessage() + "please try again.");
+            try {
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
+                    break;
+                }
+                currentCell = engine.getCellInfo(userInput);
+                System.out.print("Enter new value (or leave blank to clear the cell):");
+                String newValue = scanner.nextLine().trim();
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
+                    break;
+                }
+                engine.updateCell(userInput, newValue);
+                displayCellInfo(userInput);
+                displaySpreadSheet();
+                break;
+            } catch (Exception e) {
+                System.out.println("An error occurred while updating the cell: " + e.getMessage() + " please try again.\n");
+            }
         }
     }
 /*    @Override

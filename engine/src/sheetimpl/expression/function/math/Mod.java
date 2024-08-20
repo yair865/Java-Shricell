@@ -16,6 +16,7 @@ public class Mod extends BinaryExpression {
     public EffectiveValue evaluate(Expression left, Expression right , SpreadsheetDTO spreadsheetDTO) {
         EffectiveValue leftValue = left.evaluate(spreadsheetDTO);
         EffectiveValue rightValue = right.evaluate(spreadsheetDTO);
+
         // do some checking... error handling...
 
         double result = leftValue.extractValueWithExpectation(Double.class) % rightValue.extractValueWithExpectation(Double.class);

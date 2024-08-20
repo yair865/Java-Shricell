@@ -10,20 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ExpressionUtils {
-    public static void main(String[] args) {
-//        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
-//        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
-//        System.out.println(tokenizeExpression("{CONCAT,Hello,World}")); // Output: HelloWorld
-//        System.out.println(tokenizeExpression("{ABS,{MINUS,4,5}}")); // Output: 1
-//        System.out.println(tokenizeExpression("{POW,2,3}")); // Output: 8
-//        System.out.println(tokenizeExpression("{SUB,hello,2,3}")); // Output: 8
-//        System.out.println(tokenizeExpression("{MOD,4, 2}")); // Output: 0
-//        System.out.println(tokenizeExpression("5"));
-//        System.out.println(tokenizeExpression("BLABLBALLBA"));
-//        Expression exp = buildExpressionFromString("{CONCAT,Hello,World}");
-//        System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
-
-    }
     public static Expression buildExpressionFromString(String someExpression){
         Node tokenized = tokenizeExpression(someExpression.trim());
         return buildExpression(tokenized);
