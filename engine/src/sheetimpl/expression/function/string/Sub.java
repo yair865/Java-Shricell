@@ -1,10 +1,11 @@
 package sheetimpl.expression.function.string;
 
 import api.EffectiveValue;
-import dtoPackage.SpreadsheetDTO;
-import sheetimpl.expression.type.TrinaryExpression;
 import api.Expression;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
+import sheetimpl.expression.type.Text;
+import sheetimpl.expression.type.TrinaryExpression;
 import sheetimpl.utils.CellType;
 
 public class Sub extends TrinaryExpression {
@@ -28,7 +29,7 @@ public class Sub extends TrinaryExpression {
         // Validate extracted values
         if (source == null || start == null || end == null) {
             throw new IllegalArgumentException("Invalid arguments in function " + this.getClass().getSimpleName() + ".\n"
-                    + "Expected argument types are " +sourceStringValue.getCellType() +" for the source, and "+ startIndexValue.getCellType() +" for the indices. "
+                    + "Expected argument types are " + Text.class.getSimpleName() +" for the source, and "+ Number.class.getSimpleName() +" for the indices. "
                     + "But received types: "
                     + "source - " + sourceStringValue.getCellType() + ", "
                     + "startIndex - " + startIndexValue.getCellType() + ", "

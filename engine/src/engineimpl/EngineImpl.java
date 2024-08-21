@@ -15,6 +15,7 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
 import java.lang.reflect.InaccessibleObjectException;
+import java.util.Map;
 
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -25,7 +26,8 @@ public class EngineImpl implements Engine {
 public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
 
-   // private Map<Integer , SpreadsheetDTO> spreadsheetsByVersions;
+    private Map<Integer, Spreadsheet> spreadsheetsByVersions;
+    int currentSpreadSheetVersion = 0;
     private Spreadsheet currentSpreadsheet;
 
     @Override
@@ -34,6 +36,7 @@ public static final int MAX_ROWS = 50;
             STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
             validateSTLSheet(loadedSheetFromXML);
             this.currentSpreadsheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+
     }
 
     private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {

@@ -76,7 +76,7 @@ public class ConsoleUI implements UI {
     public void handleLoadFile() {
 
         while(true) {
-            System.out.print("Enter file path or 'Q' button to return to the main menu:");
+            System.out.print("Enter file path or 'q/Q' button to return to the main menu:");
             String userInput = scanner.nextLine();
 
             try {
@@ -142,7 +142,7 @@ public class ConsoleUI implements UI {
     @Override
     public void handleDisplayCell() {
         while (true) {
-            System.out.print("Enter cell identifier (e.g., A1) , or 'Q' button to return to the main menu:");
+            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' button to return to the main menu:");
             String userInput = scanner.nextLine();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
@@ -172,7 +172,7 @@ public class ConsoleUI implements UI {
     public void handleUpdateCell() {
         CellDTO currentCell;
         while (true) {
-            System.out.print("Enter cell identifier (e.g., A1) , or 'q' to return to the main menu:");
+            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' to return to the main menu:");
             String userInput = scanner.nextLine().trim();
 
             try {
@@ -181,9 +181,9 @@ public class ConsoleUI implements UI {
                     break;
                 }
                 currentCell = engine.getCellInfo(userInput);
-                System.out.print("Enter new value (or leave blank to clear the cell):");
+                System.out.print("Enter new value (or leave blank to clear the cell) , or q/Q button to return to the main menu:");
                 String newValue = scanner.nextLine().trim();
-                if (userInput.equalsIgnoreCase("q")) {
+                if (newValue.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu.\n");
                     break;
                 }
@@ -196,6 +196,7 @@ public class ConsoleUI implements UI {
             }
         }
     }
+
 /*    @Override
     public void displayVersions() {
         // Step 1: Display version history
