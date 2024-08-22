@@ -4,7 +4,9 @@ import api.Cell;
 import api.EffectiveValue;
 import sheetimpl.utils.CellType;
 
-public class CellImpl implements Cell {
+import java.io.Serializable;
+
+public class CellImpl implements Cell , Serializable {
 
     private String originalValue;
     private EffectiveValue effectiveValue;
@@ -19,7 +21,7 @@ public class CellImpl implements Cell {
     public CellImpl() {
         this.originalValue = "";
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
-        this.lastModifiedVersion = 0;
+        this.lastModifiedVersion = 1;
     }
 
     @Override

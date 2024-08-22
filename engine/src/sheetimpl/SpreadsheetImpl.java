@@ -9,10 +9,7 @@ import sheetimpl.cellimpl.CellImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +19,7 @@ import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLette
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
-public class SpreadsheetImpl implements Spreadsheet {
+public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private String sheetName;
     private int sheetVersion; // necessary ?
     private Map<Coordinate, Cell> activeCells;
@@ -34,11 +31,12 @@ public class SpreadsheetImpl implements Spreadsheet {
     private int columnWidthUnits;
     private List<Coordinate> cellsThatHaveChanged;
 
-    public SpreadsheetImpl() {
+    public SpreadsheetImpl()  {
         activeCells = new HashMap<>();
         dependenciesAdjacencyList = new HashMap<>();
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
+        sheetVersion = 1;
     }
 
     @Override

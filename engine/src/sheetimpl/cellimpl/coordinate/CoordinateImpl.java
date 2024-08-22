@@ -1,6 +1,8 @@
 package sheetimpl.cellimpl.coordinate;
 
-public record CoordinateImpl(int row, int column) implements Coordinate {
+import java.io.Serializable;
+
+public record CoordinateImpl(int row, int column) implements Coordinate , Serializable {
 
     @Override
     public String toString() {

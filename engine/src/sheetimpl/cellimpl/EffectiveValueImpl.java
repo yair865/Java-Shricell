@@ -3,9 +3,10 @@ package sheetimpl.cellimpl;
 import api.EffectiveValue;
 import sheetimpl.utils.CellType;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class EffectiveValueImpl implements EffectiveValue {
+public class EffectiveValueImpl implements EffectiveValue , Serializable {
 
     private CellType cellType;
     private Object value;

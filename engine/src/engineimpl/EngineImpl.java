@@ -26,7 +26,7 @@ public class EngineImpl implements Engine {
 
     public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
-    public static final int LOAD_VERSION = 0;
+    public static final int LOAD_VERSION = 1;
 
     private Map<Integer, Spreadsheet> spreadsheetsByVersions;
     int currentSpreadSheetVersion = LOAD_VERSION;
@@ -115,7 +115,7 @@ public class EngineImpl implements Engine {
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet(); //need to deep copy instead.
+        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
 
         try {
             currentSpreadSheetVersion++;
