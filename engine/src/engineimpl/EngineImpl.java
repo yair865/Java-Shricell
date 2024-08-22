@@ -15,6 +15,8 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.File;
 import java.lang.reflect.InaccessibleObjectException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -22,21 +24,21 @@ import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 public class EngineImpl implements Engine {
 
-public static final int MAX_ROWS = 50;
+    public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
+    public static final int LOAD_VERSION = 1;
 
-   // private Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    int currentSpreadSheetVersion = 0;
-    private Spreadsheet currentSpreadsheet;
+    private Map<Integer, Spreadsheet> spreadsheetsByVersions;
+    int currentSpreadSheetVersion = LOAD_VERSION;
+
 
     @Override
     public void loadSpreadsheet(String filePath) throws Exception {
         validateXmlFile(filePath);
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
         validateSTLSheet(loadedSheetFromXML);
-        this.currentSpreadsheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
-       // spreadsheetsByVersions.put(1, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
-
+        spreadsheetsByVersions = new HashMap<>();
+        spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
     }
 
     private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
@@ -93,14 +95,14 @@ public static final int MAX_ROWS = 50;
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
         validateSheetIsLoaded();
-        return convertSheetToDTO(this.currentSpreadsheet);
+        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
     }
 
     @Override
     public CellDTO getCellInfo(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
-        Cell cellToDTO = this.currentSpreadsheet.getCell(cellCoordinate);
+        Cell cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
 
         return new CellDTO(cellToDTO.getOriginalValue(),
                 cellToDTO.getEffectiveValue(),
@@ -111,7 +113,18 @@ public static final int MAX_ROWS = 50;
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        this.currentSpreadsheet.setCell(coordinate, newValue);
+        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion);
+
+        try {
+            currentSpreadSheetVersion++;
+            spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
+            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue);
+
+        } catch (Exception e) {
+            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
+            currentSpreadSheetVersion--;
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -127,13 +140,20 @@ public static final int MAX_ROWS = 50;
     }
 
     private void validateSheetIsLoaded() {
-        if (this.currentSpreadsheet == null) {
+        if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
             throw new InaccessibleObjectException("File is not loaded yet.\n");
         }
     }
 
     @Override
-    public SpreadsheetDTO getSpreadSheetByVersion() {
-        return null;
+    public Map<Integer, SpreadsheetDTO> getSpreadSheetByVersion() {
+        validateSheetIsLoaded();
+        Map<Integer, SpreadsheetDTO> spreadSheetByVersionDTO = new HashMap<>();
+
+        for (Map.Entry<Integer, Spreadsheet> entry : spreadsheetsByVersions.entrySet()) {
+            convertSheetToDTO(spreadsheetsByVersions.get(entry.getKey()));
+        }
+
+        return spreadSheetByVersionDTO;
     }
 }

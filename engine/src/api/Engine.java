@@ -3,6 +3,8 @@ package api;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 
+import java.util.Map;
+
 public interface Engine {
 
     void loadSpreadsheet(String filePath) throws Exception;
@@ -17,5 +19,5 @@ public interface Engine {
 
     int getCurrentVersion();
 
-    SpreadsheetDTO getSpreadSheetByVersion();
+    Map<Integer, SpreadsheetDTO> getSpreadSheetByVersion();
 }
