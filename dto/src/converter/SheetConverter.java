@@ -20,7 +20,8 @@ public class SheetConverter {
                 sheetToConvert.getRowHeightUnits(),
                 sheetToConvert.getColumnWidthUnits(),
                 sheetToConvert.getDependenciesAdjacencyList(),
-                sheetToConvert.getReferencesAdjacencyList());
+                sheetToConvert.getReferencesAdjacencyList(),
+                sheetToConvert.getCellsThatHaveChanged());
     }
 
     public static Map<Coordinate, CellDTO> convertSheetCellsToDto(Map<Coordinate, Cell> cellsToConvert) {

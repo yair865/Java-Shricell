@@ -9,17 +9,13 @@ public class CellImpl implements Cell {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
+    private boolean isModified;
 
     public CellImpl(String originalValue, EffectiveValue effectiveValue, int version) {
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.lastModifiedVersion = version;
-    }
-
-    public CellImpl(int lastModifiedVersion) {
-        this.originalValue = "";
-        this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
-        this.lastModifiedVersion = lastModifiedVersion;
+        this.isModified = false;
     }
 
     public CellImpl() {
@@ -49,12 +45,13 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void setEffectiveValue(EffectiveValue effectiveValue) {
-        this.effectiveValue = effectiveValue;
-    }
+    public void setEffectiveValue(EffectiveValue newEffectiveValue) {this.effectiveValue = newEffectiveValue;}
 
     @Override
     public void setLastModifiedVersion(int sheetVersion) {
         this.lastModifiedVersion = sheetVersion;
     }
+
+    @Override
+    public void setModified(boolean modified) {isModified = modified;}
 }

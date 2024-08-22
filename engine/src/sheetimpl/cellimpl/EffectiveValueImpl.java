@@ -3,6 +3,8 @@ package sheetimpl.cellimpl;
 import api.EffectiveValue;
 import sheetimpl.utils.CellType;
 
+import java.util.Objects;
+
 public class EffectiveValueImpl implements EffectiveValue {
 
     private CellType cellType;
@@ -29,6 +31,24 @@ public class EffectiveValueImpl implements EffectiveValue {
             return type.cast(value);
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EffectiveValueImpl that = (EffectiveValueImpl) o;
+
+        if (cellType != that.cellType) return false;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = cellType != null ? cellType.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 
     @Override

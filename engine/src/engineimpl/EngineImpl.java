@@ -113,7 +113,7 @@ public class EngineImpl implements Engine {
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion);
+        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion); //need to deep copy instead.
 
         try {
             currentSpreadSheetVersion++;
@@ -146,7 +146,7 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public Map<Integer, SpreadsheetDTO> getSpreadSheetByVersion() {
+    public Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory() {
         validateSheetIsLoaded();
         Map<Integer, SpreadsheetDTO> spreadSheetByVersionDTO = new HashMap<>();
 

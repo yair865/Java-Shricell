@@ -12,6 +12,7 @@ import sheetimpl.utils.CellType;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -69,11 +70,6 @@ public class ConsoleUI implements UI {
                 scanner.nextLine();
             }
         }
-    }
-
-    @Override
-    public void displayVersions() {
-        System.out.println("Not implemented yet");
     }
 
     @Override
@@ -242,23 +238,22 @@ public class ConsoleUI implements UI {
         }
     }
 
-/*    @Override
+    @Override
     public void displayVersions() {
         // Step 1: Display version history
-        Map<Integer, Integer> versionHistory = engine.getVersionHistory(); // TODO
+        Map<Integer, SpreadsheetDTO> versionHistory = engine.getSpreadSheetVersionHistory(); // TODO
         if (versionHistory == null || versionHistory.isEmpty()) {
             System.out.println("No versions available.");
             return;
         }
 
         System.out.println("Version History:");
-        for (Map.Entry<Integer, Integer> entry : versionHistory.entrySet()) {
-            System.out.printf("Version %d: %d cells changed%n", entry.getKey(), entry.getValue());
+        for (Map.Entry<Integer, SpreadsheetDTO> entry : versionHistory.entrySet()) {
+            System.out.printf("Version %d: number of cells that changed %d %n", entry.getKey(), entry.getValue().cellsThatHaveChanged().size());
         }
 
-        // Step 2: Allow user to view a specific version
         while (true) {
-            System.out.println("Enter a version number to view or 'q' to quit:");
+            System.out.println("Enter a version number to view or 'q/Q' to quit:");
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("q")) {
@@ -268,11 +263,10 @@ public class ConsoleUI implements UI {
             try {
                 int versionNumber = Integer.parseInt(input);
 
-                if (versionHistory.containsKey(versionNumber)) {
-                    // Display the state of the spreadsheet for the selected version
-                    engine.loadVersion(versionNumber); // TODO
+                if (versionHistory.containsKey(versionNumber)) { //maybe should be in engine
                     System.out.println("Displaying Spreadsheet for Version " + versionNumber + ":");
-                    displaySpreadSheet();
+                    printSpreadSheet(versionHistory.get(versionNumber));
+
                 } else {
                     System.out.println("Invalid version number. Please try again.");
                 }
@@ -280,7 +274,8 @@ public class ConsoleUI implements UI {
                 System.out.println("Invalid input. Please enter a valid number or 'q' to quit.");
             }
         }
-    }*/
+    }
+
     @Override
     public void handleExit() {
         engine.exitProgram();
