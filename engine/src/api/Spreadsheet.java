@@ -47,4 +47,6 @@ public interface Spreadsheet extends SheetReadActions, SheetUpdateActions {
     void init(STLSheet loadedSheetFromXML);
 
     int getChangedCellsCount();
+
+    void setChangedCellsCount(int changedCellsCount);
 }

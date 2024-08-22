@@ -16,10 +16,16 @@ public class CellImpl implements Cell {
         this.lastModifiedVersion = version;
     }
 
+    public CellImpl(int lastModifiedVersion) {
+        this.originalValue = "";
+        this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
+        this.lastModifiedVersion = lastModifiedVersion;
+    }
+
     public CellImpl() {
         this.originalValue = "";
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
-        this.lastModifiedVersion = 0;
+        this.lastModifiedVersion = 1;
     }
 
     @Override

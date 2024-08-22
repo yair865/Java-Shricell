@@ -36,129 +36,12 @@ public class SpreadsheetImpl implements Spreadsheet {
         referencesAdjacencyList = new HashMap<>();
     }
 
-    // Getters:
-
-    @Override
-    public String getSheetName() {
-        return this.sheetName;
-    }
-
-    @Override
-    public int getVersion() {
-        return sheetVersion;
-    }
-
-    @Override
-    public Cell getCell(Coordinate coordinate) {
-        validateCoordinateInbound(coordinate);
-        return activeCells.computeIfAbsent(coordinate, key -> new CellImpl() {
-        });
-    }
-
-    @Override
-    public Map<Coordinate, Cell> getActiveCells() {
-        return activeCells;
-    }
-
-    @Override
-    public int getRows() {
-        return this.rows;
-    }
-
-    @Override
-    public int getColumns() {
-        return this.columns;
-    }
-
-    @Override
-    public int getRowHeightUnits() {
-        return rowHeightUnits;
-    }
-
-    @Override
-    public int getColumnWidthUnits() {
-        return columnWidthUnits;
-    }
-
-    @Override
-    public int getChangedCellsCount() {
-        return changedCellsCount;
-    }
-
-    @Override
-    public Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList() {
-        return referencesAdjacencyList;
-    }
-
-    @Override
-    public int getSheetVersion() {
-        return sheetVersion;
-    }
-
-    @Override
-    public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {
-        return dependenciesAdjacencyList;
-    }
-
-//  Setters:
-
-    @Override
-    public void setTitle(String sheetName) {
-        this.sheetName = sheetName;
-    }
-
-    @Override
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    @Override
-    public void setColumns(int columns) {
-        this.columns = columns;
-    }
-
-    @Override
-    public void setRowHeightUnits(int rowHeightUnits) {
-        this.rowHeightUnits = rowHeightUnits;
-    }
-
-    @Override
-    public void setColumnWidthUnits(int columnWidthUnits) {
-        this.columnWidthUnits = columnWidthUnits;
-    }
-
-    @Override
-    public void setCell(Coordinate coordinate, String value) {
-        Cell cellToCalculate = getCell(coordinate);
-
-        String originalValueBackup = cellToCalculate.getOriginalValue();
-        EffectiveValue effectiveValueBackup = cellToCalculate.getEffectiveValue();
-
-        try {
-            cellToCalculate.setCellOriginalValue(value);
-            calculateSheetEffectiveValues();
-            cellToCalculate.setLastModifiedVersion(sheetVersion);
-        } catch (Exception e) {
-            cellToCalculate.setCellOriginalValue(originalValueBackup);
-            cellToCalculate.setEffectiveValue(effectiveValueBackup);
-
-            throw e;
-        }
-    }
-
     private void validateCoordinateInbound(Coordinate coordinate) {
         if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
             throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
                     ") is outside the sheet boundaries: max rows = " + rows +
                     ", max columns = " + columns);
         }
-    }
-
-    private void calculateCellEffectiveValue(Cell cellToCalculate) {
-        String originalValue = cellToCalculate.getOriginalValue();
-
-        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
-        cellToCalculate.setEffectiveValue(effectiveValue);
     }
 
     @Override
@@ -178,6 +61,61 @@ public class SpreadsheetImpl implements Spreadsheet {
         }
 
         calculateSheetEffectiveValues();
+    }
+
+    private void calculateSheetEffectiveValues() {
+        Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
+        List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
+
+        for (Coordinate coordinate : calculationOrder) {
+            Cell cell = getCell(coordinate);
+            calculateCellEffectiveValue(cell);
+        }
+
+        dependenciesAdjacencyList = dependencyGraph;
+        referencesAdjacencyList = getTransposedGraph();
+    }
+
+    private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
+        Map<Coordinate, List<Coordinate>> dependencyGraph = new HashMap<>();
+
+        for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
+            Coordinate cellCoordinate = entry.getKey();
+            Cell cell = entry.getValue();
+            if (!dependencyGraph.containsKey(cellCoordinate)) {
+                dependencyGraph.put(cellCoordinate, new LinkedList<>());
+            }
+            List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
+
+            for (Coordinate coordinate : coordinateList) {
+                if (!dependencyGraph.containsKey(coordinate)) {
+                    dependencyGraph.put(coordinate, new LinkedList<>());
+                }
+
+                List<Coordinate> neighborsList = dependencyGraph.get(coordinate);
+                neighborsList.add(cellCoordinate);
+            }
+        }
+
+        return dependencyGraph;
+    }
+
+    private List<Coordinate> extractRefCoordinates(String expression) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        // Regular expression to match patterns like {REF,A4}
+        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
+        Matcher matcher = pattern.matcher(expression);
+
+        // Find all matches in the expression
+        while (matcher.find()) {
+            String cellId = matcher.group(1);
+            // Convert the coordinate string to a Coordinate object
+            Coordinate coordinate = createCoordinate(cellId);
+            coordinates.add(coordinate);
+        }
+
+        return coordinates;
     }
 
     private List<Coordinate> topologicalSort(Map<Coordinate, List<Coordinate>> dependencyGraph) {
@@ -226,81 +164,120 @@ public class SpreadsheetImpl implements Spreadsheet {
         return sortedList;
     }
 
-    private List<Coordinate> extractRefCoordinates(String expression) {
-        List<Coordinate> coordinates = new ArrayList<>();
+    private void calculateCellEffectiveValue(Cell cellToCalculate) {
+        String originalValue = cellToCalculate.getOriginalValue();
 
-        // Regular expression to match patterns like {REF,A4}
-        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
-        Matcher matcher = pattern.matcher(expression);
-
-        // Find all matches in the expression
-        while (matcher.find()) {
-            String cellId = matcher.group(1);
-            // Convert the coordinate string to a Coordinate object
-            Coordinate coordinate = createCoordinate(cellId);
-            coordinates.add(coordinate);
-        }
-
-        return coordinates;
-    }
-
-    private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
-        Map<Coordinate, List<Coordinate>> dependencyGraph = new HashMap<>();
-
-        for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
-            Coordinate cellCoordinate = entry.getKey();
-            Cell cell = entry.getValue();
-            if (!dependencyGraph.containsKey(cellCoordinate)) {
-                dependencyGraph.put(cellCoordinate, new LinkedList<>());
-            }
-            List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
-
-            for (Coordinate coordinate : coordinateList) {
-                if (!dependencyGraph.containsKey(coordinate)) {
-                    dependencyGraph.put(coordinate, new LinkedList<>());
-                }
-
-                List<Coordinate> neighborsList = dependencyGraph.get(coordinate);
-                neighborsList.add(cellCoordinate);
-            }
-        }
-
-        return dependencyGraph;
+        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
+        cellToCalculate.setEffectiveValue(effectiveValue);
     }
 
     private Map<Coordinate, List<Coordinate>> getTransposedGraph() {
-        Map<Coordinate, List<Coordinate>> tempTransposedGraph = new HashMap<>();
+        Map<Coordinate, List<Coordinate>> transposedGraph = new HashMap<>();
 
         for (Map.Entry<Coordinate, List<Coordinate>> entry : dependenciesAdjacencyList.entrySet()) {
             Coordinate source = entry.getKey();
             List<Coordinate> targets = entry.getValue();
 
             for (Coordinate target : targets) {
-                if (!tempTransposedGraph.containsKey(target)) {
-                    tempTransposedGraph.put(target, new LinkedList<>());
+                if (!transposedGraph.containsKey(target)) {
+                    transposedGraph.put(target, new LinkedList<>());
                 }
-                tempTransposedGraph.get(target).add(source);
+                transposedGraph.get(target).add(source);
             }
         }
 
-        return tempTransposedGraph;
+        return transposedGraph;
     }
 
-    private void calculateSheetEffectiveValues() {
-        Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
-        List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
+    // Getters:
+    @Override
+    public String getSheetName() {
+        return this.sheetName;
+    }
 
-        for (Coordinate coordinate : calculationOrder) {
-            Cell cell = getCell(coordinate);
-            calculateCellEffectiveValue(cell);
+    @Override
+    public int getVersion() {
+        return sheetVersion;
+    }
+
+    @Override
+    public Cell getCell(Coordinate coordinate) {
+        validateCoordinateInbound(coordinate);
+        return activeCells.computeIfAbsent(coordinate, key -> new CellImpl() {
+        });
+    }
+
+    @Override
+    public Map<Coordinate, Cell> getActiveCells() {
+        return activeCells;
+    }
+
+    @Override
+    public int getRows() {
+        return this.rows;
+    }
+
+    @Override
+    public int getColumns() {
+        return this.columns;
+    }
+
+    @Override
+    public int getRowHeightUnits() {return rowHeightUnits;}
+
+    @Override
+    public int getColumnWidthUnits() {return columnWidthUnits;}
+
+    @Override
+    public int getChangedCellsCount() {return changedCellsCount;}
+
+    @Override
+    public Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList() {return referencesAdjacencyList;}
+
+    @Override
+    public int getSheetVersion() {return sheetVersion;}
+
+    @Override
+    public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {return dependenciesAdjacencyList;}
+
+    //  Setters:
+    @Override
+    public void setCell(Coordinate coordinate, String value) {
+        Cell cellToCalculate = getCell(coordinate);
+
+        String originalValueBackup = cellToCalculate.getOriginalValue();
+        EffectiveValue effectiveValueBackup = cellToCalculate.getEffectiveValue();
+
+        try {
+            cellToCalculate.setCellOriginalValue(value);
+            calculateSheetEffectiveValues();
+            cellToCalculate.setLastModifiedVersion(sheetVersion);
+        } catch (Exception e) {
+            cellToCalculate.setCellOriginalValue(originalValueBackup);
+            cellToCalculate.setEffectiveValue(effectiveValueBackup);
+
+            throw e;
         }
-
-        dependenciesAdjacencyList = dependencyGraph;
-        referencesAdjacencyList = getTransposedGraph();
     }
 
-    public void setChangedCellsCount(int changedCellsCount) {
-        this.changedCellsCount = changedCellsCount;
+    @Override
+    public void setTitle(String sheetName) {
+        this.sheetName = sheetName;
     }
+
+    @Override
+    public void setRows(int rows) {this.rows = rows;}
+
+    @Override
+    public void setColumns(int columns) {this.columns = columns;}
+
+    @Override
+    public void setRowHeightUnits(int rowHeightUnits) {this.rowHeightUnits = rowHeightUnits;}
+
+    @Override
+    public void setColumnWidthUnits(int columnWidthUnits) {this.columnWidthUnits = columnWidthUnits;}
+
+    @Override
+    public void setChangedCellsCount(int changedCellsCount) {this.changedCellsCount = changedCellsCount;}
 }
 
