@@ -3,15 +3,20 @@ package api;
 import generated.STLSheet;
 import sheetimpl.cellimpl.coordinate.Coordinate;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * Interface representing a spreadsheet.
  */
-public interface Spreadsheet {
+public interface Spreadsheet extends SheetReadActions, SheetUpdateActions {
     int getRows();
 
     int getColumns();
+
+    int getSheetVersion();
+
+    Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList();
 
     void setTitle(String sheetName);
 
@@ -20,6 +25,8 @@ public interface Spreadsheet {
     int getVersion();
 
     Cell getCell(Coordinate coordinate);
+
+    Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList();
 
     void setCell(Coordinate coordinate, String value);
 
@@ -37,9 +44,7 @@ public interface Spreadsheet {
 
     void setColumnWidthUnits(int columnWidthUnits);
 
-    void clearSpreadSheet();
-
-    void recalculateCellsValue();
-
     void init(STLSheet loadedSheetFromXML);
+
+    int getChangedCellsCount();
 }

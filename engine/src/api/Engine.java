@@ -17,6 +17,5 @@ public interface Engine {
 
     int getCurrentVersion();
 
-
-    //List<Version> getVersionHistory();
+    SpreadsheetDTO getSpreadSheetByVersion();
 }

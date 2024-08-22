@@ -4,7 +4,7 @@ import dtoPackage.SpreadsheetDTO;
 
 public interface UI {
 
-    void displayCellInfo(String cellId);
+    void displayBasicCellInfo(String cellId);
 
     void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint);
 
@@ -21,6 +21,8 @@ public interface UI {
     void handleLoadFile();
 
     void handleDisplayCell();
+
+    void displayFullCellInformation(String cellId);
 
     void handleUpdateCell();
 

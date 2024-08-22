@@ -20,18 +20,23 @@ import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
 public class SpreadsheetImpl implements Spreadsheet {
     private String sheetName;
-    private int sheetVersion;
+    private int sheetVersion; // necessary ?
     private Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList;
+    private Map<Coordinate, List<Coordinate>> referencesAdjacencyList;
     private int rows;
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
+    private int changedCellsCount = 0;
 
     public SpreadsheetImpl() {
         activeCells = new HashMap<>();
         dependenciesAdjacencyList = new HashMap<>();
+        referencesAdjacencyList = new HashMap<>();
     }
+
+    // Getters:
 
     @Override
     public String getSheetName() {
@@ -46,16 +51,8 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public Cell getCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate);
-        return activeCells.computeIfAbsent(coordinate, key->new CellImpl() {
+        return activeCells.computeIfAbsent(coordinate, key -> new CellImpl() {
         });
-    }
-
-    private void validateCoordinateInbound(Coordinate coordinate){
-        if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
-            throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
-                    ") is outside the sheet boundaries: max rows = " + rows +
-                    ", max columns = " + columns);
-        }
     }
 
     @Override
@@ -70,8 +67,40 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     @Override
     public int getColumns() {
-       return this.columns;
+        return this.columns;
     }
+
+    @Override
+    public int getRowHeightUnits() {
+        return rowHeightUnits;
+    }
+
+    @Override
+    public int getColumnWidthUnits() {
+        return columnWidthUnits;
+    }
+
+    @Override
+    public int getChangedCellsCount() {
+        return changedCellsCount;
+    }
+
+    @Override
+    public Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList() {
+        return referencesAdjacencyList;
+    }
+
+    @Override
+    public int getSheetVersion() {
+        return sheetVersion;
+    }
+
+    @Override
+    public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {
+        return dependenciesAdjacencyList;
+    }
+
+//  Setters:
 
     @Override
     public void setTitle(String sheetName) {
@@ -79,7 +108,27 @@ public class SpreadsheetImpl implements Spreadsheet {
     }
 
     @Override
-    public void setCell(Coordinate coordinate , String value) {
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    @Override
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    @Override
+    public void setRowHeightUnits(int rowHeightUnits) {
+        this.rowHeightUnits = rowHeightUnits;
+    }
+
+    @Override
+    public void setColumnWidthUnits(int columnWidthUnits) {
+        this.columnWidthUnits = columnWidthUnits;
+    }
+
+    @Override
+    public void setCell(Coordinate coordinate, String value) {
         Cell cellToCalculate = getCell(coordinate);
 
         String originalValueBackup = cellToCalculate.getOriginalValue();
@@ -97,48 +146,19 @@ public class SpreadsheetImpl implements Spreadsheet {
         }
     }
 
+    private void validateCoordinateInbound(Coordinate coordinate) {
+        if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
+            throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
+                    ") is outside the sheet boundaries: max rows = " + rows +
+                    ", max columns = " + columns);
+        }
+    }
+
     private void calculateCellEffectiveValue(Cell cellToCalculate) {
         String originalValue = cellToCalculate.getOriginalValue();
 
         EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
         cellToCalculate.setEffectiveValue(effectiveValue);
-    }
-
-    @Override
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    @Override
-    public void setColumns(int columns) {
-        this.columns = columns;
-    }
-    @Override
-    public int getRowHeightUnits() {
-        return rowHeightUnits;
-    }
-    @Override
-    public void setRowHeightUnits(int rowHeightUnits) {
-        this.rowHeightUnits = rowHeightUnits;
-    }
-    @Override
-    public int getColumnWidthUnits() {
-        return columnWidthUnits;
-    }
-    @Override
-    public void setColumnWidthUnits(int columnWidthUnits) {
-        this.columnWidthUnits = columnWidthUnits;
-    }
-
-    @Override
-    public void clearSpreadSheet() {
-        activeCells.clear();
-        dependenciesAdjacencyList.clear();
-    }
-
-    @Override
-    public void recalculateCellsValue() {
-
     }
 
     @Override
@@ -151,7 +171,7 @@ public class SpreadsheetImpl implements Spreadsheet {
 
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow() , convertColumnLetterToNumber(stlCell.getColumn()));
+            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn()));
             Cell cell = getCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
@@ -230,14 +250,14 @@ public class SpreadsheetImpl implements Spreadsheet {
         for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             Coordinate cellCoordinate = entry.getKey();
             Cell cell = entry.getValue();
-            if(!dependencyGraph.containsKey(cellCoordinate)) {
-                dependencyGraph.put(cellCoordinate,new LinkedList<>());
+            if (!dependencyGraph.containsKey(cellCoordinate)) {
+                dependencyGraph.put(cellCoordinate, new LinkedList<>());
             }
             List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
 
             for (Coordinate coordinate : coordinateList) {
-                if(!dependencyGraph.containsKey(coordinate)) {
-                    dependencyGraph.put(coordinate,new LinkedList<>());
+                if (!dependencyGraph.containsKey(coordinate)) {
+                    dependencyGraph.put(coordinate, new LinkedList<>());
                 }
 
                 List<Coordinate> neighborsList = dependencyGraph.get(coordinate);
@@ -246,6 +266,24 @@ public class SpreadsheetImpl implements Spreadsheet {
         }
 
         return dependencyGraph;
+    }
+
+    private Map<Coordinate, List<Coordinate>> getTransposedGraph() {
+        Map<Coordinate, List<Coordinate>> tempTransposedGraph = new HashMap<>();
+
+        for (Map.Entry<Coordinate, List<Coordinate>> entry : dependenciesAdjacencyList.entrySet()) {
+            Coordinate source = entry.getKey();
+            List<Coordinate> targets = entry.getValue();
+
+            for (Coordinate target : targets) {
+                if (!tempTransposedGraph.containsKey(target)) {
+                    tempTransposedGraph.put(target, new LinkedList<>());
+                }
+                tempTransposedGraph.get(target).add(source);
+            }
+        }
+
+        return tempTransposedGraph;
     }
 
     private void calculateSheetEffectiveValues() {
@@ -258,6 +296,11 @@ public class SpreadsheetImpl implements Spreadsheet {
         }
 
         dependenciesAdjacencyList = dependencyGraph;
+        referencesAdjacencyList = getTransposedGraph();
+    }
+
+    public void setChangedCellsCount(int changedCellsCount) {
+        this.changedCellsCount = changedCellsCount;
     }
 }
 

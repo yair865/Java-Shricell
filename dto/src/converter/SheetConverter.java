@@ -18,7 +18,9 @@ public class SheetConverter {
                 sheetToConvert.getRows(),
                 sheetToConvert.getColumns(),
                 sheetToConvert.getRowHeightUnits(),
-                sheetToConvert.getColumnWidthUnits());
+                sheetToConvert.getColumnWidthUnits(),
+                sheetToConvert.getDependenciesAdjacencyList(),
+                sheetToConvert.getReferencesAdjacencyList());
     }
 
     public static Map<Coordinate, CellDTO> convertSheetCellsToDto(Map<Coordinate, Cell> cellsToConvert) {

@@ -21,10 +21,6 @@ public class CellImpl implements Cell {
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
         this.lastModifiedVersion = 0;
     }
-/*    @Override
-    public Coordinate getCoordinate() {
-        return coordinate;
-    }*/
 
     @Override
     public String getOriginalValue() {
