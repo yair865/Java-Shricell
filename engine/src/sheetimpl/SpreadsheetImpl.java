@@ -9,6 +9,10 @@ import sheetimpl.cellimpl.CellImpl;
 import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +39,22 @@ public class SpreadsheetImpl implements Spreadsheet {
         dependenciesAdjacencyList = new HashMap<>();
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
+    }
+
+    @Override
+    public Spreadsheet copySheet() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            return (SpreadsheetImpl) ois.readObject();
+        } catch (Exception e) {
+            // deal with the runtime error that was discovered as part of invocation
+            return this;
+        }
     }
 
     private void validateCoordinateInbound(Coordinate coordinate) {
@@ -78,8 +98,16 @@ public class SpreadsheetImpl implements Spreadsheet {
         }
 
         cellsThatHaveChanged =cellsThatHaveChangedLocal;
+        updateCellsLastModifiedVersion();
         dependenciesAdjacencyList = dependencyGraph;
         referencesAdjacencyList = getTransposedGraph();
+    }
+
+    private void updateCellsLastModifiedVersion() {
+        for (Coordinate coordinate : cellsThatHaveChanged) {
+            Cell cell = getCell(coordinate);
+            cell.setLastModifiedVersion(sheetVersion);
+        }
     }
 
     private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
@@ -284,6 +312,7 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public List<Coordinate> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
 
+    @Override
     public void setSheetVersion(int sheetVersion) {
         this.sheetVersion = sheetVersion;
     }

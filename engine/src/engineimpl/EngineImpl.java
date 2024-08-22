@@ -26,7 +26,7 @@ public class EngineImpl implements Engine {
 
     public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
-    public static final int LOAD_VERSION = 1;
+    public static final int LOAD_VERSION = 0;
 
     private Map<Integer, Spreadsheet> spreadsheetsByVersions;
     int currentSpreadSheetVersion = LOAD_VERSION;
@@ -38,6 +38,8 @@ public class EngineImpl implements Engine {
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
         validateSTLSheet(loadedSheetFromXML);
         spreadsheetsByVersions = new HashMap<>();
+        Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+        loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
         spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
     }
 
@@ -113,10 +115,11 @@ public class EngineImpl implements Engine {
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion); //need to deep copy instead.
+        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet(); //need to deep copy instead.
 
         try {
             currentSpreadSheetVersion++;
+            currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
             spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
             spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue);
 
@@ -151,7 +154,7 @@ public class EngineImpl implements Engine {
         Map<Integer, SpreadsheetDTO> spreadSheetByVersionDTO = new HashMap<>();
 
         for (Map.Entry<Integer, Spreadsheet> entry : spreadsheetsByVersions.entrySet()) {
-            convertSheetToDTO(spreadsheetsByVersions.get(entry.getKey()));
+            spreadSheetByVersionDTO.put(entry.getKey(), convertSheetToDTO(spreadsheetsByVersions.get(entry.getKey())));
         }
 
         return spreadSheetByVersionDTO;

@@ -2,7 +2,6 @@ package sheetimpl.expression.type;
 
 import api.EffectiveValue;
 import api.Expression;
-import api.Spreadsheet;
 import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.utils.CellType;

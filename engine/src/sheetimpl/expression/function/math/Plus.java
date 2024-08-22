@@ -1,10 +1,10 @@
 package sheetimpl.expression.function.math;
 
-import dtoPackage.SpreadsheetDTO;
-import sheetimpl.expression.type.BinaryExpression;
-import api.Expression;
 import api.EffectiveValue;
+import api.Expression;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
+import sheetimpl.expression.type.BinaryExpression;
 import sheetimpl.utils.CellType;
 
 public class Plus extends BinaryExpression {

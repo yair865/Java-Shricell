@@ -7,7 +7,6 @@ public interface Cell {
     EffectiveValue getEffectiveValue();
     int getLastModifiedVersionVersion();
     void setEffectiveValue(EffectiveValue effectiveValue);
-    void setLastModifiedVersion(int sheetVersion);
 
-    void setModified(boolean modified);
+    void setLastModifiedVersion(int sheetVersion);
 }

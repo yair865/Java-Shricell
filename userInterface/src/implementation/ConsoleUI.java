@@ -266,6 +266,7 @@ public class ConsoleUI implements UI {
                 if (versionHistory.containsKey(versionNumber)) { //maybe should be in engine
                     System.out.println("Displaying Spreadsheet for Version " + versionNumber + ":");
                     printSpreadSheet(versionHistory.get(versionNumber));
+                    break;
 
                 } else {
                     System.out.println("Invalid version number. Please try again.");

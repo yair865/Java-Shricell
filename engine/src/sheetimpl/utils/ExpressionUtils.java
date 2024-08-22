@@ -10,11 +10,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ExpressionUtils {
+
     public static Expression buildExpressionFromString(String someExpression){
         Node tokenized = tokenizeExpression(someExpression.trim());
         return buildExpression(tokenized);
     }
-
 
     private static class Node {
         String value;
@@ -24,15 +24,6 @@ public class ExpressionUtils {
             this.value = value;
             this.children = children;
         }
-
-        public String getValue() {
-            return value;
-        }
-
-        public List<Node> getChildren() {
-            return children;
-        }
-
     }
 
     public static Expression buildExpression(Node expression) {
@@ -75,8 +66,6 @@ public class ExpressionUtils {
     }
 
     public static Node tokenizeExpression(String input) {
-        input = input;
-
         if (input.startsWith("{") && input.endsWith("}")) {
             int commaIndex = input.indexOf(',');
             String function = input.substring(1, commaIndex);

@@ -44,7 +44,11 @@ public interface Spreadsheet extends SheetReadActions, SheetUpdateActions {
 
     void setColumnWidthUnits(int columnWidthUnits);
 
+    Spreadsheet copySheet();
+
     void init(STLSheet loadedSheetFromXML);
 
     List<Coordinate> getCellsThatHaveChanged();
+
+    void setSheetVersion(int sheetVersion);
 }

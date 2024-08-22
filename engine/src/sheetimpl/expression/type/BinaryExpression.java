@@ -1,7 +1,7 @@
 package sheetimpl.expression.type;
 
-import api.Expression;
 import api.EffectiveValue;
+import api.Expression;
 import dtoPackage.SpreadsheetDTO;
 
 

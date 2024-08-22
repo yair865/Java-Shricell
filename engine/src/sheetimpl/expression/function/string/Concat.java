@@ -1,11 +1,10 @@
 package sheetimpl.expression.function.string;
 
 import api.EffectiveValue;
-import dtoPackage.SpreadsheetDTO;
-import sheetimpl.expression.type.BinaryExpression;
-
 import api.Expression;
+import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
+import sheetimpl.expression.type.BinaryExpression;
 import sheetimpl.expression.type.Text;
 import sheetimpl.utils.CellType;
 
