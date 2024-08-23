@@ -159,4 +159,9 @@ public class EngineImpl implements Engine {
 
         return spreadSheetByVersionDTO;
     }
+
+    @Override
+    public Map<Integer, Spreadsheet> getSpreadsheetsByVersions() {
+        return spreadsheetsByVersions;
+    }
 }

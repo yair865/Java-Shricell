@@ -85,7 +85,6 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private void calculateSheetEffectiveValues() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
         List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
-        List<Coordinate> cellsThatHaveChangedLocal = new ArrayList<>();
 
         for (Coordinate coordinate : calculationOrder) {
             Cell cell = getCell(coordinate);

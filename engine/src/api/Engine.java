@@ -20,4 +20,6 @@ public interface Engine {
     int getCurrentVersion();
 
     Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory();
+
+    Map<Integer, Spreadsheet> getSpreadsheetsByVersions();
 }
