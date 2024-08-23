@@ -90,7 +90,7 @@ public class EngineImpl implements Engine {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (STLSheet) jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new RuntimeException(e); // consider creating special Exception to throw.
+            throw new RuntimeException("Failed to load the data from the XML file."); // consider creating special Exception to throw.
         }
     }
 
@@ -126,7 +126,7 @@ public class EngineImpl implements Engine {
         } catch (Exception e) {
             spreadsheetsByVersions.remove(currentSpreadSheetVersion);
             currentSpreadSheetVersion--;
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 

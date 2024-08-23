@@ -249,7 +249,7 @@ public class ConsoleUI implements UI {
 
         System.out.println("Version History:");
         for (Map.Entry<Integer, SpreadsheetDTO> entry : versionHistory.entrySet()) {
-            System.out.printf("Version %d: number of cells that changed %d %n", entry.getKey(), entry.getValue().cellsThatHaveChanged().size());
+            System.out.printf("Version %d: number of cells that changed %d %n", entry.getKey(), entry.getValue().numberOfModifiedCells());
         }
 
         while (true) {

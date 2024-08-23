@@ -28,6 +28,8 @@ public interface Spreadsheet extends SheetReadActions, SheetUpdateActions {
 
     Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList();
 
+    int getNumberOfModifiedCells();
+
     void setCell(Coordinate coordinate, String value);
 
     Map<Coordinate, Cell> getActiveCells();
@@ -48,7 +50,7 @@ public interface Spreadsheet extends SheetReadActions, SheetUpdateActions {
 
     void init(STLSheet loadedSheetFromXML);
 
-    List<Coordinate> getCellsThatHaveChanged();
+    List<Cell> getCellsThatHaveChanged();
 
     void setSheetVersion(int sheetVersion);
 }

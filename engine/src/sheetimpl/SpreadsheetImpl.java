@@ -21,7 +21,7 @@ import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
 public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private String sheetName;
-    private int sheetVersion; // necessary ?
+    private int sheetVersion;
     private Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList;
     private Map<Coordinate, List<Coordinate>> referencesAdjacencyList;
@@ -29,7 +29,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
-    private List<Coordinate> cellsThatHaveChanged;
+    private List<Cell> cellsThatHaveChanged;
 
     public SpreadsheetImpl()  {
         activeCells = new HashMap<>();
@@ -89,23 +89,11 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
 
         for (Coordinate coordinate : calculationOrder) {
             Cell cell = getCell(coordinate);
-            if(calculateCellEffectiveValue(cell))
-            {
-                cellsThatHaveChangedLocal.add(coordinate);
-            }
+            calculateCellEffectiveValue(cell);
         }
 
-        cellsThatHaveChanged =cellsThatHaveChangedLocal;
-        updateCellsLastModifiedVersion();
         dependenciesAdjacencyList = dependencyGraph;
         referencesAdjacencyList = getTransposedGraph();
-    }
-
-    private void updateCellsLastModifiedVersion() {
-        for (Coordinate coordinate : cellsThatHaveChanged) {
-            Cell cell = getCell(coordinate);
-            cell.setLastModifiedVersion(sheetVersion);
-        }
     }
 
     private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
@@ -196,14 +184,17 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
         return sortedList;
     }
 
-    private boolean calculateCellEffectiveValue(Cell cellToCalculate) {
+    private void calculateCellEffectiveValue(Cell cellToCalculate) {
         String originalValue = cellToCalculate.getOriginalValue();
         EffectiveValue previousEffectiveValue = cellToCalculate.getEffectiveValue();
         EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
-        if(effectiveValue.equals(previousEffectiveValue)) {return false;}
-        cellToCalculate.setEffectiveValue(effectiveValue);
 
-        return true;
+        if(!(effectiveValue.equals(previousEffectiveValue))) {
+            cellToCalculate.setEffectiveValue(effectiveValue);
+            cellToCalculate.setLastModifiedVersion(sheetVersion);
+            cellsThatHaveChanged.add(cellToCalculate);
+        }
+
     }
 
     private Map<Coordinate, List<Coordinate>> getTransposedGraph() {
@@ -270,22 +261,22 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     @Override
     public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {return dependenciesAdjacencyList;}
 
+    @Override
+    public int getNumberOfModifiedCells()
+    {
+        return cellsThatHaveChanged.size();
+    }
+
     //  Setters:
     @Override
     public void setCell(Coordinate coordinate, String value) {
         Cell cellToCalculate = getCell(coordinate);
-
-        String originalValueBackup = cellToCalculate.getOriginalValue();
-        EffectiveValue effectiveValueBackup = cellToCalculate.getEffectiveValue();
-
         try {
             cellToCalculate.setCellOriginalValue(value);
+            cellsThatHaveChanged.clear();
             calculateSheetEffectiveValues();
             cellToCalculate.setLastModifiedVersion(sheetVersion);
         } catch (Exception e) {
-            cellToCalculate.setCellOriginalValue(originalValueBackup);
-            cellToCalculate.setEffectiveValue(effectiveValueBackup);
-
             throw e;
         }
     }
@@ -308,7 +299,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     public void setColumnWidthUnits(int columnWidthUnits) {this.columnWidthUnits = columnWidthUnits;}
 
     @Override
-    public List<Coordinate> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
+    public List<Cell> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
 
     @Override
     public void setSheetVersion(int sheetVersion) {

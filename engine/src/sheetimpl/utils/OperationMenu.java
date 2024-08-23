@@ -90,7 +90,8 @@ public enum OperationMenu {
         }
 
         if (!matchFound) {
-            throw new IllegalArgumentException("No compatible constructor found for class: " + operationClazz.getName());
+            throw new IllegalArgumentException("Not enough arguments for function " + operationClazz.getSimpleName() +
+                    "expected " + constructorParameterCount + " but received " + parameters.size());
         }
     }
 }
