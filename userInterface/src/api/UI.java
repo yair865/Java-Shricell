@@ -28,5 +28,9 @@ public interface UI {
 
     void displaySpreadSheet();
 
+    void handleSaveSystemState();
+
+    void handleLoadSystemState();
+
     void handleExit();
 }

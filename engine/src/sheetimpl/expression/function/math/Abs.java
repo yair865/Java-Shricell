@@ -21,7 +21,7 @@ public class Abs extends UnaryExpression {
 
         if(valueToAbs == null) {
             throw new IllegalArgumentException("Invalid argument in function " + this.getClass().getSimpleName() + ".\n"
-                    + "the argument expected is from type " + Number.class.getSimpleName() + " but the argument is from type - " + expressionEffectiveValue.getCellType() + ".");
+                    + "the argument expected is from type " + CellType.NUMERIC + " but the argument is from type - " + expressionEffectiveValue.getCellType() + ".");
         }
 
         double result = Math.abs(valueToAbs);

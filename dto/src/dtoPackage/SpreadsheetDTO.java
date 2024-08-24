@@ -1,6 +1,6 @@
 package dtoPackage;
 
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 
 import java.util.List;
 import java.util.Map;

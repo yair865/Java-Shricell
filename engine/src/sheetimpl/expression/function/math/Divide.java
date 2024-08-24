@@ -23,7 +23,7 @@ public class Divide extends BinaryExpression {
 
         if(numerator == null || denominator == null) {
             throw new IllegalArgumentException("Invalid arguments in function " + this.getClass().getSimpleName() + ".\n"
-                    + "the arguments expected are from type " + Number.class.getSimpleName() + " but the first argument is from type - " + leftEffectiveValue.getCellType()
+                    + "the arguments expected are from type " + CellType.NUMERIC + " but the first argument is from type - " + leftEffectiveValue.getCellType()
                     + ", and the second argument is from type - " + rightEffectiveValue.getCellType() + ".");
         }
 

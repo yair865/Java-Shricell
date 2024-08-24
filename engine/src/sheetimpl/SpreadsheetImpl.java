@@ -6,7 +6,7 @@ import api.Spreadsheet;
 import generated.STLCell;
 import generated.STLSheet;
 import sheetimpl.cellimpl.CellImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.*;
@@ -15,8 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static converter.SheetConverter.convertSheetToDTO;
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.*;
 import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
 public class SpreadsheetImpl implements Spreadsheet , Serializable {
@@ -57,9 +56,9 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
 
     private void validateCoordinateInbound(Coordinate coordinate) {
         if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
-            throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
-                    ") is outside the sheet boundaries: max rows = " + rows +
-                    ", max columns = " + columns);
+            throw new IllegalArgumentException("Cell at position " + coordinate +
+                    " is outside the sheet boundaries: max row = " + rows +
+                    ", max column = " + convertColumnNumberToLetter(columns));
         }
     }
 

@@ -1,5 +1,7 @@
 package sheetimpl.cellimpl.coordinate;
 
+import api.Coordinate;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,19 @@ public class CoordinateFactory {
 
     public static int convertColumnLetterToNumber(String columnLetter) {
         return columnLetter.charAt(0) - 'A' + 1;
+    }
+
+    public static String convertColumnNumberToLetter(int columnNumber) {
+        StringBuilder columnName = new StringBuilder();
+
+        while (columnNumber > 0) {
+            columnNumber--; // Adjust for 1-based indexing
+            char letter = (char) ('A' + (columnNumber % 26));
+            columnName.insert(0, letter);
+            columnNumber /= 26;
+        }
+
+        return columnName.toString();
     }
 }
 

@@ -3,6 +3,7 @@ package api;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface Engine {
@@ -17,9 +18,10 @@ public interface Engine {
 
     void exitProgram();
 
-    int getCurrentVersion();
+    void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException;
+
+   void saveSystemToFile(String fileName) throws IOException;
 
     Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory();
 
-    Map<Integer, Spreadsheet> getSpreadsheetsByVersions();
 }

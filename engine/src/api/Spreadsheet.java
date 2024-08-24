@@ -1,7 +1,6 @@
 package api;
 
 import generated.STLSheet;
-import sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.util.List;
 import java.util.Map;

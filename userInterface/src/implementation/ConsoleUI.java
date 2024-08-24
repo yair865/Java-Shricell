@@ -6,7 +6,7 @@ import api.UI;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import engineimpl.EngineImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import sheetimpl.utils.CellType;
 
@@ -163,7 +163,7 @@ public class ConsoleUI implements UI {
     public void handleDisplayCell() {
         while (true) {
             System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' button to return to the main menu:");
-            String userInput = scanner.nextLine();
+            String userInput = scanner.nextLine().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu.\n");
@@ -218,7 +218,7 @@ public class ConsoleUI implements UI {
     public void handleUpdateCell() {
         while (true) {
             System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' to return to the main menu:");
-            String userInput = scanner.nextLine().trim();
+            String userInput = scanner.nextLine().trim().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu.\n");
@@ -253,7 +253,7 @@ public class ConsoleUI implements UI {
         }
 
         while (true) {
-            System.out.println("Enter a version number to view or 'q/Q' to quit:");
+            System.out.print("Enter a version number to view or 'q/Q' to quit:");
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("q")) {
@@ -275,6 +275,49 @@ public class ConsoleUI implements UI {
                 System.out.println("Invalid input. Please enter a valid number or 'q' to quit.");
             }
         }
+    }
+
+    @Override
+    public void handleSaveSystemState() {
+        while (true) {
+            System.out.print("Enter the file path to save the system state (without extension) or 'q/Q' to return to the main menu: ");
+            String userInput = scanner.nextLine();
+
+            try {
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
+                    break;
+                }
+                engine.saveSystemToFile(userInput);
+                System.out.println("System state successfully saved!\n");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error saving system state: " + e.getMessage() + " please try again.\n");
+            }
+        }
+        System.out.println();
+    }
+
+    @Override
+    public void handleLoadSystemState() {
+        while (true) {
+            System.out.print("Enter file path to load the system state or 'q/Q' to return to the main menu: ");
+            String userInput = scanner.nextLine();
+
+            if (userInput.equalsIgnoreCase("q")) {
+                System.out.println("Returning to main menu.\n");
+                break;
+            }
+
+            try {
+                engine.loadSystemFromFile(userInput);
+                System.out.println("System state successfully loaded!\n");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error loading system state: " + e.getMessage() + " please try again.\n");
+            }
+        }
+        System.out.println();
     }
 
     @Override

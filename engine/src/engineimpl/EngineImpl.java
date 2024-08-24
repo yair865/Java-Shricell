@@ -10,10 +10,10 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 
-public class EngineImpl implements Engine {
+public class EngineImpl implements Engine , Serializable{
 
     public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
@@ -130,18 +130,6 @@ public class EngineImpl implements Engine {
         }
     }
 
-    @Override
-    public void exitProgram() {
-        System.exit(0);
-    }
-
-    @Override
-    public int getCurrentVersion() {
-        validateSheetIsLoaded();
-        //TODO
-        return 0;
-    }
-
     private void validateSheetIsLoaded() {
         if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
             throw new InaccessibleObjectException("File is not loaded yet.\n");
@@ -160,8 +148,27 @@ public class EngineImpl implements Engine {
         return spreadSheetByVersionDTO;
     }
 
+
     @Override
-    public Map<Integer, Spreadsheet> getSpreadsheetsByVersions() {
-        return spreadsheetsByVersions;
+    public void saveSystemToFile(String fileName) throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            out.writeObject(this); // Save the current instance of the Engine
+            out.flush();
+        }
+    }
+
+    @Override
+    public void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
+            EngineImpl loadedEngine = (EngineImpl) in.readObject();
+
+            this.spreadsheetsByVersions = loadedEngine.spreadsheetsByVersions;
+            this.currentSpreadSheetVersion = loadedEngine.currentSpreadSheetVersion;
+        }
+    }
+
+    @Override
+    public void exitProgram() {
+        System.exit(0);
     }
 }

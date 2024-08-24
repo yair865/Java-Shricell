@@ -4,8 +4,7 @@ import api.EffectiveValue;
 import api.Expression;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import sheetimpl.cellimpl.coordinate.Coordinate;
-import sheetimpl.expression.type.Text;
+import api.Coordinate;
 import sheetimpl.expression.type.UnaryExpression;
 
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -24,7 +23,7 @@ public class Ref extends UnaryExpression {
 
         // Validate that the cell ID is not null
         if (cellId == null) {
-            throw new IllegalArgumentException("Invalid cell ID in the expression. Expected a" + Text.class.getSimpleName() + "but got "
+            throw new IllegalArgumentException("Invalid cell ID in the expression. Expected a" + String.class.getSimpleName() + "but got "
                     + cellIdValue.getCellType() + ".");
         }
 

@@ -4,7 +4,7 @@ import api.Cell;
 import api.Spreadsheet;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;
