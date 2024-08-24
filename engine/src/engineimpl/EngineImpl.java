@@ -48,7 +48,7 @@ public class EngineImpl implements Engine , Serializable{
 
         try {
             spreadsheet.init(loadedSheetFromXML);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             throw new IllegalArgumentException("In file: " + loadedSheetFromXML.getName() + " - " + e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException(e);

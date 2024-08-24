@@ -45,7 +45,7 @@ public class ExpressionUtils {
     }
 
     public static Expression parseExpression(String expression) {
-        String numberPattern = "^\\d+(\\.\\d+)?$";
+        String numberPattern = "^-?\\d+(\\.\\d+)?$";
         Expression parsingResult;
 
         try {

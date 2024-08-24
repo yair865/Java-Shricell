@@ -33,7 +33,7 @@ public class CoordinateFactory {
             throw new IllegalArgumentException("Cell ID cannot be null or empty.");
         }
 
-        String columnPart = cellId.substring(0, 1);
+        String columnPart = cellId.substring(0, 1).toUpperCase();
         String rowPart = cellId.substring(1);
 
         if (!columnPart.matches("[A-Za-z]")) {
@@ -50,7 +50,7 @@ public class CoordinateFactory {
     }
 
     public static int convertColumnLetterToNumber(String columnLetter) {
-        return columnLetter.charAt(0) - 'A' + 1;
+        return (columnLetter.charAt(0) - 'A' + 1);
     }
 
     public static String convertColumnNumberToLetter(int columnNumber) {

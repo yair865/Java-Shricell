@@ -72,7 +72,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
 
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn()));
+            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
             Cell cell = getCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
@@ -122,7 +122,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
         List<Coordinate> coordinates = new ArrayList<>();
 
         // Regular expression to match patterns like {REF,A4}
-        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
+        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(expression);
 
         // Find all matches in the expression
@@ -291,10 +291,20 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     public void setColumns(int columns) {this.columns = columns;}
 
     @Override
-    public void setRowHeightUnits(int rowHeightUnits) {this.rowHeightUnits = rowHeightUnits;}
+    public void setRowHeightUnits(int rowHeightUnits) {
+        if (rowHeightUnits < 1) {
+            throw new IllegalArgumentException("Row height units must be at least 1, but was " + rowHeightUnits);
+        }
+        this.rowHeightUnits = rowHeightUnits;
+    }
 
     @Override
-    public void setColumnWidthUnits(int columnWidthUnits) {this.columnWidthUnits = columnWidthUnits;}
+    public void setColumnWidthUnits(int columnWidthUnits) {
+        if (columnWidthUnits < 1) {
+            throw new IllegalArgumentException("Column width units must be at least 1, but was " + columnWidthUnits);
+        }
+        this.columnWidthUnits = columnWidthUnits;
+    }
 
     @Override
     public List<Cell> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
