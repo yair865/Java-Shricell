@@ -9,6 +9,7 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import sheetimpl.utils.CellType;
 
 import java.io.*;
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -275,6 +276,10 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     @Override
     public void setCell(Coordinate coordinate, String value) {
         if (value.isEmpty()) {
+            if(activeCells.get(coordinate) == EmptyCell.INSTANCE){
+               throw new InvalidParameterException();
+            }
+            cellsThatHaveChanged.clear();
             activeCells.remove(coordinate);
         }else {
             Cell cellToCalculate = CreateNewEmptyCell(coordinate);
