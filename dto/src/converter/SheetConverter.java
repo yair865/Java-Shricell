@@ -4,7 +4,7 @@ import api.Cell;
 import api.Spreadsheet;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import api.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class SheetConverter {
                 sheetToConvert.getColumnWidthUnits(),
                 sheetToConvert.getDependenciesAdjacencyList(),
                 sheetToConvert.getReferencesAdjacencyList(),
-                sheetToConvert.getCellsThatHaveChanged());
+                sheetToConvert.getNumberOfModifiedCells());
     }
 
     public static Map<Coordinate, CellDTO> convertSheetCellsToDto(Map<Coordinate, Cell> cellsToConvert) {

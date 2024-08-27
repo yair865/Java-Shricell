@@ -3,7 +3,11 @@ package sheetimpl.utils;
 public enum CellType {
     NUMERIC(Double.class) ,
     STRING(String.class) ,
-    BOOLEAN(Boolean.class) ;
+    EMPTY(String.class) ,
+    UNKNOWN(void.class),
+    BOOLEAN(Boolean.class),
+    ERROR(Error.class);
+
 
     private final Class<?> type;
 

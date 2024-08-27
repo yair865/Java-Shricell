@@ -2,6 +2,7 @@ package sheetimpl.expression.type;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.utils.CellType;
@@ -14,8 +15,13 @@ public class Number implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadsheetDTO spreadsheetDTO) {
+    public EffectiveValue evaluate(SheetReadActions spreadsheet) {
 
         return new EffectiveValueImpl(CellType.NUMERIC, num);
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.NUMERIC;
     }
 }

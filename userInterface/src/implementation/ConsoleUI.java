@@ -1,12 +1,9 @@
 package implementation;
 
-import api.EffectiveValue;
-import api.Engine;
-import api.UI;
+import api.*;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import engineimpl.EngineImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import sheetimpl.utils.CellType;
 
@@ -73,7 +70,7 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void handleLoadFile() {
+    public void handleLoadXMLFile() {
 
         while(true) {
             System.out.print("Enter file path or 'q/Q' button to return to the main menu:");
@@ -87,7 +84,7 @@ public class ConsoleUI implements UI {
                 engine.loadSpreadsheet(userInput);
                 System.out.println("File successfully loaded!\n");
                 break;
-            } catch (Exception e) { //more catch types for different Exceptions?
+            } catch (Exception e) {
                 System.out.println("Error loading file: " + e.getMessage() + " please try to load again.\n");
             }
         }
@@ -163,7 +160,7 @@ public class ConsoleUI implements UI {
     public void handleDisplayCell() {
         while (true) {
             System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' button to return to the main menu:");
-            String userInput = scanner.nextLine();
+            String userInput = scanner.nextLine().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu.\n");
@@ -179,52 +176,60 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void displayFullCellInformation(String cellId)
-    {
-        displayBasicCellInfo(cellId);
-        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+    public void displayFullCellInformation(String cellId) {
+        SpreadsheetDTO spreadsheetDTO = engine.pokeCellAndReturnSheet(cellId);
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        System.out.println("The last modified version of the cell is: " + spreadsheetDTO.cells().get(coordinate).lastModifiedVersion());
+        CellDTO currentCell = spreadsheetDTO.cells().get(coordinate);
 
-        System.out.print("The dependents are: ");
-        List<Coordinate> dependents = spreadsheetDTO.dependenciesAdjacencyList().get(coordinate);
-        String dependentsOutput = (dependents != null && !dependents.isEmpty())
-                ? dependents.stream()
-                .map(Coordinate::toString)
-                .collect(Collectors.joining(", "))
-                : "None";
-        System.out.print(dependentsOutput);
+        if (currentCell.effectiveValue().getCellType() == CellType.EMPTY) {
+            System.out.println("Cell " + cellId + " is empty.");
+        } else {
+            displayBasicCellInfo(currentCell,cellId);
 
-        System.out.print("\nThe references are: ");
-        List<Coordinate> references = spreadsheetDTO.referencesAdjacencyList().get(coordinate);
-        String referencesOutput = (references != null && !references.isEmpty())
-                ? references.stream()
-                .map(Coordinate::toString)
-                .collect(Collectors.joining(", "))
-                : "None";
-        System.out.print(referencesOutput + "\n");
+            System.out.println("The last modified version of the cell is: " + spreadsheetDTO.cells().get(coordinate).lastModifiedVersion());
+            System.out.print("The dependents are: ");
+            List<Coordinate> dependents = spreadsheetDTO.dependenciesAdjacencyList().get(coordinate);
+            String dependentsOutput = (dependents != null && !dependents.isEmpty())
+                    ? dependents.stream()
+                    .map(Coordinate::toString)
+                    .collect(Collectors.joining(", "))
+                    : "None";
+            System.out.print(dependentsOutput);
+
+            System.out.print("\nThe references are: ");
+            List<Coordinate> references = spreadsheetDTO.referencesAdjacencyList().get(coordinate);
+            String referencesOutput = (references != null && !references.isEmpty())
+                    ? references.stream()
+                    .map(Coordinate::toString)
+                    .collect(Collectors.joining(", "))
+                    : "None";
+            System.out.print(referencesOutput + "\n");
+        }
     }
 
     @Override
-    public void displayBasicCellInfo(String cellId)
+    public void displayBasicCellInfo(CellDTO currentCell , String cellId)
     {
-        CellDTO currentCell = engine.getCellInfo(cellId);
         System.out.println("Cell ID: " + cellId);
         System.out.println("Original Value: " + currentCell.originalValue());
-        System.out.println("Effective Value: " + currentCell.effectiveValue());
+        System.out.println("Effective Value: " + formatEffectiveValue(currentCell.effectiveValue()));
     }
 
     @Override
     public void handleUpdateCell() {
         while (true) {
             System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' to return to the main menu:");
-            String userInput = scanner.nextLine().trim();
+            String userInput = scanner.nextLine().trim().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu.\n");
                     break;
                 }
-                displayBasicCellInfo(userInput);
+                CellDTO currentCell = engine.getCellInfo(userInput);
+                if (currentCell.effectiveValue().getCellType() == CellType.EMPTY) {
+                    System.out.println("Cell " + userInput + " is empty.\n");
+                }
+                else displayBasicCellInfo(currentCell,userInput);
                 System.out.print("\nEnter new value (or leave blank to clear the cell): ");
                 String newValue = scanner.nextLine().trim();
 
@@ -249,11 +254,11 @@ public class ConsoleUI implements UI {
 
         System.out.println("Version History:");
         for (Map.Entry<Integer, SpreadsheetDTO> entry : versionHistory.entrySet()) {
-            System.out.printf("Version %d: number of cells that changed %d %n", entry.getKey(), entry.getValue().cellsThatHaveChanged().size());
+            System.out.printf("Version %d: number of cells that changed %d %n", entry.getKey(), entry.getValue().numberOfModifiedCells());
         }
 
         while (true) {
-            System.out.println("Enter a version number to view or 'q/Q' to quit:");
+            System.out.print("Enter a version number to view or 'q/Q' to quit:");
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("q")) {
@@ -264,7 +269,7 @@ public class ConsoleUI implements UI {
                 int versionNumber = Integer.parseInt(input);
 
                 if (versionHistory.containsKey(versionNumber)) { //maybe should be in engine
-                    System.out.println("Displaying Spreadsheet for Version " + versionNumber + ":");
+                    System.out.println("\nDisplaying Spreadsheet for Version " + versionNumber + ":");
                     printSpreadSheet(versionHistory.get(versionNumber));
                     break;
 
@@ -275,6 +280,49 @@ public class ConsoleUI implements UI {
                 System.out.println("Invalid input. Please enter a valid number or 'q' to quit.");
             }
         }
+    }
+
+    @Override
+    public void handleSaveSystemState() {
+        while (true) {
+            System.out.print("Enter the file path to save the system state (without extension) or 'q/Q' to return to the main menu: ");
+            String userInput = scanner.nextLine();
+
+            try {
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu.\n");
+                    break;
+                }
+                engine.saveSystemToFile(userInput);
+                System.out.println("System state successfully saved!\n");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error saving system state: " + e.getMessage() + " please try again.\n");
+            }
+        }
+        System.out.println();
+    }
+
+    @Override
+    public void handleLoadSystemState() {
+        while (true) {
+            System.out.print("Enter file path to load the system state or 'q/Q' to return to the main menu: ");
+            String userInput = scanner.nextLine();
+
+            if (userInput.equalsIgnoreCase("q")) {
+                System.out.println("Returning to main menu.\n");
+                break;
+            }
+
+            try {
+                engine.loadSystemFromFile(userInput);
+                System.out.println("System state successfully loaded!\n");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error loading system state: " + e.getMessage() + " please try again.\n");
+            }
+        }
+        System.out.println();
     }
 
     @Override

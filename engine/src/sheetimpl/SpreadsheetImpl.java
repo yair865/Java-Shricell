@@ -1,30 +1,24 @@
 package sheetimpl;
 
-import api.Cell;
-import api.EffectiveValue;
-import api.Spreadsheet;
+import api.*;
 import generated.STLCell;
 import generated.STLSheet;
 import sheetimpl.cellimpl.CellImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
+import sheetimpl.cellimpl.EmptyCell;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import sheetimpl.utils.CellType;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static converter.SheetConverter.convertSheetToDTO;
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.convertColumnLetterToNumber;
-import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static sheetimpl.cellimpl.coordinate.CoordinateFactory.*;
 import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
-public class SpreadsheetImpl implements Spreadsheet {
+public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private String sheetName;
-    private int sheetVersion; // necessary ?
+    private int sheetVersion;
     private Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> dependenciesAdjacencyList;
     private Map<Coordinate, List<Coordinate>> referencesAdjacencyList;
@@ -32,13 +26,16 @@ public class SpreadsheetImpl implements Spreadsheet {
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
-    private List<Coordinate> cellsThatHaveChanged;
+    private List<Cell> cellsThatHaveChanged;
 
-    public SpreadsheetImpl() {
+
+
+    public SpreadsheetImpl()  {
         activeCells = new HashMap<>();
         dependenciesAdjacencyList = new HashMap<>();
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
+        sheetVersion = 1;
     }
 
     @Override
@@ -59,9 +56,9 @@ public class SpreadsheetImpl implements Spreadsheet {
 
     private void validateCoordinateInbound(Coordinate coordinate) {
         if (coordinate.row() < 1 || coordinate.row() > rows || coordinate.column() < 1 || coordinate.column() > columns) {
-            throw new IllegalArgumentException("Cell at position (" + coordinate.row() + ", " + coordinate.column() +
-                    ") is outside the sheet boundaries: max rows = " + rows +
-                    ", max columns = " + columns);
+            throw new IllegalArgumentException("Cell at position " + coordinate +
+                    " is outside the sheet boundaries: max row = " + rows +
+                    ", max column = " + convertColumnNumberToLetter(columns));
         }
     }
 
@@ -75,8 +72,8 @@ public class SpreadsheetImpl implements Spreadsheet {
 
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn()));
-            Cell cell = getCell(coordinate);
+            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
+            Cell cell = CreateNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
         }
@@ -87,27 +84,15 @@ public class SpreadsheetImpl implements Spreadsheet {
     private void calculateSheetEffectiveValues() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
         List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
-        List<Coordinate> cellsThatHaveChangedLocal = new ArrayList<>();
 
         for (Coordinate coordinate : calculationOrder) {
-            Cell cell = getCell(coordinate);
-            if(calculateCellEffectiveValue(cell))
-            {
-                cellsThatHaveChangedLocal.add(coordinate);
+            if (getCell(coordinate) != EmptyCell.INSTANCE) {
+                Cell cell = CreateNewEmptyCell(coordinate);
+                calculateCellEffectiveValue(cell);
             }
         }
-
-        cellsThatHaveChanged =cellsThatHaveChangedLocal;
-        updateCellsLastModifiedVersion();
         dependenciesAdjacencyList = dependencyGraph;
         referencesAdjacencyList = getTransposedGraph();
-    }
-
-    private void updateCellsLastModifiedVersion() {
-        for (Coordinate coordinate : cellsThatHaveChanged) {
-            Cell cell = getCell(coordinate);
-            cell.setLastModifiedVersion(sheetVersion);
-        }
     }
 
     private Map<Coordinate, List<Coordinate>> buildGraphFromSheet() {
@@ -138,7 +123,7 @@ public class SpreadsheetImpl implements Spreadsheet {
         List<Coordinate> coordinates = new ArrayList<>();
 
         // Regular expression to match patterns like {REF,A4}
-        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}");
+        Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(expression);
 
         // Find all matches in the expression
@@ -198,14 +183,17 @@ public class SpreadsheetImpl implements Spreadsheet {
         return sortedList;
     }
 
-    private boolean calculateCellEffectiveValue(Cell cellToCalculate) {
+    private void calculateCellEffectiveValue(Cell cellToCalculate) {
         String originalValue = cellToCalculate.getOriginalValue();
         EffectiveValue previousEffectiveValue = cellToCalculate.getEffectiveValue();
-        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
-        if(effectiveValue.equals(previousEffectiveValue)) {return false;}
-        cellToCalculate.setEffectiveValue(effectiveValue);
+        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(this);
 
-        return true;
+        if(!(effectiveValue.equals(previousEffectiveValue))) {
+            cellToCalculate.setEffectiveValue(effectiveValue);
+            cellToCalculate.setLastModifiedVersion(sheetVersion);
+            cellsThatHaveChanged.add(cellToCalculate);
+        }
+
     }
 
     private Map<Coordinate, List<Coordinate>> getTransposedGraph() {
@@ -240,8 +228,13 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public Cell getCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate);
-        return activeCells.computeIfAbsent(coordinate, key -> new CellImpl() {
-        });
+
+        Cell cell = activeCells.get(coordinate);
+        if (cell == null) {
+            activeCells.put(coordinate,EmptyCell.INSTANCE);
+            return EmptyCell.INSTANCE;
+        }
+        return cell;
     }
 
     @Override
@@ -272,26 +265,29 @@ public class SpreadsheetImpl implements Spreadsheet {
     @Override
     public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {return dependenciesAdjacencyList;}
 
+    @Override
+    public int getNumberOfModifiedCells()
+    {
+        return cellsThatHaveChanged.size();
+    }
+
     //  Setters:
     @Override
     public void setCell(Coordinate coordinate, String value) {
-        Cell cellToCalculate = getCell(coordinate);
-
-        String originalValueBackup = cellToCalculate.getOriginalValue();
-        EffectiveValue effectiveValueBackup = cellToCalculate.getEffectiveValue();
-
-        try {
-            cellToCalculate.setCellOriginalValue(value);
-            calculateSheetEffectiveValues();
-            cellToCalculate.setLastModifiedVersion(sheetVersion);
-        } catch (Exception e) {
-            cellToCalculate.setCellOriginalValue(originalValueBackup);
-            cellToCalculate.setEffectiveValue(effectiveValueBackup);
-
-            throw e;
+        if (value.isEmpty()) {
+            activeCells.remove(coordinate);
+        }else {
+            Cell cellToCalculate = CreateNewEmptyCell(coordinate);
+            try {
+                cellToCalculate.setCellOriginalValue(value);
+                cellsThatHaveChanged.clear();
+                calculateSheetEffectiveValues();
+                cellToCalculate.setLastModifiedVersion(sheetVersion);
+            } catch (Exception e) {
+                throw e;
+            }
         }
     }
-
     @Override
     public void setTitle(String sheetName) {
         this.sheetName = sheetName;
@@ -304,17 +300,40 @@ public class SpreadsheetImpl implements Spreadsheet {
     public void setColumns(int columns) {this.columns = columns;}
 
     @Override
-    public void setRowHeightUnits(int rowHeightUnits) {this.rowHeightUnits = rowHeightUnits;}
+    public void setRowHeightUnits(int rowHeightUnits) {
+        if (rowHeightUnits < 1) {
+            throw new IllegalArgumentException("Row height units must be at least 1, but was " + rowHeightUnits);
+        }
+        this.rowHeightUnits = rowHeightUnits;
+    }
 
     @Override
-    public void setColumnWidthUnits(int columnWidthUnits) {this.columnWidthUnits = columnWidthUnits;}
+    public void setColumnWidthUnits(int columnWidthUnits) {
+        if (columnWidthUnits < 1) {
+            throw new IllegalArgumentException("Column width units must be at least 1, but was " + columnWidthUnits);
+        }
+        this.columnWidthUnits = columnWidthUnits;
+    }
 
     @Override
-    public List<Coordinate> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
+    public List<Cell> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
 
     @Override
     public void setSheetVersion(int sheetVersion) {
         this.sheetVersion = sheetVersion;
+    }
+
+    //INSIDE
+    private Cell CreateNewEmptyCell (Coordinate coordinate) {
+        Cell newCell = getCell(coordinate);
+
+        if(newCell instanceof EmptyCell){
+            Cell cell = new CellImpl();
+            activeCells.put(coordinate, cell);
+            return cell;
+        }
+
+        return  newCell;
     }
 }
 

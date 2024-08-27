@@ -1,4 +1,4 @@
-package sheetimpl.cellimpl.coordinate;
+package api;
 
 public interface Coordinate {
     int row();

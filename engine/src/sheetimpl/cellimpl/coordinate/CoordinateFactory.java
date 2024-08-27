@@ -1,5 +1,7 @@
 package sheetimpl.cellimpl.coordinate;
 
+import api.Coordinate;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public class CoordinateFactory {
             throw new IllegalArgumentException("Cell ID cannot be null or empty.");
         }
 
-        String columnPart = cellId.substring(0, 1);
+        String columnPart = cellId.substring(0, 1).toUpperCase();
         String rowPart = cellId.substring(1);
 
         if (!columnPart.matches("[A-Za-z]")) {
@@ -48,7 +50,20 @@ public class CoordinateFactory {
     }
 
     public static int convertColumnLetterToNumber(String columnLetter) {
-        return columnLetter.charAt(0) - 'A' + 1;
+        return (columnLetter.charAt(0) - 'A' + 1);
+    }
+
+    public static String convertColumnNumberToLetter(int columnNumber) {
+        StringBuilder columnName = new StringBuilder();
+
+        while (columnNumber > 0) {
+            columnNumber--; // Adjust for 1-based indexing
+            char letter = (char) ('A' + (columnNumber % 26));
+            columnName.insert(0, letter);
+            columnNumber /= 26;
+        }
+
+        return columnName.toString();
     }
 }
 

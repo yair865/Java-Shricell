@@ -1,8 +1,6 @@
 package engineimpl;
 
-import api.Cell;
-import api.Engine;
-import api.Spreadsheet;
+import api.*;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import generated.STLSheet;
@@ -10,23 +8,23 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
-import sheetimpl.cellimpl.coordinate.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static converter.CellConverter.convertCellToDTO;
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 
-public class EngineImpl implements Engine {
+public class EngineImpl implements Engine , Serializable{
 
     public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
-    public static final int LOAD_VERSION = 0;
+    public static final int LOAD_VERSION = 1;
 
     private Map<Integer, Spreadsheet> spreadsheetsByVersions;
     int currentSpreadSheetVersion = LOAD_VERSION;
@@ -48,7 +46,7 @@ public class EngineImpl implements Engine {
 
         try {
             spreadsheet.init(loadedSheetFromXML);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             throw new IllegalArgumentException("In file: " + loadedSheetFromXML.getName() + " - " + e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -90,7 +88,7 @@ public class EngineImpl implements Engine {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (STLSheet) jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new RuntimeException(e); // consider creating special Exception to throw.
+            throw new RuntimeException("Failed to load the data from the XML file."); // consider creating special Exception to throw.
         }
     }
 
@@ -101,21 +99,28 @@ public class EngineImpl implements Engine {
     }
 
     @Override
+    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId)
+    {
+        validateSheetIsLoaded();
+        Coordinate cellCoordinate = createCoordinate(cellId);
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
+        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
+    }
+
+    @Override
     public CellDTO getCellInfo(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
-        Cell cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
+        CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
 
-        return new CellDTO(cellToDTO.getOriginalValue(),
-                cellToDTO.getEffectiveValue(),
-                cellToDTO.getLastModifiedVersionVersion());
+        return convertCellToDTO(cellToDTO);
     }
 
     @Override
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet(); //need to deep copy instead.
+        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
 
         try {
             currentSpreadSheetVersion++;
@@ -126,20 +131,8 @@ public class EngineImpl implements Engine {
         } catch (Exception e) {
             spreadsheetsByVersions.remove(currentSpreadSheetVersion);
             currentSpreadSheetVersion--;
-            throw new RuntimeException(e);
+            throw e;
         }
-    }
-
-    @Override
-    public void exitProgram() {
-        System.exit(0);
-    }
-
-    @Override
-    public int getCurrentVersion() {
-        validateSheetIsLoaded();
-        //TODO
-        return 0;
     }
 
     private void validateSheetIsLoaded() {
@@ -158,5 +151,29 @@ public class EngineImpl implements Engine {
         }
 
         return spreadSheetByVersionDTO;
+    }
+
+
+    @Override
+    public void saveSystemToFile(String fileName) throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            out.writeObject(this); // Save the current instance of the Engine
+            out.flush();
+        }
+    }
+
+    @Override
+    public void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
+            EngineImpl loadedEngine = (EngineImpl) in.readObject();
+
+            this.spreadsheetsByVersions = loadedEngine.spreadsheetsByVersions;
+            this.currentSpreadSheetVersion = loadedEngine.currentSpreadSheetVersion;
+        }
+    }
+
+    @Override
+    public void exitProgram() {
+        System.exit(0);
     }
 }

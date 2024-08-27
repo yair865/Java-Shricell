@@ -6,37 +6,49 @@ public enum Menu  {
 
     LOAD_SPREADSHEET("Load Spreadsheet from XML File") {
         @Override
-       public void invoke(UI consoleUserInterface) {
-            consoleUserInterface.handleLoadFile();
+        public void invoke(UI consoleUserInterface) {
+            consoleUserInterface.handleLoadXMLFile();
         }
     },
     DISPLAY_SPREADSHEET("Display Current Spreadsheet") {
         @Override
-       public void invoke(UI consoleUserInterface) {
+        public void invoke(UI consoleUserInterface) {
             consoleUserInterface.displaySpreadSheet();
         }
     },
     DISPLAY_CELL_VALUE("Display Cell Value") {
         @Override
-       public void invoke(UI consoleUserInterface) {
+        public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleDisplayCell();
         }
     },
     UPDATE_CELL_VALUE("Update Cell Value") {
         @Override
-       public void invoke(UI consoleUserInterface) {
+        public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleUpdateCell();
         }
     },
     DISPLAY_VERSION_HISTORY("Display Version History") {
         @Override
-       public void invoke(UI consoleUserInterface) {
+        public void invoke(UI consoleUserInterface) {
             consoleUserInterface.displayVersions();
+        }
+    },
+    SAVE_SYSTEM_STATE("Save System State to a File") {
+        @Override
+        public void invoke(UI consoleUserInterface) {
+            consoleUserInterface.handleSaveSystemState();
+        }
+    },
+    LOAD_SYSTEM_STATE("Load System State from a File") {
+        @Override
+        public void invoke(UI consoleUserInterface) {
+            consoleUserInterface.handleLoadSystemState();
         }
     },
     EXIT("Exit") {
         @Override
-       public void invoke(UI consoleUserInterface) {
+        public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleExit();
         }
     };
@@ -53,4 +65,3 @@ public enum Menu  {
         return menuOption;
     }
 }
-

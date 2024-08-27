@@ -2,10 +2,10 @@ package sheetimpl.expression.function.string;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.expression.type.BinaryExpression;
-import sheetimpl.expression.type.Text;
 import sheetimpl.utils.CellType;
 
 public class Concat extends BinaryExpression {
@@ -15,21 +15,24 @@ public class Concat extends BinaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression left, Expression right, SpreadsheetDTO spreadsheetDTO) {
-        EffectiveValue leftEffectiveValue = left.evaluate(spreadsheetDTO);
-        EffectiveValue rightEffectiveValue = right.evaluate(spreadsheetDTO);
+    public EffectiveValue evaluate(Expression left, Expression right, SheetReadActions spreadsheet) {
+        EffectiveValue leftEffectiveValue = left.evaluate(spreadsheet);
+        EffectiveValue rightEffectiveValue = right.evaluate(spreadsheet);
 
         String leftString = leftEffectiveValue.extractValueWithExpectation(String.class);
         String rightString = rightEffectiveValue.extractValueWithExpectation(String.class);
 
         if (leftString == null || rightString == null) {
-            throw new IllegalArgumentException("Invalid arguments in function " + this.getClass().getSimpleName() + ".\n"
-                    + "the arguments expected are from type " + Text.class.getSimpleName() + " but the first argument is from type - " + leftEffectiveValue.getCellType()
-                    + ", and the second argument is from type - " + rightEffectiveValue.getCellType() + ".");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         String result = leftString + rightString;
 
         return new EffectiveValueImpl(CellType.STRING, result);
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.STRING;
     }
 }

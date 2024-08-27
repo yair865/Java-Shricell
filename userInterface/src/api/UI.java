@@ -1,10 +1,9 @@
 package api;
 
+import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 
 public interface UI {
-
-    void displayBasicCellInfo(String cellId);
 
     void printSpreadSheet(SpreadsheetDTO SpreadsheetToPrint);
 
@@ -18,15 +17,21 @@ public interface UI {
 
     void displayVersions();
 
-    void handleLoadFile();
+    void handleLoadXMLFile();
 
     void handleDisplayCell();
 
     void displayFullCellInformation(String cellId);
 
+    void displayBasicCellInfo(CellDTO currentCell, String cellId);
+
     void handleUpdateCell();
 
     void displaySpreadSheet();
+
+    void handleSaveSystemState();
+
+    void handleLoadSystemState();
 
     void handleExit();
 }

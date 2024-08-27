@@ -1,6 +1,7 @@
 package sheetimpl.utils;
 
 import api.Expression;
+import exception.InvalidOperationException;
 import sheetimpl.expression.type.Bool;
 import sheetimpl.expression.type.Number;
 import sheetimpl.expression.type.Text;
@@ -30,22 +31,28 @@ public class ExpressionUtils {
         Expression resultExpression;
         List<Expression> argumentsList = new LinkedList<>();
 
-        if((expression.children != null && !expression.children.isEmpty())) { // IM AN OPERATION
-            for(int i = 0; i < expression.children.size(); i++) {
-                argumentsList.add(buildExpression(expression.children.get(i)));
+        if (expression.children != null && !expression.children.isEmpty()) { // I'm an operation
+            for (Node child : expression.children) {
+                argumentsList.add(buildExpression(child));
             }
+            OperationMenu operation;
+            try {
+                 operation = OperationMenu.valueOf(expression.value.toUpperCase());
 
-            OperationMenu operation = OperationMenu.valueOf(expression.value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOperationException("Invalid operation- " + expression.value);
+            }
             resultExpression = operation.createExpression(argumentsList);
-        } else { // IM A LEAF
+        } else { // I'm a leaf
             resultExpression = parseExpression(expression.value);
         }
 
         return resultExpression;
     }
 
+
     public static Expression parseExpression(String expression) {
-        String numberPattern = "^\\d+(\\.\\d+)?$";
+        String numberPattern = "^-?\\d+(\\.\\d+)?$";
         Expression parsingResult;
 
         try {

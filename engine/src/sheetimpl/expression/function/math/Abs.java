@@ -2,6 +2,7 @@ package sheetimpl.expression.function.math;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.expression.type.UnaryExpression;
@@ -14,14 +15,13 @@ public class Abs extends UnaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression expression, SpreadsheetDTO spreadsheetDTO) {
+    public EffectiveValue evaluate(Expression expression, SheetReadActions spreadsheet) {
 
-        EffectiveValue expressionEffectiveValue = expression.evaluate(spreadsheetDTO);
+        EffectiveValue expressionEffectiveValue = expression.evaluate(spreadsheet);
        Double valueToAbs = expressionEffectiveValue.extractValueWithExpectation(Double.class);
 
         if(valueToAbs == null) {
-            throw new IllegalArgumentException("Invalid argument in function " + this.getClass().getSimpleName() + ".\n"
-                    + "the argument expected is from type " + Number.class.getSimpleName() + " but the argument is from type - " + expressionEffectiveValue.getCellType() + ".");
+            return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
         double result = Math.abs(valueToAbs);
@@ -29,5 +29,9 @@ public class Abs extends UnaryExpression {
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
 
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.NUMERIC;
+    }
 }
 

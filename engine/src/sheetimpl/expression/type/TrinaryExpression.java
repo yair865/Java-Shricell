@@ -2,6 +2,7 @@ package sheetimpl.expression.type;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 
 public abstract class TrinaryExpression implements Expression {
@@ -17,9 +18,9 @@ public abstract class TrinaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadsheetDTO spreadsheetDTO) {
-        return evaluate(expression1, expression2 , expression3, spreadsheetDTO);
+    public EffectiveValue evaluate(SheetReadActions spreadsheet) {
+        return evaluate(expression1, expression2 , expression3, spreadsheet);
     }
 
-    abstract protected EffectiveValue evaluate(Expression evaluate, Expression evaluate2 , Expression evaluate3,SpreadsheetDTO spreadsheetDTO);
+    abstract protected EffectiveValue evaluate(Expression evaluate, Expression evaluate2 , Expression evaluate3,SheetReadActions spreadsheet);
 }
