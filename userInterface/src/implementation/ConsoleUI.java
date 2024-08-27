@@ -51,7 +51,12 @@ public class ConsoleUI implements UI {
             choice = getUserChoice();
         }
         Menu selectedOption = Menu.values()[choice - 1];
-        selectedOption.invoke(this);
+
+        try {
+            selectedOption.invoke(this);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
