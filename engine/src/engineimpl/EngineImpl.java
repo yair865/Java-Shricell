@@ -137,7 +137,7 @@ public class EngineImpl implements Engine , Serializable{
 
     private void validateSheetIsLoaded() {
         if (spreadsheetsByVersions == null) {
-            throw new IllegalStateException("Spreadsheet data structure is not loaded yet.");
+            throw new IllegalStateException("File is not loaded yet.");
         }
         if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
             throw new IllegalStateException("File is not loaded yet.");
