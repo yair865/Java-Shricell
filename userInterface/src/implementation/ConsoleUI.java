@@ -33,7 +33,7 @@ public class ConsoleUI implements UI {
     @Override
     public void displayMenu()
     {
-        System.out.println("Shticell Menu:");
+        System.out.println("\nShticell Menu:");
         for (Menu option : Menu.values()) {
             System.out.println(option.ordinal() + 1 + ". " + option);
         }
@@ -49,7 +49,9 @@ public class ConsoleUI implements UI {
         {
             System.out.print("Invalid choice. Please enter a number between 1 and " + Menu.values().length + ".\n");
             choice = getUserChoice();
+
         }
+
         Menu selectedOption = Menu.values()[choice - 1];
 
         try {
@@ -105,7 +107,6 @@ public class ConsoleUI implements UI {
         }catch (Exception e) {
             System.out.println("Could not display spreadsheet, because of an error: " + e.getMessage() + " please try again.\n");
         }
-
     }
 
     @Override
