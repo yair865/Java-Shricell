@@ -1,12 +1,9 @@
 package implementation;
 
-import api.EffectiveValue;
-import api.Engine;
-import api.UI;
+import api.*;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import engineimpl.EngineImpl;
-import api.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import sheetimpl.utils.CellType;
 
@@ -73,7 +70,7 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void handleLoadFile() {
+    public void handleLoadXMLFile() {
 
         while(true) {
             System.out.print("Enter file path or 'q/Q' button to return to the main menu:");
@@ -87,7 +84,7 @@ public class ConsoleUI implements UI {
                 engine.loadSpreadsheet(userInput);
                 System.out.println("File successfully loaded!\n");
                 break;
-            } catch (Exception e) { //more catch types for different Exceptions?
+            } catch (Exception e) {
                 System.out.println("Error loading file: " + e.getMessage() + " please try to load again.\n");
             }
         }
@@ -179,39 +176,43 @@ public class ConsoleUI implements UI {
     }
 
     @Override
-    public void displayFullCellInformation(String cellId)
-    {
-        displayBasicCellInfo(cellId);
-        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+    public void displayFullCellInformation(String cellId) {
+        SpreadsheetDTO spreadsheetDTO = engine.pokeCellAndReturnSheet(cellId);
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        System.out.println("The last modified version of the cell is: " + spreadsheetDTO.cells().get(coordinate).lastModifiedVersion());
+        CellDTO currentCell = spreadsheetDTO.cells().get(coordinate);
 
-        System.out.print("The dependents are: ");
-        List<Coordinate> dependents = spreadsheetDTO.dependenciesAdjacencyList().get(coordinate);
-        String dependentsOutput = (dependents != null && !dependents.isEmpty())
-                ? dependents.stream()
-                .map(Coordinate::toString)
-                .collect(Collectors.joining(", "))
-                : "None";
-        System.out.print(dependentsOutput);
+        if (currentCell.effectiveValue().getCellType() == CellType.EMPTY) {
+            System.out.println("Cell " + cellId + " is empty.");
+        } else {
+            displayBasicCellInfo(currentCell,cellId);
 
-        System.out.print("\nThe references are: ");
-        List<Coordinate> references = spreadsheetDTO.referencesAdjacencyList().get(coordinate);
-        String referencesOutput = (references != null && !references.isEmpty())
-                ? references.stream()
-                .map(Coordinate::toString)
-                .collect(Collectors.joining(", "))
-                : "None";
-        System.out.print(referencesOutput + "\n");
+            System.out.println("The last modified version of the cell is: " + spreadsheetDTO.cells().get(coordinate).lastModifiedVersion());
+            System.out.print("The dependents are: ");
+            List<Coordinate> dependents = spreadsheetDTO.dependenciesAdjacencyList().get(coordinate);
+            String dependentsOutput = (dependents != null && !dependents.isEmpty())
+                    ? dependents.stream()
+                    .map(Coordinate::toString)
+                    .collect(Collectors.joining(", "))
+                    : "None";
+            System.out.print(dependentsOutput);
+
+            System.out.print("\nThe references are: ");
+            List<Coordinate> references = spreadsheetDTO.referencesAdjacencyList().get(coordinate);
+            String referencesOutput = (references != null && !references.isEmpty())
+                    ? references.stream()
+                    .map(Coordinate::toString)
+                    .collect(Collectors.joining(", "))
+                    : "None";
+            System.out.print(referencesOutput + "\n");
+        }
     }
 
     @Override
-    public void displayBasicCellInfo(String cellId)
+    public void displayBasicCellInfo(CellDTO currentCell , String cellId)
     {
-        CellDTO currentCell = engine.getCellInfo(cellId);
         System.out.println("Cell ID: " + cellId);
         System.out.println("Original Value: " + currentCell.originalValue());
-        System.out.println("Effective Value: " + currentCell.effectiveValue());
+        System.out.println("Effective Value: " + formatEffectiveValue(currentCell.effectiveValue()));
     }
 
     @Override
@@ -224,7 +225,11 @@ public class ConsoleUI implements UI {
                     System.out.println("Returning to main menu.\n");
                     break;
                 }
-                displayBasicCellInfo(userInput);
+                CellDTO currentCell = engine.getCellInfo(userInput);
+                if (currentCell.effectiveValue().getCellType() == CellType.EMPTY) {
+                    System.out.println("Cell " + userInput + " is empty.\n");
+                }
+                else displayBasicCellInfo(currentCell,userInput);
                 System.out.print("\nEnter new value (or leave blank to clear the cell): ");
                 String newValue = scanner.nextLine().trim();
 
@@ -264,7 +269,7 @@ public class ConsoleUI implements UI {
                 int versionNumber = Integer.parseInt(input);
 
                 if (versionHistory.containsKey(versionNumber)) { //maybe should be in engine
-                    System.out.println("Displaying Spreadsheet for Version " + versionNumber + ":");
+                    System.out.println("\nDisplaying Spreadsheet for Version " + versionNumber + ":");
                     printSpreadSheet(versionHistory.get(versionNumber));
                     break;
 

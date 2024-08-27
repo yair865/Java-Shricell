@@ -2,6 +2,7 @@ package sheetimpl.expression.type;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 
 
@@ -12,10 +13,11 @@ public abstract class UnaryExpression implements Expression {
     public UnaryExpression(Expression expression) {
         this.expression = expression;
     }
+
     @Override
-    public EffectiveValue evaluate(SpreadsheetDTO spreadsheet) {
+    public EffectiveValue evaluate(SheetReadActions spreadsheet) {
         return evaluate(expression, spreadsheet);
     }
 
-    public abstract EffectiveValue evaluate(Expression expression,SpreadsheetDTO spreadsheet);
+    public abstract EffectiveValue evaluate(Expression expression,SheetReadActions spreadsheet);
 }

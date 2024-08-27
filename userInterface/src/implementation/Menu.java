@@ -7,7 +7,7 @@ public enum Menu  {
     LOAD_SPREADSHEET("Load Spreadsheet from XML File") {
         @Override
         public void invoke(UI consoleUserInterface) {
-            consoleUserInterface.handleLoadFile();
+            consoleUserInterface.handleLoadXMLFile();
         }
     },
     DISPLAY_SPREADSHEET("Display Current Spreadsheet") {
@@ -34,13 +34,13 @@ public enum Menu  {
             consoleUserInterface.displayVersions();
         }
     },
-    SAVE_SYSTEM_STATE("Save System State to File") {
+    SAVE_SYSTEM_STATE("Save System State to a File") {
         @Override
         public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleSaveSystemState();
         }
     },
-    LOAD_SYSTEM_STATE("Load System State from File") {
+    LOAD_SYSTEM_STATE("Load System State from a File") {
         @Override
         public void invoke(UI consoleUserInterface) {
             consoleUserInterface.handleLoadSystemState();

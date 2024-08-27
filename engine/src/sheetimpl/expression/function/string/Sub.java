@@ -2,6 +2,7 @@ package sheetimpl.expression.function.string;
 
 import api.EffectiveValue;
 import api.Expression;
+import api.SheetReadActions;
 import dtoPackage.SpreadsheetDTO;
 import sheetimpl.cellimpl.EffectiveValueImpl;
 import sheetimpl.expression.type.TrinaryExpression;
@@ -14,11 +15,11 @@ public class Sub extends TrinaryExpression {
     }
 
     @Override
-    public EffectiveValue evaluate(Expression sourceString, Expression startIndex, Expression endIndex, SpreadsheetDTO spreadsheetDTO) {
+    public EffectiveValue evaluate(Expression sourceString, Expression startIndex, Expression endIndex, SheetReadActions spreadsheet) {
         // Evaluate expressions to get EffectiveValues
-        EffectiveValue sourceStringValue = sourceString.evaluate(spreadsheetDTO);
-        EffectiveValue startIndexValue = startIndex.evaluate(spreadsheetDTO);
-        EffectiveValue endIndexValue = endIndex.evaluate(spreadsheetDTO);
+        EffectiveValue sourceStringValue = sourceString.evaluate(spreadsheet);
+        EffectiveValue startIndexValue = startIndex.evaluate(spreadsheet);
+        EffectiveValue endIndexValue = endIndex.evaluate(spreadsheet);
 
         // Extract the expected types
         String source = sourceStringValue.extractValueWithExpectation(String.class);
@@ -27,12 +28,7 @@ public class Sub extends TrinaryExpression {
 
         // Validate extracted values
         if (source == null || start == null || end == null) {
-            throw new IllegalArgumentException("Invalid arguments in function " + this.getClass().getSimpleName() + ".\n"
-                    + "Expected argument types are " + CellType.STRING +" for the source, and "+ CellType.NUMERIC +" for the indices. "
-                    + "But received types: "
-                    + "source - " + sourceStringValue.getCellType() + ", "
-                    + "startIndex - " + startIndexValue.getCellType() + ", "
-                    + "endIndex - " + endIndexValue.getCellType() + ".");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         // Ensure start and end are actually integers
@@ -53,6 +49,11 @@ public class Sub extends TrinaryExpression {
         String result = source.substring(startIndexInt, endIndexInt);
 
         return new EffectiveValueImpl(CellType.STRING, result);
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.STRING;
     }
 }
 

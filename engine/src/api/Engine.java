@@ -12,6 +12,8 @@ public interface Engine {
 
     SpreadsheetDTO getSpreadsheetState();
 
+    SpreadsheetDTO pokeCellAndReturnSheet(String cellId);
+
     CellDTO getCellInfo(String cellId);
 
     void updateCell(String cellId, String newValue);

@@ -1,20 +1,18 @@
 package sheetimpl;
 
-import api.Cell;
-import api.EffectiveValue;
-import api.Spreadsheet;
+import api.*;
 import generated.STLCell;
 import generated.STLSheet;
 import sheetimpl.cellimpl.CellImpl;
-import api.Coordinate;
+import sheetimpl.cellimpl.EmptyCell;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import sheetimpl.utils.CellType;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.*;
 import static sheetimpl.utils.ExpressionUtils.buildExpressionFromString;
 
@@ -29,6 +27,8 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private int rowHeightUnits;
     private int columnWidthUnits;
     private List<Cell> cellsThatHaveChanged;
+
+
 
     public SpreadsheetImpl()  {
         activeCells = new HashMap<>();
@@ -73,7 +73,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
             Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
-            Cell cell = getCell(coordinate);
+            Cell cell = CreateNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
         }
@@ -86,10 +86,11 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
         List<Coordinate> calculationOrder = topologicalSort(dependencyGraph);
 
         for (Coordinate coordinate : calculationOrder) {
-            Cell cell = getCell(coordinate);
-            calculateCellEffectiveValue(cell);
+            if (getCell(coordinate) != EmptyCell.INSTANCE) {
+                Cell cell = CreateNewEmptyCell(coordinate);
+                calculateCellEffectiveValue(cell);
+            }
         }
-
         dependenciesAdjacencyList = dependencyGraph;
         referencesAdjacencyList = getTransposedGraph();
     }
@@ -185,7 +186,7 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     private void calculateCellEffectiveValue(Cell cellToCalculate) {
         String originalValue = cellToCalculate.getOriginalValue();
         EffectiveValue previousEffectiveValue = cellToCalculate.getEffectiveValue();
-        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(convertSheetToDTO(this));
+        EffectiveValue effectiveValue = buildExpressionFromString(originalValue).evaluate(this);
 
         if(!(effectiveValue.equals(previousEffectiveValue))) {
             cellToCalculate.setEffectiveValue(effectiveValue);
@@ -227,8 +228,13 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     @Override
     public Cell getCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate);
-        return activeCells.computeIfAbsent(coordinate, key -> new CellImpl() {
-        });
+
+        Cell cell = activeCells.get(coordinate);
+        if (cell == null) {
+            activeCells.put(coordinate,EmptyCell.INSTANCE);
+            return EmptyCell.INSTANCE;
+        }
+        return cell;
     }
 
     @Override
@@ -268,17 +274,20 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     //  Setters:
     @Override
     public void setCell(Coordinate coordinate, String value) {
-        Cell cellToCalculate = getCell(coordinate);
-        try {
-            cellToCalculate.setCellOriginalValue(value);
-            cellsThatHaveChanged.clear();
-            calculateSheetEffectiveValues();
-            cellToCalculate.setLastModifiedVersion(sheetVersion);
-        } catch (Exception e) {
-            throw e;
+        if (value.isEmpty()) {
+            activeCells.remove(coordinate);
+        }else {
+            Cell cellToCalculate = CreateNewEmptyCell(coordinate);
+            try {
+                cellToCalculate.setCellOriginalValue(value);
+                cellsThatHaveChanged.clear();
+                calculateSheetEffectiveValues();
+                cellToCalculate.setLastModifiedVersion(sheetVersion);
+            } catch (Exception e) {
+                throw e;
+            }
         }
     }
-
     @Override
     public void setTitle(String sheetName) {
         this.sheetName = sheetName;
@@ -312,6 +321,19 @@ public class SpreadsheetImpl implements Spreadsheet , Serializable {
     @Override
     public void setSheetVersion(int sheetVersion) {
         this.sheetVersion = sheetVersion;
+    }
+
+    //INSIDE
+    private Cell CreateNewEmptyCell (Coordinate coordinate) {
+        Cell newCell = getCell(coordinate);
+
+        if(newCell instanceof EmptyCell){
+            Cell cell = new CellImpl();
+            activeCells.put(coordinate, cell);
+            return cell;
+        }
+
+        return  newCell;
     }
 }
 

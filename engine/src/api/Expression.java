@@ -1,9 +1,10 @@
 package api;
 
-import dtoPackage.SpreadsheetDTO;
+import sheetimpl.utils.CellType;
 
 public interface Expression
 {
-        EffectiveValue evaluate(SpreadsheetDTO spreadsheetDTO);
+        EffectiveValue evaluate(SheetReadActions spreadsheet);
+        CellType getFunctionResultType();
 }
 

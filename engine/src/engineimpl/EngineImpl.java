@@ -1,8 +1,6 @@
 package engineimpl;
 
-import api.Cell;
-import api.Engine;
-import api.Spreadsheet;
+import api.*;
 import dtoPackage.CellDTO;
 import dtoPackage.SpreadsheetDTO;
 import generated.STLSheet;
@@ -10,7 +8,6 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import sheetimpl.SpreadsheetImpl;
-import api.Coordinate;
 import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.*;
@@ -18,6 +15,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static converter.CellConverter.convertCellToDTO;
 import static converter.SheetConverter.convertSheetToDTO;
 import static sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
@@ -101,14 +99,21 @@ public class EngineImpl implements Engine , Serializable{
     }
 
     @Override
+    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId)
+    {
+        validateSheetIsLoaded();
+        Coordinate cellCoordinate = createCoordinate(cellId);
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
+        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
+    }
+
+    @Override
     public CellDTO getCellInfo(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
-        Cell cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
+        CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
 
-        return new CellDTO(cellToDTO.getOriginalValue(),
-                cellToDTO.getEffectiveValue(),
-                cellToDTO.getLastModifiedVersionVersion());
+        return convertCellToDTO(cellToDTO);
     }
 
     @Override
