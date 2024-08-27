@@ -12,6 +12,7 @@ import sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.*;
 import java.lang.reflect.InaccessibleObjectException;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,7 +128,9 @@ public class EngineImpl implements Engine , Serializable{
             currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
             spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
             spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue);
-
+        } catch (InvalidParameterException e) { //roll-back only.
+            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
+            currentSpreadSheetVersion--;
         } catch (Exception e) {
             spreadsheetsByVersions.remove(currentSpreadSheetVersion);
             currentSpreadSheetVersion--;
