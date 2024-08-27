@@ -136,10 +136,14 @@ public class EngineImpl implements Engine , Serializable{
     }
 
     private void validateSheetIsLoaded() {
+        if (spreadsheetsByVersions == null) {
+            throw new IllegalStateException("Spreadsheet data structure is not loaded yet.");
+        }
         if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
-            throw new InaccessibleObjectException("File is not loaded yet.\n");
+            throw new IllegalStateException("File is not loaded yet.");
         }
     }
+
 
     @Override
     public Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory() {
