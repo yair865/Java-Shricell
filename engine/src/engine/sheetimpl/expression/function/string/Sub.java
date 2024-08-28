@@ -41,7 +41,7 @@ public class Sub extends TrinaryExpression {
 
         // Additional validation for index bounds
         if (startIndexInt < 0 || endIndexInt > source.length() || startIndexInt > endIndexInt) {
-            return new EffectiveValueImpl(CellType.STRING, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         // Perform the substring operation

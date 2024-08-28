@@ -129,7 +129,7 @@ public class EngineImpl implements Engine, Serializable{
             currentSpreadSheetVersion++;
             currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
             spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
-            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue);
+            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue); // consider set before put
         } catch (InvalidParameterException e) { //roll-back only.
             spreadsheetsByVersions.remove(currentSpreadSheetVersion);
             currentSpreadSheetVersion--;
