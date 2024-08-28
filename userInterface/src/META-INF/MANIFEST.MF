@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: implementation.Main
+Main-Class: userinterface.implementation.Main
 Class-Path: ../engine/engine.jar ../dto/dto.jar ../jaxb/angus-activation.jar ../mod/jakarta.activation-api.jar ../jaxb/jakarta.xml.bind-api.jar ../jaxb/jaxb-core.jar ../jaxb/jaxb-impl.jar ../jaxb/jaxb-jxc.jar ../jaxb/jaxb-xjc.jar
 
