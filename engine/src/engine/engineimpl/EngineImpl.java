@@ -30,15 +30,17 @@ public class EngineImpl implements Engine, Serializable{
     public static final int LOAD_VERSION = 1;
 
     private Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    int currentSpreadSheetVersion = LOAD_VERSION;
+    int currentSpreadSheetVersion;
 
 
     @Override
     public void loadSpreadsheet(String filePath) throws Exception {
+        spreadsheetsByVersions = new HashMap<>();
+        currentSpreadSheetVersion = LOAD_VERSION;
         validateXmlFile(filePath);
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
         validateSTLSheet(loadedSheetFromXML);
-        spreadsheetsByVersions = new HashMap<>();
+
         Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
         loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
         spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));

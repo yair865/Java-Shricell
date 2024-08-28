@@ -45,7 +45,7 @@ public class Sub extends TrinaryExpression {
         }
 
         // Perform the substring operation
-        String result = source.substring(startIndexInt, endIndexInt);
+        String result = source.substring(startIndexInt, endIndexInt + 1);
 
         return new EffectiveValueImpl(CellType.STRING, result);
     }
