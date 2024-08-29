@@ -83,7 +83,7 @@ public class ConsoleUI implements UI {
     public void handleLoadXMLFile() {
 
         while(true) {
-            System.out.print("Enter file path or 'q/Q' button to return to the main menu:");
+            System.out.print("Enter file path or 'q/Q' button to return to the main menu: ");
             String userInput = scanner.nextLine();
 
             try {
@@ -168,7 +168,7 @@ public class ConsoleUI implements UI {
     @Override
     public void handleDisplayCell() {
         while (true) {
-            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' button to return to the main menu:");
+            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' button to return to the main menu: ");
             String userInput = scanner.nextLine().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
@@ -227,7 +227,7 @@ public class ConsoleUI implements UI {
     @Override
     public void handleUpdateCell() {
         while (true) {
-            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' to return to the main menu:");
+            System.out.print("Enter cell identifier (e.g., A1) , or 'q/Q' to return to the main menu: ");
             String userInput = scanner.nextLine().trim().toUpperCase();
             try {
                 if (userInput.equalsIgnoreCase("q")) {
@@ -267,7 +267,7 @@ public class ConsoleUI implements UI {
         }
 
         while (true) {
-            System.out.print("Enter a version number to view or 'q/Q' to quit:");
+            System.out.print("Enter a version number to view or 'q/Q' to quit: ");
             String input = scanner.nextLine().trim();
 
             if (input.equalsIgnoreCase("q")) {

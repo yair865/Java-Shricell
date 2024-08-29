@@ -30,7 +30,7 @@ public class EngineImpl implements Engine, Serializable{
     public static final int LOAD_VERSION = 1;
 
     private Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    int currentSpreadSheetVersion = LOAD_VERSION;
+    int currentSpreadSheetVersion;
 
 
     @Override
@@ -38,8 +38,9 @@ public class EngineImpl implements Engine, Serializable{
         validateXmlFile(filePath);
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
         validateSTLSheet(loadedSheetFromXML);
-        spreadsheetsByVersions = new HashMap<>();
         Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+        spreadsheetsByVersions = new HashMap<>();
+        currentSpreadSheetVersion = LOAD_VERSION;
         loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
         spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
     }
@@ -129,7 +130,7 @@ public class EngineImpl implements Engine, Serializable{
             currentSpreadSheetVersion++;
             currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
             spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
-            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue);
+            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue); // consider set before put
         } catch (InvalidParameterException e) { //roll-back only.
             spreadsheetsByVersions.remove(currentSpreadSheetVersion);
             currentSpreadSheetVersion--;
