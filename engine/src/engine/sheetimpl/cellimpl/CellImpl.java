@@ -1,6 +1,7 @@
 package engine.sheetimpl.cellimpl;
 
 import engine.api.Cell;
+import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
 
@@ -11,17 +12,20 @@ public class CellImpl implements Cell , Serializable {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
+    private Coordinate coordinate;
 
-    public CellImpl(String originalValue, EffectiveValue effectiveValue, int version) {
+    public CellImpl(String originalValue, EffectiveValue effectiveValue, int version , Coordinate coordinate) {
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.lastModifiedVersion = version;
+        this.coordinate = coordinate;
     }
 
-    public CellImpl() {
+    public CellImpl(Coordinate coordinate) {
         this.originalValue = "";
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
         this.lastModifiedVersion = 1;
+        this.coordinate = coordinate;
     }
 
     @Override
@@ -42,6 +46,11 @@ public class CellImpl implements Cell , Serializable {
     @Override
     public int getLastModifiedVersionVersion() {
         return lastModifiedVersion;
+    }
+
+    @Override
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
     @Override

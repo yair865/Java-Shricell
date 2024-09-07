@@ -4,4 +4,5 @@ public interface CellReadActions {
     String getOriginalValue();
     EffectiveValue getEffectiveValue();
     int getLastModifiedVersionVersion();
+    Coordinate getCoordinate();
 }

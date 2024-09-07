@@ -27,7 +27,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
-    private List<Cell> cellsThatHaveChanged;
+    private List<Coordinate> cellsThatHaveChanged;
 
 
 
@@ -192,7 +192,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         if(!(effectiveValue.equals(previousEffectiveValue))) {
             cellToCalculate.setEffectiveValue(effectiveValue);
             cellToCalculate.setLastModifiedVersion(sheetVersion);
-            cellsThatHaveChanged.add(cellToCalculate);
+            cellsThatHaveChanged.add(cellToCalculate.getCoordinate());
         }
 
     }
@@ -321,7 +321,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
-    public List<Cell> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
+    public List<Coordinate> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
 
     @Override
     public void setSheetVersion(int sheetVersion) {
@@ -333,12 +333,14 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         Cell newCell = getCell(coordinate);
 
         if(newCell instanceof EmptyCell){
-            Cell cell = new CellImpl();
+            Cell cell = new CellImpl(coordinate);
             activeCells.put(coordinate, cell);
             return cell;
         }
 
         return  newCell;
     }
+
+
 }
 

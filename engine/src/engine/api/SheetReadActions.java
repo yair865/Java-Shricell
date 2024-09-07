@@ -18,6 +18,6 @@ public interface SheetReadActions {
     int getRowHeightUnits();
     int getColumnWidthUnits();
     Spreadsheet copySheet();
-    List<Cell> getCellsThatHaveChanged();
+    List<Coordinate> getCellsThatHaveChanged();
 }
 

@@ -117,7 +117,7 @@ public class EngineImpl implements Engine, Serializable{
         Coordinate cellCoordinate = createCoordinate(cellId);
         CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
 
-        return convertCellToDTO(cellToDTO);
+        return convertCellToDTO(cellCoordinate,cellToDTO);
     }
 
     @Override
