@@ -31,7 +31,7 @@ public class SheetConverter {
             Coordinate coordinate = entry.getKey();
             Cell cell = entry.getValue();
 
-            CellDTO cellDTO = CellConverter.convertCellToDTO(coordinate,cell);
+            CellDTO cellDTO = CellConverter.convertCellToDTO(cell);
             cellsDtoMap.put(coordinate, cellDTO);
         }
 

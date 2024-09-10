@@ -117,7 +117,7 @@ public class EngineImpl implements Engine, Serializable{
         Coordinate cellCoordinate = createCoordinate(cellId);
         CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
 
-        return convertCellToDTO(cellCoordinate,cellToDTO);
+        return convertCellToDTO(cellToDTO);
     }
 
     @Override
@@ -185,5 +185,18 @@ public class EngineImpl implements Engine, Serializable{
     @Override
     public void exitProgram() {
         System.exit(0);
+    }
+
+
+    @Override
+    public SpreadsheetDTO getSpreadSheetByVersion(int version)
+    {
+        validateSheetIsLoaded();
+        return convertSheetToDTO(spreadsheetsByVersions.get(version));
+    }
+
+    @Override
+    public Integer getCurrentVersion() {
+        return currentSpreadSheetVersion;
     }
 }

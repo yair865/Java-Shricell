@@ -5,20 +5,24 @@ import application.body.BodyController;
 import application.body.CellViewController;
 import application.header.HeaderController;
 import application.model.DataManager;
+import application.model.TemporaryCellDataProvider;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Cell;
 import engine.api.Coordinate;
 import engine.api.Engine;
 import engine.engineimpl.EngineImpl;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
+
+import static dto.converter.CellDataProviderConverter.convertDTOToCellData;
 
 public class ShticellController {
 
@@ -55,6 +59,7 @@ public class ShticellController {
             headerComponentController.setShticellController(this);
             cellViewController.setShticellController(this);
             bodyController.setShticellController(this);
+            headerComponentController.setEngine(this.engine);
         }
     }
 
@@ -62,10 +67,12 @@ public class ShticellController {
     public void loadFile(String filePath) {
         try {
             engine.loadSpreadsheet(filePath);
+            dataManager.getCellDataMap().clear();
             SpreadsheetDTO spreadSheet = engine.getSpreadsheetState();
-            convertDTOtoCellView(spreadSheet);
-            bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(), spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits());
+            convertDTOToCellData(dataManager.getCellDataMap(),spreadSheet);
+            bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(), spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
             applicationWindow.setCenter(bodyController.getBody());
+            this.headerComponentController.setVersionsChoiceBox();
             System.out.println("Successfully loaded: " + filePath);
         } catch (Exception e) {
             // Create an alert to display the error message
@@ -79,9 +86,20 @@ public class ShticellController {
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
-        engine.updateCell(cellId, newValue);
-        List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
-        dataManager.updateCellDataMap(cellsThatHaveChanged);
+        try {
+            engine.updateCell(cellId, newValue);
+            List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
+            dataManager.updateCellDataMap(cellsThatHaveChanged);
+            headerComponentController.setVersionsChoiceBox();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("An error occurred while updating the cell.");
+            alert.setContentText("Error: " + e.getMessage() + "\nPlease try again.");
+
+            alert.showAndWait();
+        }
     }
 
     public HeaderController getHeaderController() {
@@ -92,23 +110,34 @@ public class ShticellController {
         return this.engine;
     }
 
-    public void convertDTOtoCellView(SpreadsheetDTO spreadsheetDTO) {
-        for (Map.Entry<Coordinate, CellDTO> entry : spreadsheetDTO.cells().entrySet()) {
-            Coordinate coordinate = entry.getKey();
-            CellDTO cellDTO = entry.getValue();
-
-            // Create a new BasicCellData or CellViewController instance
-            BasicCellData cellData = new BasicCellData(
-                    cellDTO.effectiveValue().toString(), // Bind the effective value from the DTO
-                    cellDTO.originalValue(),  // Bind the original value from the DTO
-                    coordinate.toString()     // Use the coordinate as the cell ID
-            );
-
-            dataManager.getCellDataMap().put(coordinate, cellData);
-        }
-    }
-
     public DataManager getDataManager() {
         return dataManager;
     }
+
+    public void showSpreadsheetVersion(int version) {
+        try {
+            SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version);
+            TemporaryCellDataProvider tempProvider = new TemporaryCellDataProvider();
+            convertDTOToCellData(tempProvider.getTemporaryCellDataMap(), spreadsheetDTO);
+
+            // Create a new instance of BodyController and configure it
+            BodyController tempBodyController = new BodyController();
+            tempBodyController.createGridPane(
+                    spreadsheetDTO.rows(),
+                    spreadsheetDTO.columns(),
+                    spreadsheetDTO.rowHeightUnits(),
+                    spreadsheetDTO.columnWidthUnits(),
+                    tempProvider
+            );
+
+            // Create and show a new window with the BodyController's view
+            Stage newStage = new Stage();
+            newStage.setScene(new Scene(tempBodyController.getBody()));
+            newStage.setTitle("Spreadsheet Version " + version);
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

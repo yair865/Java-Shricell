@@ -2,7 +2,6 @@ package application.body;
 
 import application.app.ShticellController;
 import application.header.HeaderController;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -18,12 +17,14 @@ public class CellViewController extends BasicCellData {
     @FXML
     public Label effectiveValueLabel;
 
+
     public CellViewController() {
         super("", "Cell Original Value", "Cell ID");
     }
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
+
     }
 
     @FXML

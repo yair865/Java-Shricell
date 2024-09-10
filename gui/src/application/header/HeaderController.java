@@ -1,10 +1,11 @@
 package application.header;
 
 import application.app.ShticellController;
+import engine.api.Engine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -15,6 +16,8 @@ import java.io.File;
 public class HeaderController {
 
     private ShticellController shticellController;
+
+    private Engine engine;
 
     @FXML
     private Button btnFileChooser;
@@ -37,6 +40,9 @@ public class HeaderController {
     @FXML
     private Label cellVersionLabel;
 
+    @FXML
+    private ChoiceBox<Integer> selectVersionChoiceBox;
+
     private static final String DEFAULT_ID = "Selected Cell Id";
 
     private static final String DEFAULT_ORIGINAL_VALUE = "Original Cell Value";
@@ -44,6 +50,16 @@ public class HeaderController {
     private static final String DEFAULT_VERSION = "Last modified version";
 
     private static final String DEFAULT_NEW_VALUE_PROMPT = "Enter new value";
+
+    @FXML
+    private void initialize() {
+        selectVersionChoiceBox.setOnAction(event -> {
+            int selectedVersion = selectVersionChoiceBox.getValue();
+            this.shticellController.showSpreadsheetVersion(selectedVersion);
+            System.out.println("Selected version: " + selectedVersion);
+        });
+    }
+
 
     @FXML
     public void loadFileButtonListener() {
@@ -74,7 +90,7 @@ public class HeaderController {
         }
 
         newValueTextField.clear();
-        resetHeaderLabels(); // Reset labels to default text
+        resetHeaderLabels();
     }
 
     private void resetHeaderLabels() {
@@ -96,6 +112,14 @@ public class HeaderController {
 
     public TextField getNewValueTextField() {
         return this.newValueTextField;
+    }
+
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void setVersionsChoiceBox() {
+        selectVersionChoiceBox.getItems().add(engine.getCurrentVersion());
     }
 }
 

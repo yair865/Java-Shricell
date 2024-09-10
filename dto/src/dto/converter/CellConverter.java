@@ -7,9 +7,9 @@ import engine.api.Coordinate;
 
 public class CellConverter {
 
-    public static CellDTO convertCellToDTO(Coordinate coordinate, CellReadActions cell) {
+    public static CellDTO convertCellToDTO(CellReadActions cell) {
         return new CellDTO(
-                coordinate,
+                cell.getCoordinate(),
                 cell.getOriginalValue(),
                 cell.getEffectiveValue(),
                 cell.getLastModifiedVersionVersion()

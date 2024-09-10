@@ -26,4 +26,7 @@ public interface Engine {
 
     Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory();
 
+    SpreadsheetDTO getSpreadSheetByVersion(int version);
+
+    Integer getCurrentVersion();
 }

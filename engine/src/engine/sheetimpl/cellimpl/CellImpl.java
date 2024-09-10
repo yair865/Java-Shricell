@@ -12,14 +12,8 @@ public class CellImpl implements Cell , Serializable {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
-    private Coordinate coordinate;
-
-    public CellImpl(String originalValue, EffectiveValue effectiveValue, int version , Coordinate coordinate) {
-        this.originalValue = originalValue;
-        this.effectiveValue = effectiveValue;
-        this.lastModifiedVersion = version;
-        this.coordinate = coordinate;
-    }
+    private final Coordinate coordinate;
+    
 
     public CellImpl(Coordinate coordinate) {
         this.originalValue = "";

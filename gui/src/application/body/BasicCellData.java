@@ -22,7 +22,7 @@ public class BasicCellData {
         this.effectiveValue = new SimpleStringProperty(effectiveValue);
         this.originalValue = new SimpleStringProperty(originalValue);
         this.cellId = new SimpleStringProperty(cellId);
-        this.lastModifiedVersion = new SimpleIntegerProperty(0); // Initialize with default value
+        this.lastModifiedVersion = new SimpleIntegerProperty(1); // Initialize with default value
     }
 
     public StringProperty effectiveValueProperty() {
@@ -55,14 +55,6 @@ public class BasicCellData {
 
     public void setOriginalValue(String value) {
         originalValue.set(value);
-    }
-
-    public String getCellId() {
-        return cellId.get();
-    }
-
-    public void setCellId(String id) {
-        cellId.set(id);
     }
 
     public int getLastModifiedVersion() {

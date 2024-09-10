@@ -51,7 +51,7 @@
                   <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="75.0" minWidth="150.0" prefHeight="75.0" prefWidth="150.0" style="-fx-border-color: black;" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
                   <StackPane prefHeight="25.0" prefWidth="152.0">
                      <children>
-                        <ChoiceBox prefHeight="25.0" prefWidth="151.0">
+                        <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="151.0">
                            <StackPane.margin>
                               <Insets />
                            </StackPane.margin>
