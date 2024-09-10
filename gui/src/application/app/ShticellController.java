@@ -14,6 +14,7 @@ import engine.engineimpl.EngineImpl;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -27,13 +28,14 @@ import static dto.converter.CellDataProviderConverter.convertDTOToCellData;
 public class ShticellController {
 
     private Engine engine;
+
     private DataManager dataManager;
 
     @FXML
     private BorderPane applicationWindow;
 
     @FXML
-    private VBox headerComponent;
+    private ScrollPane headerComponent;
 
     @FXML
     private HeaderController headerComponentController;
@@ -44,6 +46,7 @@ public class ShticellController {
     @FXML
     private CellViewController cellViewController;
 
+    @FXML
     private BodyController bodyController;
 
     public ShticellController() {

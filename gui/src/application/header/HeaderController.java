@@ -60,7 +60,6 @@ public class HeaderController {
         });
     }
 
-
     @FXML
     public void loadFileButtonListener() {
         FileChooser fileChooser = new FileChooser();

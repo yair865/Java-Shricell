@@ -2,7 +2,6 @@ package application.body;
 
 import application.app.ShticellController;
 import application.model.CellDataProvider;
-import application.body.BasicCellData;
 import engine.api.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.fxml.FXML;
