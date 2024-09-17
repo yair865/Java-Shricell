@@ -19,7 +19,7 @@ public class CellViewController extends BasicCellData {
 
 
     public CellViewController() {
-        super("", "Cell Original Value", "Cell ID");
+        super("", "Cell Original Value", "Cell ID" , "BLACK","WHITE");
     }
 
     public void setShticellController(ShticellController shticellController) {

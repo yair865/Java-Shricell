@@ -19,13 +19,17 @@ public class BasicCellData {
         originalValue = new SimpleStringProperty();
         cellId = new SimpleStringProperty();
         lastModifiedVersion = new SimpleIntegerProperty();
+        textColor = Color.BLACK;
+        backgroundColor = Color.WHITE;
     }
 
-    public BasicCellData(String effectiveValue, String originalValue, String cellId) {
+    public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor) {
         this.effectiveValue = new SimpleStringProperty(effectiveValue);
         this.originalValue = new SimpleStringProperty(originalValue);
         this.cellId = new SimpleStringProperty(cellId);
-        this.lastModifiedVersion = new SimpleIntegerProperty(1); // Initialize with default value
+        this.lastModifiedVersion = new SimpleIntegerProperty(1);
+        this.textColor = Color.web(textColor);
+        this.backgroundColor = Color.web(backgroundColor);
     }
 
     public StringProperty effectiveValueProperty() {

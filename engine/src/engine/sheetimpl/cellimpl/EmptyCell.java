@@ -31,6 +31,11 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public CellStyle getCellStyle() {
+        return null;
+    }
+
+    @Override
     public void setCellOriginalValue(String value) {
         throw new UnsupportedOperationException();
     }
@@ -43,5 +48,15 @@ public enum EmptyCell implements Cell, Serializable {
     @Override
     public void setLastModifiedVersion(int sheetVersion) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+
+    }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+
     }
 }

@@ -32,7 +32,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private List<Coordinate> cellsThatHaveChanged;
 
 
-
     public SpreadsheetImpl()  {
         activeCells = new HashMap<>();
         dependenciesAdjacencyList = new HashMap<>();
@@ -83,7 +82,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         calculateSheetEffectiveValues();
     }
-
 
     private void calculateSheetEffectiveValues() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
@@ -178,7 +176,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             }
         }
 
-        // Step 4: Check for cycles (i.e., if sortedList doesn't contain all nodes)
         if (sortedList.size() != inDegree.size()) {
             throw new IllegalStateException("This update may result circular dependency, " +
                     "thus, can`t use this value to update the cell.");
@@ -343,7 +340,5 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         return  newCell;
     }
-
-
 }
 

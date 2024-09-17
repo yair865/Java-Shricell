@@ -21,11 +21,11 @@
                         <Font name="Aharoni Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Button fx:id="setRowHeightBTN" mnemonicParsing="false" onAction="#setRowHeightListener" text="Set Row Height" />
-                  <Button fx:id="setColumnWidthBTN" mnemonicParsing="false" onAction="#setColumnWidthListener" text="Set Column Width" />
-                  <Button fx:id="setColorBTN" mnemonicParsing="false" onAction="#updateCellColorListener" text="Set Cell Text Color" />
-                  <Button mnemonicParsing="false" text="Set Cell Background Color" />
-                  <ComboBox fx:id="setAlignmentComboBox" onAction="#setAlignmentListener" promptText="Set Alignment" visibleRowCount="3">
+                  <Button fx:id="setRowHeightBTN" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#setRowHeightListener" prefHeight="25.0" prefWidth="155.0" text="Set Row Height" />
+                  <Button fx:id="setColumnWidthBTN" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#setColumnWidthListener" prefHeight="25.0" prefWidth="155.0" text="Set Column Width" />
+                  <Button fx:id="setTextColorBTN" mnemonicParsing="false" onAction="#updateTextColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Text Color" />
+                  <Button fx:id="setBackgroundColorBTN" mnemonicParsing="false" onAction="#updateBackGroundColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Background Color" />
+                  <ComboBox fx:id="setAlignmentComboBox" onAction="#setAlignmentListener" prefHeight="25.0" prefWidth="155.0" promptText="Set Alignment" visibleRowCount="3">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>

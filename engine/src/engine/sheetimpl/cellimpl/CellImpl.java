@@ -21,6 +21,7 @@ public class CellImpl implements Cell , Serializable {
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
         this.lastModifiedVersion = 1;
         this.coordinate = coordinate;
+        this.cellStyle = new CellStyle();
     }
 
     @Override

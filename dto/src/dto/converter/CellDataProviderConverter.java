@@ -27,10 +27,12 @@ public class CellDataProviderConverter {
                         return new BasicCellData(
                                 formatEffectiveValue(cellDTO.effectiveValue()),
                                 cellDTO.originalValue(),
-                                coord.toString()
+                                coord.toString(),
+                                cellDTO.cellStyle().getTextColor(),
+                                cellDTO.cellStyle().getBackgroundColor()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString());
+                        return new BasicCellData("", "", coord.toString(),"Black","White");
                     }
                 });
             }

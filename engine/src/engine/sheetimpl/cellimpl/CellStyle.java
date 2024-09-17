@@ -1,8 +1,15 @@
 package engine.sheetimpl.cellimpl;
 
-public class CellStyle {
+import java.io.Serializable;
+
+public class CellStyle implements Serializable {
     private String textColor;
     private String backgroundColor;
+
+    public CellStyle() {
+        this.textColor = "BLACK";
+        this.backgroundColor = "WHITE";
+    }
 
     public String getTextColor() {
         return textColor;

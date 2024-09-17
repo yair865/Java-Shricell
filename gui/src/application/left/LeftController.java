@@ -6,15 +6,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public class LeftController {
+
+    @FXML
+    private Button setBackgroundColorBTN;
 
     @FXML
     private Button setColorBTN;
@@ -39,7 +40,6 @@ public class LeftController {
         ObservableList<String> options =
                 FXCollections.observableArrayList("Left", "Center", "Right");
         setAlignmentComboBox.setItems(options);
-
     }
 
     private void showInputDialog(String title, String header, String content, Consumer<Integer> onSuccess) {
@@ -67,36 +67,72 @@ public class LeftController {
     }
 
     @FXML
-    void setColumnWidthListener(ActionEvent event)    {
+    void setColumnWidthListener(ActionEvent event) {
         showInputDialog(
                 "Set Column Width",
-                "Enter the new height for the row:",
-                "Height:",
+                "Enter the new width for the column:",
+                "Width:",
                 newWidth -> {
-                    // Call the logic to set the row height
+                    // Call the logic to set the column width
                     this.shticellController.getBodyController().setColumnWidth(newWidth);
                 }
         );
     }
 
     @FXML
-    void setRowHeightListener(ActionEvent event)
-    {
+    void setRowHeightListener(ActionEvent event) {
         showInputDialog(
-                "Set Column Width",
-                "Enter the new width for the column:",
-                "Width:",
+                "Set Row Height",
+                "Enter the new height for the row:",
+                "Height:",
                 newHeight -> {
-                    // Call the logic to set the column width
+                    // Call the logic to set the row height
                     this.shticellController.getBodyController().setRowHeight(newHeight);
                 }
         );
     }
 
     @FXML
-    void updateCellColorListener(ActionEvent event) {
-        String cellId = this.shticellController.getHeaderController().getCellId();
+    void updateTextColorListener(ActionEvent event) {
+        ColorPicker colorPicker = new ColorPicker(Color.BLACK); // Default color
 
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Select Text Color");
+        alert.setHeaderText("Choose a color for the text:");
+        alert.getDialogPane().setContent(colorPicker);
+
+        // Show the alert and capture the result
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Color selectedColor = colorPicker.getValue();
+            String cellId = this.shticellController.getHeaderController().getCellId();
+            this.shticellController.getEngine().setSingleCellTextColor(cellId, toHexString(selectedColor));
+        }
+    }
+
+    @FXML
+    void updateBackGroundColorListener(ActionEvent event) {
+        ColorPicker colorPicker = new ColorPicker(Color.WHITE); // Default color
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Select Background Color");
+        alert.setHeaderText("Choose a color for the background:");
+        alert.getDialogPane().setContent(colorPicker);
+
+        // Show the alert and capture the result
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Color selectedColor = colorPicker.getValue();
+            String cellId = this.shticellController.getHeaderController().getCellId();
+            this.shticellController.getEngine().setSingleCellBackGroundColor(cellId, toHexString(selectedColor));
+        }
+    }
+
+    private String toHexString(Color color) {
+        return String.format("#%02x%02x%02x",
+                (int)(color.getRed() * 255),
+                (int)(color.getGreen() * 255),
+                (int)(color.getBlue() * 255));
     }
 
     @FXML
