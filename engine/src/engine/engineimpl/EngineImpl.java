@@ -199,4 +199,18 @@ public class EngineImpl implements Engine, Serializable{
     public Integer getCurrentVersion() {
         return currentSpreadSheetVersion;
     }
+
+    @Override
+    public void setSingleCellTextColor(String cellId, String textColor)
+    {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).getActiveCells().get(createCoordinate(cellId)).setTextColor(textColor);
+    }
+
+    @Override
+    public void setSingleCellBackGroundColor(String cellId, String backGroundColor)
+    {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).getActiveCells().get(createCoordinate(cellId)).setBackgroundColor(backGroundColor);
+    }
 }

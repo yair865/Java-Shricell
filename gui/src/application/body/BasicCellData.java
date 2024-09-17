@@ -4,12 +4,15 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.paint.Color;
 
 public class BasicCellData {
     protected  StringProperty effectiveValue;
     protected  StringProperty originalValue;
     protected  StringProperty cellId;
     protected  IntegerProperty lastModifiedVersion;
+    protected  Color textColor;
+    protected  Color backgroundColor;
 
     public BasicCellData() {
         effectiveValue = new SimpleStringProperty();

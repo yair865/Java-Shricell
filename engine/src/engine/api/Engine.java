@@ -29,4 +29,8 @@ public interface Engine {
     SpreadsheetDTO getSpreadSheetByVersion(int version);
 
     Integer getCurrentVersion();
+
+    void setSingleCellTextColor(String cellId, String textColor);
+
+    void setSingleCellBackGroundColor(String cellId, String backGroundColor);
 }

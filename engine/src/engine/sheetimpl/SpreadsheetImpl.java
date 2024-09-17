@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+
 public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private String sheetName;
     private int sheetVersion;
@@ -73,7 +75,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
+            Coordinate coordinate = createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
             Cell cell = CreateNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
@@ -81,6 +83,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         calculateSheetEffectiveValues();
     }
+
 
     private void calculateSheetEffectiveValues() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = buildGraphFromSheet();
@@ -131,7 +134,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         while (matcher.find()) {
             String cellId = matcher.group(1);
             // Convert the coordinate string to a Coordinate object
-            Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
+            Coordinate coordinate = createCoordinate(cellId);
             coordinates.add(coordinate);
         }
 

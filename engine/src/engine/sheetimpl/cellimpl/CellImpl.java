@@ -13,6 +13,7 @@ public class CellImpl implements Cell , Serializable {
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
     private final Coordinate coordinate;
+    private CellStyle cellStyle;
     
 
     public CellImpl(Coordinate coordinate) {
@@ -55,4 +56,18 @@ public class CellImpl implements Cell , Serializable {
         this.lastModifiedVersion = sheetVersion;
     }
 
+    @Override
+    public CellStyle getCellStyle() {
+        return cellStyle;
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+        this.cellStyle.setTextColor(textColor);
+    }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+        this.cellStyle.setTextColor(backgroundColor);
+    }
 }
