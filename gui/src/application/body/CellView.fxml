@@ -3,8 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="cellView" onMouseClicked="#cellClickListener" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.body.CellViewController">
+<StackPane fx:id="cellView" onMouseClicked="#cellClickListener" prefWidth="30.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.body.CellViewController">
    <children>
-      <Label fx:id="effectiveValueLabel" text="Label" />
+      <Label fx:id="effectiveValueLabel" alignment="CENTER" contentDisplay="CENTER" text="Label" textAlignment="RIGHT" />
    </children>
 </StackPane>

@@ -24,9 +24,8 @@ public class DataManager implements CellDataProvider {
     }
     @Override
     public BasicCellData getCellData(Coordinate coordinate) {
-        return cellDataMap.getOrDefault(coordinate, new BasicCellData("", "", coordinate.toString()));
+        return cellDataMap.get(coordinate);
     }
-
 
     public void updateCellDataMap(List<Coordinate> changedCells) {
         for (Coordinate coordinate : changedCells) {

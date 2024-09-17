@@ -120,6 +120,19 @@ public class HeaderController {
     public void setVersionsChoiceBox() {
         selectVersionChoiceBox.getItems().add(engine.getCurrentVersion());
     }
+
+    public char getSelectedCellColumn() {
+        return cellIdLabel.getText().charAt(0);
+    }
+
+    public int getSelectedCellRow()
+    {
+        return Integer.parseInt(cellIdLabel.getText().substring(1,2));
+    }
+
+    public String getCellId() {
+        return cellIdLabel.getText();
+    }
 }
 
 

@@ -1,0 +1,15 @@
+/* Apply this style to both headers and regular cells */
+.cell, .header {
+    -fx-border-color: black;
+    -fx-font-weight: bold;
+}
+
+/* Customize cell appearance */
+.cell {
+    -fx-background-color: #f0f0f0;
+}
+
+/* Customize header appearance */
+.header {
+    -fx-background-color: #d0d0d0;
+}
