@@ -20,7 +20,6 @@ public class CellDataProviderConverter {
             for (int col = 1; col <= totalColumns; col++) {
                 Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
 
-
                 cellDataMap.computeIfAbsent(coordinate, coord -> {
                     CellDTO cellDTO = spreadsheetDTO.cells().get(coord);
                     if (cellDTO != null) {
@@ -32,7 +31,7 @@ public class CellDataProviderConverter {
                                 cellDTO.cellStyle().getBackgroundColor()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString(),"Black","White");
+                        return new BasicCellData("", "", coord.toString(),null,null);
                     }
                 });
             }

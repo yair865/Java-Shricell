@@ -76,7 +76,7 @@ public class BodyController {
             gridPane.add(rowLabel, 0, row + 1);
         }
 
-        // Create cell view components
+
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 try {
@@ -92,13 +92,24 @@ public class BodyController {
                     cellViewController.originalValue.bind(cellData.originalValue);
                     cellViewController.cellId.bind(cellData.cellId);
                     cellViewController.lastModifiedVersion.bind(cellData.lastModifiedVersion);
+                    cellViewController.textColor.bind(cellData.textColor);
+                    cellViewController.backgroundColor.bind(cellData.backgroundColor);
+
+                    String textColor = cellData.textColor.get();
+                    String backgroundColor = cellData.backgroundColor.get();
+
+                    if (textColor != null) {
+                        updateCellTextColor(cellData.cellId.get(), textColor);
+                    }
+                    if (backgroundColor != null) {
+                        updateCellBackgroundColor(cellData.cellId.get(), backgroundColor);
+                    }
 
                     cellView.setMinSize(columnWidthUnits, rowHeightUnits);
                     cellView.setPrefSize(columnWidthUnits, rowHeightUnits);
                     cellView.setMaxSize(columnWidthUnits, rowHeightUnits);
                     cellView.getStyleClass().add("cell");
 
-                    // Set user data
                     cellView.setUserData(cellViewController);
 
                     gridPane.add(cellView, col + 1, row + 1);
@@ -203,15 +214,41 @@ public class BodyController {
     }
 
     private int getColumnIndex(char columnLetter) {
-        int result = 0;
+        int result;
         result =  (columnLetter - 'A' + 1);
         return result;
     }
 
-
-    // Method to determine if the node is part of the header
     private boolean isHeaderNode(Node node) {
-        // Check if the node is an instance of Label and has the 'header' style class
-        return (node instanceof Label) && ((Label) node).getStyleClass().contains("header");
+        return (node instanceof Label) && (node).getStyleClass().contains("header");
+    }
+
+    public void updateCellTextColor(String cellId, String color) {
+        Node cellView = findCellViewById(cellId);
+        if (cellView != null) {
+            for (Node child : ((StackPane) cellView).getChildren()) {
+                if (child instanceof Label label) {
+                    label.setStyle("-fx-text-fill: " + color + ";");
+                }
+            }
+        }
+    }
+
+    public void updateCellBackgroundColor(String cellId, String color) {
+        Node cellView = findCellViewById(cellId);
+        if (cellView != null) {
+            cellView.setStyle("-fx-background-color: " + color + ";");
+        }
+    }
+
+    private Node findCellViewById(String cellId) {
+        for (Node node : gridPane.getChildren()) {
+            CellViewController cellViewController = (CellViewController) node.getUserData();
+            if (cellViewController != null && cellViewController.cellId.get().equals(cellId)) {
+                return node;
+            }
+        }
+
+        return null;
     }
 }

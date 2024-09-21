@@ -12,4 +12,5 @@ public interface SheetWriteActions {
     void setColumnWidthUnits(int columnWidthUnits);
     void setSheetVersion(int sheetVersion);
     void init(STLSheet loadedSheetFromXML);
+    void setBackgroundColor(String cellId, String backGroundColor);
 }

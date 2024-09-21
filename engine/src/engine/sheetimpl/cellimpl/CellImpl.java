@@ -69,6 +69,6 @@ public class CellImpl implements Cell , Serializable {
 
     @Override
     public void setBackgroundColor(String backgroundColor) {
-        this.cellStyle.setTextColor(backgroundColor);
+        this.cellStyle.setBackgroundColor(backgroundColor);
     }
 }

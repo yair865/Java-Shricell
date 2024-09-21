@@ -75,7 +75,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
             Coordinate coordinate = createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
-            Cell cell = CreateNewEmptyCell(coordinate);
+            Cell cell = createNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
         }
@@ -89,7 +89,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         for (Coordinate coordinate : calculationOrder) {
             if (getCell(coordinate) != EmptyCell.INSTANCE) {
-                Cell cell = CreateNewEmptyCell(coordinate);
+                Cell cell = createNewEmptyCell(coordinate);
                 calculateCellEffectiveValue(cell);
             }
         }
@@ -282,7 +282,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             cellsThatHaveChanged.clear();
             activeCells.remove(coordinate);
         }else {
-            Cell cellToCalculate = CreateNewEmptyCell(coordinate);
+            Cell cellToCalculate = createNewEmptyCell(coordinate);
             try {
                 cellToCalculate.setCellOriginalValue(value);
                 cellsThatHaveChanged.clear();
@@ -328,8 +328,15 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         this.sheetVersion = sheetVersion;
     }
 
+    @Override
+    public void setBackgroundColor(String cellId, String backGroundColor) {
+        Coordinate coordinate = createCoordinate(cellId);
+        Cell cell = this.createNewEmptyCell(coordinate);
+        cell.setBackgroundColor(backGroundColor);
+    }
+
     //INSIDE
-    private Cell CreateNewEmptyCell (Coordinate coordinate) {
+    private Cell createNewEmptyCell(Coordinate coordinate) {
         Cell newCell = getCell(coordinate);
 
         if(newCell instanceof EmptyCell){

@@ -11,16 +11,16 @@ public class BasicCellData {
     protected  StringProperty originalValue;
     protected  StringProperty cellId;
     protected  IntegerProperty lastModifiedVersion;
-    protected  Color textColor;
-    protected  Color backgroundColor;
+    protected  StringProperty textColor;
+    protected  StringProperty backgroundColor;
 
     public BasicCellData() {
         effectiveValue = new SimpleStringProperty();
         originalValue = new SimpleStringProperty();
         cellId = new SimpleStringProperty();
         lastModifiedVersion = new SimpleIntegerProperty();
-        textColor = Color.BLACK;
-        backgroundColor = Color.WHITE;
+        textColor = new SimpleStringProperty();
+        backgroundColor = new SimpleStringProperty();
     }
 
     public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor) {
@@ -28,8 +28,8 @@ public class BasicCellData {
         this.originalValue = new SimpleStringProperty(originalValue);
         this.cellId = new SimpleStringProperty(cellId);
         this.lastModifiedVersion = new SimpleIntegerProperty(1);
-        this.textColor = Color.web(textColor);
-        this.backgroundColor = Color.web(backgroundColor);
+        this.textColor = new SimpleStringProperty(textColor);
+        this.backgroundColor = new SimpleStringProperty(backgroundColor);
     }
 
     public StringProperty effectiveValueProperty() {
@@ -70,5 +70,22 @@ public class BasicCellData {
 
     public void setLastModifiedVersion(int version) {
         lastModifiedVersion.set(version);
+    }
+
+    public void setTextColor(Color textColor) {
+        this.textColor = toHexString(textColor);
+    }
+
+    public void setBackGroundColor(Color backgroundColor) {
+        this.backgroundColor = toHexString(backgroundColor);
+    }
+
+    private StringProperty toHexString(Color color) {
+        String hexColor = String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
+
+        return new SimpleStringProperty(hexColor);
     }
 }

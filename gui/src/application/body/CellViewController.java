@@ -2,10 +2,12 @@ package application.body;
 
 import application.app.ShticellController;
 import application.header.HeaderController;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 public class CellViewController extends BasicCellData {
 
@@ -19,12 +21,11 @@ public class CellViewController extends BasicCellData {
 
 
     public CellViewController() {
-        super("", "Cell Original Value", "Cell ID" , "BLACK","WHITE");
+        super("", "Cell Original Value", "Cell ID" , null,null);
     }
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
-
     }
 
     @FXML

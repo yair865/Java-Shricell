@@ -7,20 +7,19 @@ public class CellStyle implements Serializable {
     private String backgroundColor;
 
     public CellStyle() {
-        this.textColor = "BLACK";
-        this.backgroundColor = "WHITE";
+        this.textColor = null;
+        this.backgroundColor = null;
     }
 
     public String getTextColor() {
         return textColor;
     }
 
-    public void setTextColor(String textColor) {
-        this.textColor = textColor;
-    }
-
     public String getBackgroundColor() {
         return backgroundColor;
+    }
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
     }
 
     public void setBackgroundColor(String backgroundColor) {

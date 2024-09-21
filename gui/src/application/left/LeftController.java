@@ -1,6 +1,8 @@
 package application.left;
 
 import application.app.ShticellController;
+import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -94,37 +96,36 @@ public class LeftController {
 
     @FXML
     void updateTextColorListener(ActionEvent event) {
-        ColorPicker colorPicker = new ColorPicker(Color.BLACK); // Default color
-
+        ColorPicker colorPicker = new ColorPicker(Color.BLACK);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Select Text Color");
         alert.setHeaderText("Choose a color for the text:");
         alert.getDialogPane().setContent(colorPicker);
 
-        // Show the alert and capture the result
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Color selectedColor = colorPicker.getValue();
             String cellId = this.shticellController.getHeaderController().getCellId();
             this.shticellController.getEngine().setSingleCellTextColor(cellId, toHexString(selectedColor));
+
+            this.shticellController.getBodyController().updateCellTextColor(cellId, toHexString(selectedColor));
         }
     }
 
     @FXML
     void updateBackGroundColorListener(ActionEvent event) {
-        ColorPicker colorPicker = new ColorPicker(Color.WHITE); // Default color
-
+        ColorPicker colorPicker = new ColorPicker(Color.WHITE);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Select Background Color");
         alert.setHeaderText("Choose a color for the background:");
         alert.getDialogPane().setContent(colorPicker);
 
-        // Show the alert and capture the result
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Color selectedColor = colorPicker.getValue();
             String cellId = this.shticellController.getHeaderController().getCellId();
             this.shticellController.getEngine().setSingleCellBackGroundColor(cellId, toHexString(selectedColor));
+            this.shticellController.getBodyController().updateCellBackgroundColor(cellId, toHexString(selectedColor));
         }
     }
 

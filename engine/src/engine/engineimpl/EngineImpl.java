@@ -211,6 +211,7 @@ public class EngineImpl implements Engine, Serializable{
     public void setSingleCellBackGroundColor(String cellId, String backGroundColor)
     {
         validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).getActiveCells().get(createCoordinate(cellId)).setBackgroundColor(backGroundColor);
+
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
     }
 }

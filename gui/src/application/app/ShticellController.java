@@ -167,7 +167,6 @@ public class ShticellController {
             TemporaryCellDataProvider tempProvider = new TemporaryCellDataProvider();
             convertDTOToCellData(tempProvider.getTemporaryCellDataMap(), spreadsheetDTO);
 
-            // Create a new instance of BodyController and configure it
             BodyController tempBodyController = new BodyController();
             tempBodyController.createGridPane(
                     spreadsheetDTO.rows(),
@@ -177,7 +176,6 @@ public class ShticellController {
                     tempProvider
             );
 
-            // Create and show a new window with the BodyController's view
             Stage newStage = new Stage();
             newStage.setScene(new Scene(tempBodyController.getBody()));
             newStage.setTitle("Spreadsheet Version " + version);
