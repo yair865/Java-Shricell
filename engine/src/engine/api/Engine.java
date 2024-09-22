@@ -4,6 +4,7 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public interface Engine {
@@ -35,4 +36,8 @@ public interface Engine {
     void setSingleCellBackGroundColor(String cellId, String backGroundColor);
 
     void addRangeToSheet(String rangeName, String rangeDefinition);
+
+    void removeRangeFromSheet(String name);
+
+    List<Coordinate> getRangeByName(String rangeName);
 }

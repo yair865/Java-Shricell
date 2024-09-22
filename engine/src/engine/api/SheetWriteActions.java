@@ -14,4 +14,6 @@ public interface SheetWriteActions {
     void init(STLSheet loadedSheetFromXML);
     void setBackgroundColor(String cellId, String backGroundColor);
     void setTextColor(String cellId,String textColor);
+    void addRange(String name, String rangeDefinition);
+    void removeRange(String name);
 }

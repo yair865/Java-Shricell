@@ -15,18 +15,14 @@ public class If extends TrinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(Expression condition, Expression thenExpression, Expression elseExpression, SheetReadActions spreadsheet) {
-        // Evaluate the condition expression
         EffectiveValue conditionEffectiveValue = condition.evaluate(spreadsheet);
 
-        // Check if the condition is a boolean
         Boolean conditionResult = conditionEffectiveValue.extractValueWithExpectation(Boolean.class);
 
-        // If the condition is not a boolean, return an error
         if (conditionResult == null) {
             return new EffectiveValueImpl(CellType.ERROR, "Invalid condition type");
         }
 
-        // Based on the condition, evaluate either the thenExpression or elseExpression
         EffectiveValue result;
         if (conditionResult) {
             result = thenExpression.evaluate(spreadsheet);
@@ -34,7 +30,6 @@ public class If extends TrinaryExpression {
             result = elseExpression.evaluate(spreadsheet);
         }
 
-        // Check that both thenExpression and elseExpression return the same type
         EffectiveValue thenValue = thenExpression.evaluate(spreadsheet);
         EffectiveValue elseValue = elseExpression.evaluate(spreadsheet);
 

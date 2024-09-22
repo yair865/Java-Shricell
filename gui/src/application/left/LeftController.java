@@ -44,8 +44,10 @@ public class LeftController {
     private Button addRangeButton;
 
     @FXML
-    private ListView<String> rangesList;
+    private Button deleteRangeButton;
 
+    @FXML
+    private ListView<String> rangesList;
 
 
     private ShticellController shticellController;
@@ -56,26 +58,40 @@ public class LeftController {
 
     @FXML
     private void initialize() {
-        ObservableList<String> options =
-                FXCollections.observableArrayList("Left", "Center", "Right");
+        ObservableList<String> options = FXCollections.observableArrayList("Left", "Center", "Right");
         setAlignmentComboBox.setItems(options);
+
+        // Add selection listener to the rangesList
+        rangesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                shticellController.getBodyController().highlightSelectedRange(newValue);
+            }
+        });
+
+        // Add focus listener to clear selection when it loses focus
+        rangesList.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // If it loses focus
+                clearSelection(); // Clear selection
+            }
+        });
+    }
+
+    public void clearSelection() {
+        rangesList.getSelectionModel().clearSelection();
     }
 
     private void showInputDialog(String title, String header, String content, Consumer<Integer> onSuccess) {
-        // Create a TextInputDialog for input
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
         dialog.setHeaderText(header);
         dialog.setContentText(content);
 
-        // Show the dialog and capture the result
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(value -> {
             try {
                 int newValue = Integer.parseInt(value);
                 onSuccess.accept(newValue);
             } catch (NumberFormatException e) {
-                // Handle invalid number input
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Input");
                 alert.setHeaderText("Invalid input");
@@ -92,7 +108,6 @@ public class LeftController {
                 "Enter the new width for the column:",
                 "Width:",
                 newWidth -> {
-                    // Call the logic to set the column width
                     this.shticellController.getBodyController().setColumnWidth(newWidth);
                 }
         );
@@ -148,9 +163,9 @@ public class LeftController {
 
     private String toHexString(Color color) {
         return String.format("#%02x%02x%02x",
-                (int)(color.getRed() * 255),
-                (int)(color.getGreen() * 255),
-                (int)(color.getBlue() * 255));
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
     }
 
     @FXML
@@ -206,6 +221,35 @@ public class LeftController {
         rangesList.getItems().add(rangeName);
     }
 
+    @FXML
+    void deleteRangeListener(ActionEvent event) {
+        String selectedRange = rangesList.getSelectionModel().getSelectedItem();
+        if (selectedRange != null) {
+            shticellController.getEngine().removeRangeFromSheet(selectedRange);
+            rangesList.getItems().remove(selectedRange);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText("No Range Selected");
+            alert.setContentText("Please select a range to delete.");
+            alert.showAndWait();
+        }
+    }
+
+    public void pushRangeToSheet(String rangeName, String coordinates) {
+        try {
+            shticellController.getEngine().addRangeToSheet(rangeName, coordinates);
+        } catch (Exception e) {
+            System.err.println("Failed to push range to sheet: " + e.getMessage());
+        }
+    }
+
+    public void rangesListSelectionChanged() {
+        String selectedRange = rangesList.getSelectionModel().getSelectedItem();
+        if (selectedRange != null) {
+            shticellController.getBodyController().highlightSelectedRange(selectedRange);
+        }
+    }
 }
 
 

@@ -18,7 +18,7 @@ public class RangeController {
     @FXML
     private Button saveRangeButton;
 
-    private LeftController leftController; // Reference to LeftController
+    private LeftController leftController;
 
     public void setLeftController(LeftController leftController) {
         this.leftController = leftController;
@@ -39,6 +39,7 @@ public class RangeController {
 
         if (leftController != null) {
             leftController.addRangeToList(rangeName);
+            leftController.pushRangeToSheet(rangeName,coordinates);
         }
 
         Stage stage = (Stage) saveRangeButton.getScene().getWindow();

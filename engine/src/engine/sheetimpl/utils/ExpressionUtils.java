@@ -4,7 +4,6 @@ import engine.api.Coordinate;
 import engine.api.Expression;
 import engine.exception.InvalidOperationException;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.expression.range.RangeImpl;
 import engine.sheetimpl.expression.type.Bool;
 import engine.sheetimpl.expression.type.Number;
 import engine.sheetimpl.expression.type.Text;

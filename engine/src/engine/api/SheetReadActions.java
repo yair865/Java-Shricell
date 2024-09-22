@@ -19,5 +19,8 @@ public interface SheetReadActions {
     int getColumnWidthUnits();
     Spreadsheet copySheet();
     List<Coordinate> getCellsThatHaveChanged();
+    Map<String,Range> getRanges();
+    Range getRangeByName(String name);
+    boolean rangeExists(String rangeName);
 }
 

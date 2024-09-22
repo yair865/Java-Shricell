@@ -51,8 +51,6 @@ public class ShticellController {
     @FXML
     private AnchorPane leftComponent;
 
-
-
     public ShticellController() {
         this.engine = new EngineImpl();
         this.dataManager = new DataManager(engine); // Pass the Engine instance

@@ -16,6 +16,7 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.*;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static dto.converter.CellConverter.convertCellToDTO;
@@ -211,14 +212,29 @@ public class EngineImpl implements Engine, Serializable{
     public void setSingleCellBackGroundColor(String cellId, String backGroundColor)
     {
         validateSheetIsLoaded();
-
         spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
     }
 
     @Override
-    public void addRangeToSheet(String rangeName , String rangeDefinition)
+    public void addRangeToSheet(String rangeName, String rangeDefinition)
     {
         validateSheetIsLoaded();
+        if (spreadsheetsByVersions.get(currentSpreadSheetVersion).rangeExists(rangeName)) {
+            throw new IllegalArgumentException("A range with the name '" + rangeName + "' already exists.");
+        }
         spreadsheetsByVersions.get(currentSpreadSheetVersion).addRange(rangeName,rangeDefinition);
+    }
+
+    @Override
+    public void removeRangeFromSheet(String name) {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).removeRange(name);
+    }
+
+    @Override
+    public List<Coordinate> getRangeByName(final String rangeName)
+    {
+        validateSheetIsLoaded();
+        return spreadsheetsByVersions.get(currentSpreadSheetVersion).getRangeByName(rangeName).getCoordinates();
     }
 }

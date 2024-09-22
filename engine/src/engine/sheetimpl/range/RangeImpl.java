@@ -1,4 +1,4 @@
-package engine.sheetimpl.expression.range;
+package engine.sheetimpl.range;
 
 import engine.api.Coordinate;
 import engine.api.Range;
@@ -15,7 +15,7 @@ public class RangeImpl implements Range {
     public RangeImpl(Coordinate start, Coordinate end) {
         this.start = start;
         this.end = end;
-        initRange();
+        this.initRange();
     }
 
     @Override
@@ -33,7 +33,8 @@ public class RangeImpl implements Range {
 
         for (int row = startRow; row <= endRow; row++) {
             for (int col = startCol; col <= endCol; col++) {
-                cellsInRange.add(CoordinateFactory.createCoordinate(row, col));
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
+                cellsInRange.add(coordinate);
             }
         }
     }

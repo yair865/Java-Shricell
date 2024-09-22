@@ -2,11 +2,12 @@ package engine.sheetimpl;
 
 import engine.api.*;
 import engine.generated.STLCell;
+import engine.generated.STLRange;
 import engine.generated.STLSheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.expression.range.RangeImpl;
+import engine.sheetimpl.range.RangeImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
 
 import java.io.*;
@@ -51,7 +52,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return (SpreadsheetImpl) ois.readObject();
         } catch (Exception e) {
-            // deal with the runtime error that was discovered as part of invocation
             return this;
         }
     }
@@ -78,6 +78,15 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             Cell cell = createNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
+        }
+
+        for (STLRange stlRange : loadedSheetFromXML.getSTLRanges().getSTLRange()) {
+            String from = stlRange.getSTLBoundaries().getFrom();
+            String to = stlRange.getSTLBoundaries().getTo();
+            String rangeName = stlRange.getName();
+            Coordinate start = CoordinateFactory.createCoordinate(from);
+            Coordinate end = CoordinateFactory.createCoordinate(to);
+            addRangeHelper(rangeName, start, end);
         }
 
         calculateSheetEffectiveValues();
@@ -325,6 +334,11 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     public List<Coordinate> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
 
     @Override
+    public Map<String, Range> getRanges() {
+        return ranges;
+    }
+
+    @Override
     public void setSheetVersion(int sheetVersion) {
         this.sheetVersion = sheetVersion;
     }
@@ -359,10 +373,28 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     @Override
     public void addRange(String name, String rangeDefinition) {
         List<Coordinate> startToEnd = ExpressionUtils.parseRange(rangeDefinition);
-        for (Coordinate coordinate : startToEnd) {
-            validateCoordinateInbound(coordinate);
-        }
-        ranges.put(name, new RangeImpl(startToEnd.get(0), startToEnd.get(1)));
+        addRangeHelper(name,startToEnd.getFirst(),startToEnd.get(1));
+    }
+
+    @Override
+    public Range getRangeByName(String name){
+        return ranges.get(name);
+    }
+
+    @Override
+    public boolean rangeExists(String rangeName) {
+        return ranges.containsKey(rangeName);
+    }
+
+    @Override
+    public void removeRange(String name){
+      ranges.remove(name);
+    }
+
+    private void addRangeHelper(String name,Coordinate start , Coordinate end){
+        validateCoordinateInbound(start);
+        validateCoordinateInbound(end);
+        ranges.put(name, new RangeImpl(start, end));
     }
 }
 

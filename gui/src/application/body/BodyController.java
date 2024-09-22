@@ -291,6 +291,7 @@ public class BodyController {
                 cellView.getStyleClass().remove("depends-on-cell");
                 cellView.getStyleClass().remove("influence-on-cell");
                 cellView.getStyleClass().remove("selected-cell");
+                cellView.getStyleClass().remove("selected-range-cell");
             }
         }
         highlightedCells.clear();
@@ -298,6 +299,21 @@ public class BodyController {
 
     public void addHighlightedCell(String cellId) {
         highlightedCells.add(cellId);
+    }
+
+    public void highlightSelectedRange(String rangeName) {
+        clearHighlightedCells();
+
+        List<Coordinate> selectedRange = shticellController.getEngine().getRangeByName(rangeName);
+
+        for (Coordinate coordinate : selectedRange) {
+            Node cellView = findCellViewById(coordinate.toString());
+
+            if (cellView != null) {
+                cellView.getStyleClass().add("selected-range-cell");
+                highlightedCells.add(coordinate.toString());
+            }
+        }
     }
 }
 

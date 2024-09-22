@@ -40,7 +40,12 @@
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-                        <Button fx:id="addRangeButton" mnemonicParsing="false" onAction="#addRangeButtonListener" prefHeight="25.0" prefWidth="155.0" text="Add Range" />
+                        <HBox alignment="CENTER" spacing="10.0">
+                           <children>
+                              <Button fx:id="addRangeButton" mnemonicParsing="false" onAction="#addRangeButtonListener" prefHeight="25.0" prefWidth="77.5" text="Add Range" />
+                              <Button fx:id="deleteRangeButton" mnemonicParsing="false" onAction="#deleteRangeListener" text="Delete Range" />
+                           </children>
+                        </HBox>
                         <ListView fx:id="rangesList" prefHeight="200.0" prefWidth="150.0" />
                      </children>
                   </VBox>

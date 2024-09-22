@@ -7,33 +7,46 @@
 
 /* Customize cell appearance */
 .cell {
-    -fx-background-color: #ffffff; /* White background for cells */
+    -fx-background-color: #ffffff;
     -fx-text-fill: black;
 }
 
 .depends-on-cell {
-    -fx-effect: dropshadow(gaussian, rgba(0, 128, 255, 0.5), 5, 0.5, 0, 0); /* Soft blue shadow */
+    -fx-effect: dropshadow(gaussian, rgba(0, 128, 255, 0.5), 5, 0.5, 0, 0);
     -fx-border-style: solid;
     -fx-border-width: 2px;
-    -fx-border-color: rgba(0, 128, 255, 0.75); /* Semi-transparent blue */
+    -fx-border-color: rgba(0, 128, 255, 0.75);
 }
 
 .influence-on-cell {
-    -fx-effect: dropshadow(gaussian, rgba(127, 255, 0, 0.5), 5, 0.5, 0, 0); /* Soft green shadow */
+    -fx-effect: dropshadow(gaussian, rgba(127, 255, 0, 0.5), 5, 0.5, 0, 0);
     -fx-border-style: solid;
     -fx-border-width: 2px;
-    -fx-border-color: rgba(127, 255, 0, 0.75); /* Semi-transparent green */
+    -fx-border-color: rgba(127, 255, 0, 0.75);
 }
 
 .selected-cell {
-    -fx-border-width: 2px; /* Solid border */
+    -fx-border-width: 2px;
     -fx-border-style: solid;
-    -fx-border-color: #007BFF; /* Blue border */
-    -fx-background-color: rgba(173, 216, 230, 0.5); /* Light watery opacity background */
+    -fx-border-color: #007BFF;
+    -fx-background-color: rgba(173, 216, 230, 0.5);
 }
 
 .selected-cell:hover {
-    -fx-background-color: rgba(173, 216, 230, 0.7); /* Slightly darker on hover */
+    -fx-background-color: rgba(173, 216, 230, 0.7);
+}
+
+.selected-range-cell {
+    -fx-border-width: 3px; /* Slightly thicker border for emphasis */
+    -fx-border-style: solid;
+    -fx-border-color: #FF8C00; /* Dark orange for the border */
+    -fx-background-color: rgba(255, 140, 0, 0.3); /* Light orange background with transparency */
+    -fx-effect: dropshadow(gaussian, rgba(255, 140, 0, 0.5), 5, 0.5, 0, 0); /* Soft orange shadow */
+}
+
+.selected-range-cell:hover {
+    -fx-background-color: rgba(255, 140, 0, 0.5); /* Slightly darker on hover */
+    -fx-border-color: #FFA500; /* Brighter orange on hover */
 }
 
 /* Customize header appearance */

@@ -1,36 +1,45 @@
 package engine.sheetimpl.expression.function.math.range;
 
+import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.api.Expression;
 import engine.api.SheetReadActions;
 import engine.sheetimpl.cellimpl.EffectiveValueImpl;
-import engine.sheetimpl.expression.type.UnlimitedExpression;
+import engine.sheetimpl.expression.type.UnaryExpression;
 import engine.sheetimpl.utils.CellType;
 
 import java.util.List;
 
-public class Sum extends UnlimitedExpression {
+public class Sum extends UnaryExpression {
 
-    public Sum(List<Expression> expressions) {
-        super(expressions);
+    public Sum(Expression rangeName) {
+        super(rangeName);
     }
 
     @Override
-    public EffectiveValue evaluate(Expression left, Expression right , SheetReadActions spreadsheet) {
-        EffectiveValue leftEffectiveValue = left.evaluate(spreadsheet);
-        EffectiveValue rightEffectiveValue = right.evaluate(spreadsheet);
+    public EffectiveValue evaluate(Expression expression, SheetReadActions spreadsheet) {
+        // Get the range name from the expression
+        EffectiveValue rangeEffectiveValue = expression.evaluate(spreadsheet);
+        String rangeName = rangeEffectiveValue.extractValueWithExpectation(String.class);
 
-        Double leftNumber = leftEffectiveValue.extractValueWithExpectation(Double.class);
-        Double rightNumber = rightEffectiveValue.extractValueWithExpectation(Double.class);
-
-
-        if(leftNumber == null || rightNumber == null) {
+        if (rangeName == null) {
             return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
-        double result = leftNumber + rightNumber;
+        // Retrieve the list of coordinates for the specified range
+        List<Coordinate> selectedRange = spreadsheet.getRangeByName(rangeName).getCoordinates();
+        double sum = 0;
+        boolean hasNumericValue = false;
 
-        return new EffectiveValueImpl(CellType.NUMERIC, result);
+        for (Coordinate coordinate : selectedRange) {
+            EffectiveValue cellValue = spreadsheet.getCell(coordinate).getEffectiveValue();
+            if (cellValue.getCellType() == CellType.NUMERIC) {
+                sum += cellValue.extractValueWithExpectation(Double.class);
+                hasNumericValue = true;
+            }
+        }
+
+        return new EffectiveValueImpl(CellType.NUMERIC, hasNumericValue ? sum : 0);
     }
 
     @Override

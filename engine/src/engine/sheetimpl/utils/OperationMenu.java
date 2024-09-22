@@ -81,27 +81,27 @@ public enum OperationMenu {
             return new Sub(parameters.get(0), parameters.get(1), parameters.get(2));
         }
     },
-    SUM {
+   SUM {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Sum.class, parameters);
-            return new Sum(parameters);
+            return new Sum(parameters.getFirst());
         }
     },
-/*    PERCENT{
+   PERCENT{
         @Override
         public Expression createExpression(List<Expression> parameters) {
-            validateParameters(Sum.class, parameters);
-            return new Percent(parameters);
+            validateParameters(Percent.class, parameters);
+            return new Percent(parameters.getFirst(), parameters.get(1));
         }
     },
     AVG{
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Sum.class, parameters);
-            return new Avg(parameters);
+            return new Avg(parameters.getFirst());
         }
-    },*/
+    },
     REF {
         @Override
         public Expression createExpression(List<Expression> parameters) {
