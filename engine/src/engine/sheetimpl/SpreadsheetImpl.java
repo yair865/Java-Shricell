@@ -1,14 +1,12 @@
 package engine.sheetimpl;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.api.Spreadsheet;
+import engine.api.*;
 import engine.generated.STLCell;
 import engine.generated.STLSheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.expression.range.RangeImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
 
 import java.io.*;
@@ -30,6 +28,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private int rowHeightUnits;
     private int columnWidthUnits;
     private List<Coordinate> cellsThatHaveChanged;
+    private Map<String, Range> ranges;
 
 
     public SpreadsheetImpl()  {
@@ -37,6 +36,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         dependenciesAdjacencyList = new HashMap<>();
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
+        ranges = new HashMap<>();
         sheetVersion = 1;
     }
 
@@ -293,6 +293,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             }
         }
     }
+
     @Override
     public void setTitle(String sheetName) {
         this.sheetName = sheetName;
@@ -335,6 +336,13 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         cell.setBackgroundColor(backGroundColor);
     }
 
+    @Override
+    public void setTextColor(String cellId, String textColor) {
+        Coordinate coordinate = createCoordinate(cellId);
+        Cell cell = this.createNewEmptyCell(coordinate);
+        cell.setTextColor(textColor);
+    }
+
     //INSIDE
     private Cell createNewEmptyCell(Coordinate coordinate) {
         Cell newCell = getCell(coordinate);
@@ -346,6 +354,15 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         }
 
         return  newCell;
+    }
+
+    @Override
+    public void addRange(String name, String rangeDefinition) {
+        List<Coordinate> startToEnd = ExpressionUtils.parseRange(rangeDefinition);
+        for (Coordinate coordinate : startToEnd) {
+            validateCoordinateInbound(coordinate);
+        }
+        ranges.put(name, new RangeImpl(startToEnd.get(0), startToEnd.get(1)));
     }
 }
 

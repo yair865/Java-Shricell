@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,7 +15,7 @@
    <children>
       <HBox>
          <children>
-            <VBox alignment="TOP_CENTER" spacing="20.0">
+            <VBox alignment="TOP_CENTER" prefHeight="505.0" prefWidth="209.0" spacing="12.0">
                <children>
                   <Label alignment="TOP_CENTER" text="Visual Commands" underline="true">
                      <font>
@@ -25,17 +26,24 @@
                   <Button fx:id="setColumnWidthBTN" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#setColumnWidthListener" prefHeight="25.0" prefWidth="155.0" text="Set Column Width" />
                   <Button fx:id="setTextColorBTN" mnemonicParsing="false" onAction="#updateTextColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Text Color" />
                   <Button fx:id="setBackgroundColorBTN" mnemonicParsing="false" onAction="#updateBackGroundColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Background Color" />
+                  <Button fx:id="resetStyleBTN" mnemonicParsing="false" onAction="#resetStyleListener" prefHeight="25.0" prefWidth="155.0" text="Reset Cell Styling" />
                   <ComboBox fx:id="setAlignmentComboBox" onAction="#setAlignmentListener" prefHeight="25.0" prefWidth="155.0" promptText="Set Alignment" visibleRowCount="3">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ComboBox>
                   <Separator prefWidth="200.0" />
-                  <Label text="Ranges Commands" underline="true">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
+                  <VBox alignment="TOP_CENTER" prefHeight="505.0" prefWidth="209.0" spacing="12.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" text="Range Commands" underline="true">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="addRangeButton" mnemonicParsing="false" onAction="#addRangeButtonListener" prefHeight="25.0" prefWidth="155.0" text="Add Range" />
+                        <ListView fx:id="rangesList" prefHeight="200.0" prefWidth="150.0" />
+                     </children>
+                  </VBox>
                </children>
             </VBox>
             <Separator orientation="VERTICAL" prefHeight="200.0" />

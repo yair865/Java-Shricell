@@ -20,7 +20,7 @@ public class TemporaryCellDataProvider implements CellDataProvider {
     @Override
     public BasicCellData getCellData(Coordinate coordinate) {
         return temporaryCellDataMap.getOrDefault(coordinate, new BasicCellData("", "",
-                coordinate.toString(),"Black" , "White"));
+                coordinate.toString(),null , null));
     }
 
     public Map<Coordinate, BasicCellData> getTemporaryCellDataMap() {

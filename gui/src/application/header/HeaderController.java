@@ -43,22 +43,19 @@ public class HeaderController {
     @FXML
     private ChoiceBox<Integer> selectVersionChoiceBox;
 
-    private static final String DEFAULT_ID = "Selected Cell Id";
-
-    private static final String DEFAULT_ORIGINAL_VALUE = "Original Cell Value";
-
-    private static final String DEFAULT_VERSION = "Last modified version";
-
     private static final String DEFAULT_NEW_VALUE_PROMPT = "Enter new value";
 
     @FXML
     private void initialize() {
         selectVersionChoiceBox.setOnAction(event -> {
-            int selectedVersion = selectVersionChoiceBox.getValue();
-            this.shticellController.showSpreadsheetVersion(selectedVersion);
-            System.out.println("Selected version: " + selectedVersion);
+            Integer selectedVersion = selectVersionChoiceBox.getValue();
+            if (selectedVersion != null) {
+                this.shticellController.showSpreadsheetVersion(selectedVersion);
+                selectVersionChoiceBox.getSelectionModel().clearSelection();
+            }
         });
     }
+
 
     @FXML
     public void loadFileButtonListener() {
@@ -93,9 +90,6 @@ public class HeaderController {
     }
 
     private void resetHeaderLabels() {
-        cellIdLabel.setText(DEFAULT_ID);
-        cellOriginalValueLabel.setText(DEFAULT_ORIGINAL_VALUE);
-        cellVersionLabel.setText(DEFAULT_VERSION);
         newValueTextField.setPromptText(DEFAULT_NEW_VALUE_PROMPT);
     }
 
@@ -132,6 +126,10 @@ public class HeaderController {
 
     public String getCellId() {
         return cellIdLabel.getText();
+    }
+
+    public void setCellOriginalValueLabel(String originalValue) {
+        this.cellOriginalValueLabel.setText(originalValue);
     }
 }
 

@@ -2,12 +2,10 @@ package application.body;
 
 import application.app.ShticellController;
 import application.header.HeaderController;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 
 public class CellViewController extends BasicCellData {
 
@@ -19,9 +17,8 @@ public class CellViewController extends BasicCellData {
     @FXML
     public Label effectiveValueLabel;
 
-
     public CellViewController() {
-        super("", "Cell Original Value", "Cell ID" , null,null);
+        super("", "Cell Original Value", "Cell ID", null, null);
     }
 
     public void setShticellController(ShticellController shticellController) {
@@ -37,6 +34,7 @@ public class CellViewController extends BasicCellData {
     void cellClickListener(MouseEvent event) {
         if (event.getClickCount() == 1) {
             if (shticellController != null) {
+
                 HeaderController headerController = shticellController.getHeaderController();
                 if (headerController != null) {
                     headerController.updateHeader(
@@ -45,6 +43,12 @@ public class CellViewController extends BasicCellData {
                             lastModifiedVersion.get()
                     );
                     headerController.getNewValueTextField().requestFocus();
+
+                    shticellController.getBodyController().highlightDependencies(cellId.get());
+                    shticellController.getBodyController().highlightDependents(cellId.get());
+
+                    cellView.getStyleClass().add("selected-cell");
+                    shticellController.getBodyController().addHighlightedCell(cellId.getValue());
                 }
             }
         }
@@ -64,5 +68,14 @@ public class CellViewController extends BasicCellData {
 
     public void setEffectiveValue(String effectiveValue) {
         this.effectiveValue.set(effectiveValue);
+    }
+
+    public void updateCellStyle() {
+        if (backgroundColor.getValue() != null) {
+            cellView.setStyle("-fx-background-color: " + backgroundColor.getValue() + ";");
+        }
+        if (textColor.getValue() != null) {
+            effectiveValueLabel.setStyle("-fx-text-fill: " + textColor.getValue() + ";");
+        }
     }
 }

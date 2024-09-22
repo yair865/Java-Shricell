@@ -13,4 +13,5 @@ public interface SheetWriteActions {
     void setSheetVersion(int sheetVersion);
     void init(STLSheet loadedSheetFromXML);
     void setBackgroundColor(String cellId, String backGroundColor);
+    void setTextColor(String cellId,String textColor);
 }

@@ -3,7 +3,6 @@ package application.model;
 import application.body.BasicCellData;
 
 import dto.dtoPackage.CellDTO;
-import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.api.Engine;

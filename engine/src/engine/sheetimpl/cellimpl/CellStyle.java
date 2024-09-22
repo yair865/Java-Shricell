@@ -11,17 +11,12 @@ public class CellStyle implements Serializable {
         this.backgroundColor = null;
     }
 
-    public String getTextColor() {
-        return textColor;
-    }
-
+    public String getTextColor() {return textColor;}
     public String getBackgroundColor() {
         return backgroundColor;
     }
-    public void setTextColor(String textColor) {
-        this.textColor = textColor;
-    }
 
+    public void setTextColor(String textColor) {this.textColor = textColor;}
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }

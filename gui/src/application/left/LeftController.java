@@ -7,10 +7,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,7 +35,18 @@ public class LeftController {
     private Button setRowHeightBTN;
 
     @FXML
+    private Button resetStyleBTN;
+
+    @FXML
     private ComboBox<String> setAlignmentComboBox;
+
+    @FXML
+    private Button addRangeButton;
+
+    @FXML
+    private ListView<String> rangesList;
+
+
 
     private ShticellController shticellController;
 
@@ -151,6 +168,44 @@ public class LeftController {
                 break;
         }
     }
+
+    @FXML
+    void resetStyleListener(ActionEvent event) {
+        String cellId = this.shticellController.getHeaderController().getCellId();
+
+        //Reset text color
+        this.shticellController.getEngine().setSingleCellTextColor(cellId, null);
+        this.shticellController.getBodyController().updateCellTextColor(cellId, null);
+
+        //Reset background color
+        this.shticellController.getEngine().setSingleCellBackGroundColor(cellId, null);
+        this.shticellController.getBodyController().updateCellBackgroundColor(cellId, null);
+    }
+
+    @FXML
+    void addRangeButtonListener(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("RangeWindow.fxml"));
+            Parent root = loader.load();
+
+            RangeController rangeController = loader.getController();
+            rangeController.setLeftController(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Add Range");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(addRangeButton.getScene().getWindow());
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addRangeToList(String rangeName) {
+        rangesList.getItems().add(rangeName);
+    }
+
 }
 
 

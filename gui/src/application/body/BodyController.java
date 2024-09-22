@@ -15,7 +15,10 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class BodyController {
 
@@ -26,6 +29,8 @@ public class BodyController {
     private ScrollPane scrollPane;
 
     private StackPane centeredGridPane;
+
+    private Set<String> highlightedCells = new HashSet<>();
 
     public BodyController() {
         this.gridPane = new GridPane();
@@ -95,24 +100,15 @@ public class BodyController {
                     cellViewController.textColor.bind(cellData.textColor);
                     cellViewController.backgroundColor.bind(cellData.backgroundColor);
 
-                    String textColor = cellData.textColor.get();
-                    String backgroundColor = cellData.backgroundColor.get();
-
-                    if (textColor != null) {
-                        updateCellTextColor(cellData.cellId.get(), textColor);
-                    }
-                    if (backgroundColor != null) {
-                        updateCellBackgroundColor(cellData.cellId.get(), backgroundColor);
-                    }
-
                     cellView.setMinSize(columnWidthUnits, rowHeightUnits);
                     cellView.setPrefSize(columnWidthUnits, rowHeightUnits);
                     cellView.setMaxSize(columnWidthUnits, rowHeightUnits);
                     cellView.getStyleClass().add("cell");
-
                     cellView.setUserData(cellViewController);
 
+                    cellViewController.updateCellStyle();
                     gridPane.add(cellView, col + 1, row + 1);
+
                 } catch (IOException e) {
                     System.out.println("Error creating table: " + e.getMessage());
                 }
@@ -215,7 +211,7 @@ public class BodyController {
 
     private int getColumnIndex(char columnLetter) {
         int result;
-        result =  (columnLetter - 'A' + 1);
+        result = (columnLetter - 'A' + 1);
         return result;
     }
 
@@ -228,7 +224,12 @@ public class BodyController {
         if (cellView != null) {
             for (Node child : ((StackPane) cellView).getChildren()) {
                 if (child instanceof Label label) {
-                    label.setStyle("-fx-text-fill: " + color + ";");
+
+                    if (color != null) {
+                        label.setStyle("-fx-text-fill: " + color + ";");
+                    } else {
+                        label.setStyle(null);
+                    }
                 }
             }
         }
@@ -237,7 +238,11 @@ public class BodyController {
     public void updateCellBackgroundColor(String cellId, String color) {
         Node cellView = findCellViewById(cellId);
         if (cellView != null) {
-            cellView.setStyle("-fx-background-color: " + color + ";");
+            if (color != null) {
+                cellView.setStyle("-fx-background-color: " + color + ";");
+            } else {
+                cellView.setStyle(null);
+            }
         }
     }
 
@@ -251,4 +256,48 @@ public class BodyController {
 
         return null;
     }
+
+    public void highlightDependencies(String cellId) {
+        clearHighlightedCells(); // Clear previous highlights
+        List<Coordinate> dependentCells = shticellController.getDependents(cellId);
+        if (dependentCells != null) {
+            for (Coordinate depCellId : dependentCells) {
+                Node cellView = findCellViewById(depCellId.toString());
+                if (cellView != null) {
+                    cellView.getStyleClass().add("depends-on-cell");
+                    highlightedCells.add(depCellId.toString()); // Track this cell
+                }
+            }
+        }
+    }
+
+    public void highlightDependents(String cellId) {
+        List<Coordinate> references = shticellController.getReferences(cellId);
+        if (references != null) {
+            for (Coordinate influenceCellId : references) {
+                Node cellView = findCellViewById(influenceCellId.toString());
+                if (cellView != null) {
+                    cellView.getStyleClass().add("influence-on-cell");
+                    highlightedCells.add(influenceCellId.toString()); // Track this cell
+                }
+            }
+        }
+    }
+
+    public void clearHighlightedCells() {
+        for (String cellId : highlightedCells) {
+            Node cellView = findCellViewById(cellId);
+            if (cellView != null) {
+                cellView.getStyleClass().remove("depends-on-cell");
+                cellView.getStyleClass().remove("influence-on-cell");
+                cellView.getStyleClass().remove("selected-cell");
+            }
+        }
+        highlightedCells.clear();
+    }
+
+    public void addHighlightedCell(String cellId) {
+        highlightedCells.add(cellId);
+    }
 }
+

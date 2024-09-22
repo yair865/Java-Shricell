@@ -9,6 +9,7 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.Coordinate;
 import engine.api.Engine;
 import engine.engineimpl.EngineImpl;
+import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -18,7 +19,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public class ShticellController {
             applicationWindow.setCenter(bodyController.getBody());
             headerComponentController.setVersionsChoiceBox();
 
-            progressAlert.close(); // Close the progress window
+            progressAlert.close();
             System.out.println("Successfully loaded: " + filePath);
         });
 
@@ -138,6 +138,7 @@ public class ShticellController {
             List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
             dataManager.updateCellDataMap(cellsThatHaveChanged);
             headerComponentController.setVersionsChoiceBox();
+            headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -184,9 +185,18 @@ public class ShticellController {
             e.printStackTrace();
         }
     }
-public BodyController getBodyController()
+    public BodyController getBodyController()
 {
     return bodyController;
 }
 
+    public List<Coordinate> getDependents(String cellId) {
+        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+        return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+    }
+
+    public List<Coordinate> getReferences(String cellId) {
+        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+        return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+    }
 }

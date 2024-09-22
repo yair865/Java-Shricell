@@ -204,7 +204,7 @@ public class EngineImpl implements Engine, Serializable{
     public void setSingleCellTextColor(String cellId, String textColor)
     {
         validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).getActiveCells().get(createCoordinate(cellId)).setTextColor(textColor);
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).setTextColor(cellId,textColor);
     }
 
     @Override
@@ -213,5 +213,12 @@ public class EngineImpl implements Engine, Serializable{
         validateSheetIsLoaded();
 
         spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
+    }
+
+    @Override
+    public void addRangeToSheet(String rangeName , String rangeDefinition)
+    {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).addRange(rangeName,rangeDefinition);
     }
 }

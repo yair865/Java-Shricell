@@ -33,4 +33,6 @@ public interface Engine {
     void setSingleCellTextColor(String cellId, String textColor);
 
     void setSingleCellBackGroundColor(String cellId, String backGroundColor);
+
+    void addRangeToSheet(String rangeName, String rangeDefinition);
 }

@@ -1,10 +1,9 @@
-package engine.sheetimpl.expression.function.math;
+package engine.sheetimpl.expression.function.math.range;
 
 import engine.api.EffectiveValue;
 import engine.api.Expression;
 import engine.api.SheetReadActions;
 import engine.sheetimpl.cellimpl.EffectiveValueImpl;
-import engine.sheetimpl.expression.type.BinaryExpression;
 import engine.sheetimpl.expression.type.UnlimitedExpression;
 import engine.sheetimpl.utils.CellType;
 
