@@ -151,23 +151,20 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         Map<Coordinate, Integer> inDegree = new HashMap<>();
         Queue<Coordinate> queue = new LinkedList<>();
 
-        // Step 1: Calculate in-degree for each node
         for (Coordinate node : dependencyGraph.keySet()) {
-            inDegree.putIfAbsent(node, 0); // Ensure all nodes are in the in-degree map
+            inDegree.putIfAbsent(node, 0);
 
             for (Coordinate dependent : dependencyGraph.get(node)) {
                 inDegree.put(dependent, inDegree.getOrDefault(dependent, 0) + 1);
             }
         }
 
-        // Step 2: Add all nodes with in-degree 0 to the queue
         for (Map.Entry<Coordinate, Integer> entry : inDegree.entrySet()) {
             if (entry.getValue() == 0) {
                 queue.add(entry.getKey());
             }
         }
 
-        // Step 3: Process nodes in queue
         while (!queue.isEmpty()) {
             Coordinate node = queue.poll();
             sortedList.add(node);
@@ -383,7 +380,12 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
     @Override
     public Range getRangeByName(String name) {
-        return ranges.get(name);
+
+        if (ranges.get(name) != null) {
+            return ranges.get(name);
+        } else {
+            throw new IllegalArgumentException("Range " + name + " not found");
+        }
     }
 
     @Override
@@ -418,13 +420,18 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private void addRangeHelper(String name, Coordinate start, Coordinate end) {
         validateCoordinateInbound(start);
         validateCoordinateInbound(end);
-        ranges.put(name, new RangeImpl(start, end));
+        if (!ranges.containsKey(name)) {
+            ranges.put(name, new RangeImpl(start, end));
+        } else {
+            throw new IllegalArgumentException("Range '" + name + "' already exists");
+        }
     }
 
     private List<Coordinate> extractRangeFunction(String expression) {
         List<Coordinate> rangeCoordinates = new ArrayList<>();
         if (expression.startsWith("{SUM") || expression.startsWith("{AVG")) {
             String rangeName = extractRangeNameFromBrackets(expression);
+
             rangeCoordinates = this.getRangeByName(rangeName).getCoordinates();
         }
 

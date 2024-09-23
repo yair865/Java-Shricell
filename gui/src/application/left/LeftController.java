@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class LeftController {
@@ -284,6 +285,11 @@ public class LeftController {
     @FXML
     void sortListener(ActionEvent event) {
 
+    }
+
+    public void updateRangeList(Set<String> strings) {
+        rangesList.getItems().clear();
+        strings.forEach(rangesList.getItems()::add);
     }
 }
 

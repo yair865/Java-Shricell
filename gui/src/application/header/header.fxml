@@ -27,12 +27,12 @@
             <RowConstraints maxHeight="33.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="171.0" text="Shticell App" textFill="#009c60" underline="true">
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="231.0" text="Shticell App" textFill="#009c60" underline="true">
                <font>
-                  <Font name="Yu Gothic Light" size="33.0" />
+                  <Font name="Aharoni Bold" size="33.0" />
                </font>
                <GridPane.margin>
-                  <Insets left="430.0" />
+                  <Insets left="400.0" />
                </GridPane.margin>
             </Label>
             <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">

@@ -105,6 +105,10 @@ public class HeaderController {
         return this.newValueTextField;
     }
 
+    public void clearNewValueTextField() {
+        this.newValueTextField.setText("");;
+    }
+
     public void setEngine(Engine engine) {
         this.engine = engine;
     }

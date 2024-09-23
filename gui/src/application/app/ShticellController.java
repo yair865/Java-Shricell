@@ -12,10 +12,9 @@ import engine.engineimpl.EngineImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -68,43 +67,49 @@ public class ShticellController {
         }
     }
 
+    private Alert createProgressAlert(ProgressBar progressBar) {
+        Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
+        progressAlert.setTitle("Loading File");
+        progressAlert.setHeaderText("Please wait while the file is loading.");
+
+        progressAlert.getButtonTypes().clear();
+
+        ButtonType okButtonType = new ButtonType("OK");
+        progressAlert.getButtonTypes().add(okButtonType);
+
+        BorderPane progressPane = new BorderPane();
+        progressPane.setCenter(progressBar);
+        progressAlert.getDialogPane().setContent(progressPane);
+
+        progressAlert.setOnCloseRequest(event -> {
+        });
+
+        return progressAlert;
+    }
+
     @FXML
     public void loadFile(String filePath) {
         ProgressBar progressBar = new ProgressBar();
         progressBar.setPrefWidth(300);
 
-        // Create a Task to handle file loading
+        Alert progressAlert = createProgressAlert(progressBar);
+
         Task<Void> loadTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                // Simulate file loading by updating the progress bar
                 updateProgress(0, 100);
 
                 for (int i = 0; i <= 100; i++) {
-                    Thread.sleep(10); // Simulating work
+                    Thread.sleep(10);
                     updateProgress(i, 100);
                 }
 
-                engine.loadSpreadsheet(filePath); // Your actual file loading logic here
+                engine.loadSpreadsheet(filePath);
                 return null;
             }
         };
 
-        // Create the alert for progress
-        Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
-        progressAlert.setTitle("Loading File");
-        progressAlert.setHeaderText("Please wait while the file is loading.");
-        progressAlert.getDialogPane().setContent(progressBar);
-        progressAlert.setOnCloseRequest(event -> loadTask.cancel());
-
-        // Bind the progress bar to the task progress
         progressBar.progressProperty().bind(loadTask.progressProperty());
-
-        // Run the task in a background thread
-        new Thread(loadTask).start();
-
-        // Show the progress dialog
-        progressAlert.show();
 
         loadTask.setOnSucceeded(event -> {
             dataManager.getCellDataMap().clear();
@@ -114,20 +119,25 @@ public class ShticellController {
                     spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
             applicationWindow.setCenter(bodyController.getBody());
             headerComponentController.setVersionsChoiceBox();
+            leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
 
             progressAlert.close();
             System.out.println("Successfully loaded: " + filePath);
         });
 
         loadTask.setOnFailed(event -> {
-            // Show an error message if the file loading fails
             progressAlert.close();
+            headerComponentController.clearNewValueTextField();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Loading File");
             alert.setHeaderText("An error occurred while loading the file.");
             alert.setContentText("Error: " + loadTask.getException().getMessage() + "\nPlease try to load the file again.");
             alert.showAndWait();
         });
+
+        new Thread(loadTask).start();
+
+        progressAlert.show();
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
@@ -196,5 +206,9 @@ public class ShticellController {
     public List<Coordinate> getReferences(String cellId) {
         SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
         return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+    }
+
+    public LeftController getLeftComponentController() {
+        return this.leftComponentController;
     }
 }
