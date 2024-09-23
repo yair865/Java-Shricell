@@ -31,7 +31,7 @@ public class CellViewController extends BasicCellData {
     }
 
     @FXML
-    void cellClickListener(MouseEvent event) {
+    public void cellClickListener(MouseEvent event) {
         if (event.getClickCount() == 1) {
             if (shticellController != null) {
 

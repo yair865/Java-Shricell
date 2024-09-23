@@ -38,7 +38,6 @@ public class RangeController {
         }
 
         if (leftController != null) {
-            leftController.addRangeToList(rangeName);
             leftController.pushRangeToSheet(rangeName,coordinates);
         }
 

@@ -13,7 +13,7 @@ public class ShticellApplication extends Application {
    @Override
     public void start(Stage stage) throws Exception {
        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ShticellApplication.fxml")));
-       Scene scene = new Scene(root);
+       Scene scene = new Scene(root,1050,760);
        stage.setTitle("Shticell Application");
        stage.setScene(scene);
        stage.show();

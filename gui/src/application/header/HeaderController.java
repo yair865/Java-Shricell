@@ -79,14 +79,13 @@ public class HeaderController {
         String newValue = newValueTextField.getText();
         String cellId = cellIdLabel.getText();
 
-        if (newValue != null && !newValue.trim().isEmpty()
-                && cellId != null && !cellId.trim().isEmpty()) {
+        if (cellId != null && !cellId.trim().isEmpty()) {
             shticellController.updateNewEffectiveValue(cellId, newValue);
+            newValueTextField.clear();
+            resetHeaderLabels();
         }
-
-        newValueTextField.clear();
-        resetHeaderLabels();
     }
+
 
     private void resetHeaderLabels() {
         newValueTextField.setPromptText(DEFAULT_NEW_VALUE_PROMPT);

@@ -258,14 +258,14 @@ public class BodyController {
     }
 
     public void highlightDependencies(String cellId) {
-        clearHighlightedCells(); // Clear previous highlights
+        clearHighlightedCells();
         List<Coordinate> dependentCells = shticellController.getDependents(cellId);
         if (dependentCells != null) {
             for (Coordinate depCellId : dependentCells) {
                 Node cellView = findCellViewById(depCellId.toString());
                 if (cellView != null) {
                     cellView.getStyleClass().add("depends-on-cell");
-                    highlightedCells.add(depCellId.toString()); // Track this cell
+                    highlightedCells.add(depCellId.toString());
                 }
             }
         }
@@ -278,7 +278,7 @@ public class BodyController {
                 Node cellView = findCellViewById(influenceCellId.toString());
                 if (cellView != null) {
                     cellView.getStyleClass().add("influence-on-cell");
-                    highlightedCells.add(influenceCellId.toString()); // Track this cell
+                    highlightedCells.add(influenceCellId.toString());
                 }
             }
         }
@@ -315,5 +315,6 @@ public class BodyController {
             }
         }
     }
+
 }
 

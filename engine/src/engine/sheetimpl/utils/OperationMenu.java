@@ -2,12 +2,7 @@ package engine.sheetimpl.utils;
 
 import engine.api.Expression;
 import engine.sheetimpl.expression.function.general.Ref;
-import engine.sheetimpl.expression.function.logic.And;
-import engine.sheetimpl.expression.function.logic.Equal;
-import engine.sheetimpl.expression.function.logic.Bigger;
-import engine.sheetimpl.expression.function.logic.Less;
-import engine.sheetimpl.expression.function.logic.Not;
-import engine.sheetimpl.expression.function.logic.Or;
+import engine.sheetimpl.expression.function.logic.*;
 import engine.sheetimpl.expression.function.math.*;
 import engine.sheetimpl.expression.function.math.range.Avg;
 import engine.sheetimpl.expression.function.math.range.Sum;
@@ -95,10 +90,10 @@ public enum OperationMenu {
             return new Percent(parameters.getFirst(), parameters.get(1));
         }
     },
-    AVG{
+    AVERAGE{
         @Override
         public Expression createExpression(List<Expression> parameters) {
-            validateParameters(Sum.class, parameters);
+            validateParameters(Avg.class, parameters);
             return new Avg(parameters.getFirst());
         }
     },
@@ -144,12 +139,22 @@ public enum OperationMenu {
             return new And(parameters.get(0), parameters.get(1));
         }
     },
+    IF {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(If.class, parameters);
+            return new If(parameters.get(0), parameters.get(1),parameters.get(2));
+        }
+    },
+
     OR {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Or.class, parameters);
             return new Or(parameters.get(0), parameters.get(1));
         }
+
+
     };
 
     public abstract Expression createExpression(List<Expression> parameters);

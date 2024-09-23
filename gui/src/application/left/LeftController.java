@@ -38,6 +38,12 @@ public class LeftController {
     private Button resetStyleBTN;
 
     @FXML
+    private Button filterButton;
+
+    @FXML
+    private Button sortButton;
+
+    @FXML
     private ComboBox<String> setAlignmentComboBox;
 
     @FXML
@@ -61,17 +67,17 @@ public class LeftController {
         ObservableList<String> options = FXCollections.observableArrayList("Left", "Center", "Right");
         setAlignmentComboBox.setItems(options);
 
-        // Add selection listener to the rangesList
+        // Ensure selection is only cleared when a focus event happens, but not during deletion
         rangesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 shticellController.getBodyController().highlightSelectedRange(newValue);
             }
         });
 
-        // Add focus listener to clear selection when it loses focus
+        // Clear selection when list loses focus, except during deletion
         rangesList.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // If it loses focus
-                clearSelection(); // Clear selection
+            if (!newValue && !deleteRangeButton.isPressed()) {
+                clearSelection();
             }
         });
     }
@@ -225,8 +231,18 @@ public class LeftController {
     void deleteRangeListener(ActionEvent event) {
         String selectedRange = rangesList.getSelectionModel().getSelectedItem();
         if (selectedRange != null) {
-            shticellController.getEngine().removeRangeFromSheet(selectedRange);
-            rangesList.getItems().remove(selectedRange);
+            try {
+                shticellController.getEngine().removeRangeFromSheet(selectedRange);
+                rangesList.getItems().remove(selectedRange);
+                shticellController.getBodyController().clearHighlightedCells();
+                clearSelection();
+            } catch (IllegalStateException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Error");
+                alert.setHeaderText("Range In Use");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No Selection");
@@ -239,8 +255,9 @@ public class LeftController {
     public void pushRangeToSheet(String rangeName, String coordinates) {
         try {
             shticellController.getEngine().addRangeToSheet(rangeName, coordinates);
+            this.addRangeToList(rangeName);
         } catch (Exception e) {
-            System.err.println("Failed to push range to sheet: " + e.getMessage());
+            showRangeExistsAlert(rangeName);
         }
     }
 
@@ -249,6 +266,24 @@ public class LeftController {
         if (selectedRange != null) {
             shticellController.getBodyController().highlightSelectedRange(selectedRange);
         }
+    }
+
+    private void showRangeExistsAlert(String rangeName) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Range Exists");
+        alert.setHeaderText("Duplicate Range Name");
+        alert.setContentText("A range with the name '" + rangeName + "' already exists. Please choose a different name.");
+        alert.showAndWait();
+    }
+
+    @FXML
+    void filterListener(ActionEvent event) {
+
+    }
+
+    @FXML
+    void sortListener(ActionEvent event) {
+
     }
 }
 

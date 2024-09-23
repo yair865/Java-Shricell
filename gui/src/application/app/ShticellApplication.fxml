@@ -2,9 +2,9 @@
 
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="applicationWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="730.0" prefWidth="997.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.app.ShticellController">
+<BorderPane fx:id="applicationWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="820.0" minWidth="1050.0" prefHeight="820.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.app.ShticellController">
    <top>
-      <fx:include fx:id="headerComponent" source="../header/header.fxml" />
+      <fx:include fx:id="headerComponent" minHeight="185.0" minWidth="1050.0" prefHeight="188.0" prefWidth="1050.0" source="../header/header.fxml" />
    </top>
    <left>
       <fx:include fx:id="leftComponent" source="../left/leftComponent.fxml" />

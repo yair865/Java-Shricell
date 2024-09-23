@@ -30,7 +30,6 @@ public class DataManager implements CellDataProvider {
         for (Coordinate coordinate : changedCells) {
             BasicCellData cellData = cellDataMap.get(coordinate);
             if (cellData != null) {
-                // Update the cell data if it exists in the engine
                 CellDTO cellInfo = engine.getCellInfo(coordinate.toString());
                 cellData.setEffectiveValue(formatEffectiveValue(cellInfo.effectiveValue()));
                 cellData.setOriginalValue(cellInfo.originalValue());

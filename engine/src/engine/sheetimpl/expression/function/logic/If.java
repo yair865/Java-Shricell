@@ -20,7 +20,7 @@ public class If extends TrinaryExpression {
         Boolean conditionResult = conditionEffectiveValue.extractValueWithExpectation(Boolean.class);
 
         if (conditionResult == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "Invalid condition type");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         EffectiveValue result;

@@ -15,17 +15,13 @@ public class Or extends BinaryExpression {
 
     @Override
     public EffectiveValue evaluate(Expression exp1, Expression exp2, SheetReadActions spreadsheet) {
-        // Evaluate both expressions
         EffectiveValue effectiveValue1 = exp1.evaluate(spreadsheet);
         EffectiveValue effectiveValue2 = exp2.evaluate(spreadsheet);
 
-        // Extract the boolean values from both evaluated expressions
         Boolean boolValue1 = effectiveValue1.extractValueWithExpectation(Boolean.class);
         Boolean boolValue2 = effectiveValue2.extractValueWithExpectation(Boolean.class);
-
-        // If either of the expressions is not a boolean, return an error
         if (boolValue1 == null || boolValue2 == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "Both arguments must be booleans");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         // Perform the OR operation
