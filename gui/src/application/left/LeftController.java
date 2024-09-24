@@ -1,8 +1,8 @@
 package application.left;
 
 import application.app.ShticellController;
-import engine.api.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import application.left.range.RangeController;
+import application.left.sort.SortController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -207,7 +207,7 @@ public class LeftController {
     @FXML
     void addRangeButtonListener(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("RangeWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("range/rangeWindow.fxml"));
             Parent root = loader.load();
 
             RangeController rangeController = loader.getController();
@@ -278,12 +278,32 @@ public class LeftController {
     }
 
     @FXML
-    void filterListener(ActionEvent event) {
+    void sortListener(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("sort/SortWindow.fxml"));
+            Parent root = loader.load();
+            SortController sortController = loader.getController();
+            sortController.setShticellController(this.shticellController);
+            Stage sortStage = new Stage();
+            sortStage.setTitle("Sort Options");
+            sortStage.initModality(Modality.APPLICATION_MODAL);
+            sortStage.setScene(new Scene(root));
 
+            sortStage.initOwner(sortButton.getScene().getWindow());
+
+            sortStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Unable to open Sort Window");
+            alert.setContentText("An error occurred while opening the Sort Window: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     @FXML
-    void sortListener(ActionEvent event) {
+    void filterListener(ActionEvent event) {
 
     }
 

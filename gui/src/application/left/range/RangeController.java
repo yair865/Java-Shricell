@@ -1,5 +1,6 @@
-package application.left;
+package application.left.range;
 
+import application.left.LeftController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

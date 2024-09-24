@@ -71,6 +71,7 @@ public class HeaderController {
             String filePath = selectedFile.getAbsolutePath();
             filePathTextField.setText(filePath);
             shticellController.loadFile(filePath);
+            selectVersionChoiceBox.getItems().clear();
         }
     }
 

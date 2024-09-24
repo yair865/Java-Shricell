@@ -4,10 +4,11 @@ import engine.api.Coordinate;
 import engine.api.Range;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RangeImpl implements Range {
+public class RangeImpl implements Range , Serializable {
     private Coordinate start;
     private Coordinate end;
     private List<Coordinate> cellsInRange;

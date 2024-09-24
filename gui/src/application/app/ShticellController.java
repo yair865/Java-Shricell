@@ -3,6 +3,7 @@ package application.app;
 import application.body.BodyController;
 import application.header.HeaderController;
 import application.left.LeftController;
+import application.left.sort.SortController;
 import application.model.DataManager;
 import application.model.TemporaryCellDataProvider;
 import dto.dtoPackage.SpreadsheetDTO;
@@ -25,6 +26,8 @@ import java.util.List;
 import static dto.converter.CellDataProviderConverter.convertDTOToCellData;
 
 public class ShticellController {
+
+    int numberOfColumns;
 
     private Engine engine;
 
@@ -50,6 +53,8 @@ public class ShticellController {
     @FXML
     private AnchorPane leftComponent;
 
+    private SortController sortComponentController;
+
     public ShticellController() {
         this.engine = new EngineImpl();
         this.dataManager = new DataManager(engine); // Pass the Engine instance
@@ -59,7 +64,9 @@ public class ShticellController {
 
     @FXML
     public void initialize() {
-        if (headerComponentController != null  && bodyController != null && leftComponentController != null) {
+        if (headerComponentController != null  && bodyController != null
+                && leftComponentController != null ) {
+
             headerComponentController.setShticellController(this);
             bodyController.setShticellController(this);
             leftComponentController.setShticellController(this);
@@ -114,6 +121,7 @@ public class ShticellController {
         loadTask.setOnSucceeded(event -> {
             dataManager.getCellDataMap().clear();
             SpreadsheetDTO spreadSheet = engine.getSpreadsheetState();
+            numberOfColumns = spreadSheet.columns();
             convertDTOToCellData(dataManager.getCellDataMap(), spreadSheet);
             bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(),
                     spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
@@ -209,6 +217,13 @@ public class ShticellController {
     }
 
     public LeftController getLeftComponentController() {
-        return this.leftComponentController;
+        return null;
+    }
+
+    public void sortSheet(String cellsRange, List<Character> selectedCharacters) {
+    }
+
+    public int getNumberOfColumns() {
+        return numberOfColumns;
     }
 }
