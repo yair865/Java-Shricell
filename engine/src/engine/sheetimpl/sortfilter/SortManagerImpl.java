@@ -7,12 +7,13 @@ import engine.sheetimpl.SpreadsheetImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.row.RowImpl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Character.toUpperCase;
 
-public class SortManagerImpl implements SortManager {
+public class SortManagerImpl implements SortManager , Serializable {
 
     public SortManagerImpl() {
     }

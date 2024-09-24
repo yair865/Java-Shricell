@@ -2,12 +2,13 @@ package engine.sheetimpl.row;
 
 import engine.api.Cell;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RowImpl implements Row {
+public class RowImpl implements Row , Serializable {
     private final int rowNumber;
     private Map<Character, Double> values;
     private List<Cell> cellsInRow;
