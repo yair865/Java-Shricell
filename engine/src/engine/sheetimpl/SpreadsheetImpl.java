@@ -1,5 +1,6 @@
 package engine.sheetimpl;
 
+import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.*;
 import engine.generated.STLCell;
 import engine.generated.STLRange;
@@ -8,6 +9,8 @@ import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.range.RangeImpl;
+import engine.sheetimpl.sortfilter.SortManager;
+import engine.sheetimpl.sortfilter.SortManagerImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
 
 import java.io.*;
@@ -31,6 +34,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private int columnWidthUnits;
     private List<Coordinate> cellsThatHaveChanged;
     private Map<String, Range> ranges;
+    private SortManager sortManager;
 
 
     public SpreadsheetImpl() {
@@ -39,6 +43,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
         ranges = new HashMap<>();
+        sortManager = new SortManagerImpl();
         sheetVersion = 1;
     }
 
@@ -391,6 +396,12 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     @Override
     public boolean rangeExists(String rangeName) {
         return ranges.containsKey(rangeName);
+    }
+
+    @Override
+    public void sortSheet(String cellsRange, List<Character> selectedColumns) {
+    List<Coordinate> rangesToSort = ExpressionUtils.parseRange(cellsRange);
+    sortManager.sortRowsByColumns(rangesToSort , selectedColumns , this);
     }
 
     @Override

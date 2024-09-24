@@ -9,13 +9,13 @@ import java.util.Map;
 
 public class RowImpl implements Row {
     private final int rowNumber;
-    Map<Character,Double> values;
-    List<Cell> cellsInRow;
+    private Map<Character, Double> values;
+    private List<Cell> cellsInRow;
 
     public RowImpl(int rowNumber) {
         this.rowNumber = rowNumber;
-        values = new HashMap<Character,Double>();
-        cellsInRow = new ArrayList<Cell>();
+        this.values = new HashMap<>();
+        this.cellsInRow = new ArrayList<>();
     }
 
     @Override
@@ -28,4 +28,17 @@ public class RowImpl implements Row {
         return values.get(columnIndex);
     }
 
+    public void addCellToRow(Cell cell, Double value) {
+        if (cell != null) {
+
+            cellsInRow.add(cell);
+
+            char columnIndex = (char) ('A' + cell.getCoordinate().column() - 1);
+            values.put(columnIndex, value);
+        }
+    }
+
+    public List<Cell> getCellsInRow() {
+        return cellsInRow;
+    }
 }

@@ -220,7 +220,8 @@ public class ShticellController {
         return null;
     }
 
-    public void sortSheet(String cellsRange, List<Character> selectedCharacters) {
+    public void sortSheet(String cellsRange, List<Character> selectedColumns) {
+        engine.sort(cellsRange,selectedColumns);
     }
 
     public int getNumberOfColumns() {

@@ -1,5 +1,6 @@
 package engine.engineimpl;
 
+import dto.converter.SheetConverter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.CellReadActions;
@@ -104,8 +105,7 @@ public class EngineImpl implements Engine, Serializable{
     }
 
     @Override
-    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId)
-    {
+    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
         spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
@@ -190,8 +190,7 @@ public class EngineImpl implements Engine, Serializable{
 
 
     @Override
-    public SpreadsheetDTO getSpreadSheetByVersion(int version)
-    {
+    public SpreadsheetDTO getSpreadSheetByVersion(int version) {
         validateSheetIsLoaded();
         return convertSheetToDTO(spreadsheetsByVersions.get(version));
     }
@@ -202,22 +201,19 @@ public class EngineImpl implements Engine, Serializable{
     }
 
     @Override
-    public void setSingleCellTextColor(String cellId, String textColor)
-    {
+    public void setSingleCellTextColor(String cellId, String textColor) {
         validateSheetIsLoaded();
         spreadsheetsByVersions.get(currentSpreadSheetVersion).setTextColor(cellId,textColor);
     }
 
     @Override
-    public void setSingleCellBackGroundColor(String cellId, String backGroundColor)
-    {
+    public void setSingleCellBackGroundColor(String cellId, String backGroundColor) {
         validateSheetIsLoaded();
         spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
     }
 
     @Override
-    public void addRangeToSheet(String rangeName, String rangeDefinition)
-    {
+    public void addRangeToSheet(String rangeName, String rangeDefinition) {
         validateSheetIsLoaded();
         if (spreadsheetsByVersions.get(currentSpreadSheetVersion).rangeExists(rangeName)) {
             throw new IllegalArgumentException("A range with the name '" + rangeName + "' already exists.");
@@ -232,9 +228,17 @@ public class EngineImpl implements Engine, Serializable{
     }
 
     @Override
-    public List<Coordinate> getRangeByName(final String rangeName)
-    {
+    public List<Coordinate> getRangeByName(final String rangeName) {
         validateSheetIsLoaded();
         return spreadsheetsByVersions.get(currentSpreadSheetVersion).getRangeByName(rangeName).getCoordinates();
+    }
+
+    @Override
+    public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) {
+        validateSheetIsLoaded();
+         Spreadsheet sheetToSort = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
+         sheetToSort.sortSheet(cellsRange,selectedColumns);
+
+         return SheetConverter.convertSheetToDTO(sheetToSort);
     }
 }

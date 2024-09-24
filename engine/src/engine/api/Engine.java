@@ -40,4 +40,5 @@ public interface Engine {
     void removeRangeFromSheet(String name);
 
     List<Coordinate> getRangeByName(String rangeName);
+    SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns);
 }

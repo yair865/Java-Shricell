@@ -1,5 +1,7 @@
 package engine.api;
 
+import dto.dtoPackage.SpreadsheetDTO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,5 +24,6 @@ public interface SheetReadActions {
     Map<String,Range> getRanges();
     Range getRangeByName(String name);
     boolean rangeExists(String rangeName);
+    void sortSheet(String cellsRange, List<Character> selectedColumns);
 }
 
