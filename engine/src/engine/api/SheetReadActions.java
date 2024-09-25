@@ -1,6 +1,6 @@
 package engine.api;
 
-import dto.dtoPackage.SpreadsheetDTO;
+import engine.sheetimpl.range.Range;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ public interface SheetReadActions {
     int getColumnWidthUnits();
     Spreadsheet copySheet();
     List<Coordinate> getCellsThatHaveChanged();
-    Map<String,Range> getRanges();
+    Map<String, Range> getRanges();
     Range getRangeByName(String name);
     boolean rangeExists(String rangeName);
     void sortSheet(String cellsRange, List<Character> selectedColumns);

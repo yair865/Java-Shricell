@@ -1,8 +1,7 @@
-package engine.sheetimpl.sortfilter;
+package engine.sheetimpl.sort;
 
 import engine.api.Coordinate;
 import engine.api.Spreadsheet;
-import engine.sheetimpl.row.RowImpl;
 
 import java.util.List;
 

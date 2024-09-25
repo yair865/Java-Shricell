@@ -1,6 +1,5 @@
 package engine.sheetimpl;
 
-import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.*;
 import engine.generated.STLCell;
 import engine.generated.STLRange;
@@ -8,9 +7,10 @@ import engine.generated.STLSheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.range.Range;
 import engine.sheetimpl.range.RangeImpl;
-import engine.sheetimpl.sortfilter.SortManager;
-import engine.sheetimpl.sortfilter.SortManagerImpl;
+import engine.sheetimpl.sort.SortManager;
+import engine.sheetimpl.sort.SortManagerImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
 
 import java.io.*;
@@ -401,7 +401,8 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     @Override
     public void sortSheet(String cellsRange, List<Character> selectedColumns) {
     List<Coordinate> rangesToSort = ExpressionUtils.parseRange(cellsRange);
-    sortManager.sortRowsByColumns(rangesToSort , selectedColumns , this);
+        validateRangeCoordinates(rangesToSort.getFirst(), rangesToSort.getLast());
+        sortManager.sortRowsByColumns(rangesToSort , selectedColumns , this);
     }
 
     @Override
@@ -413,7 +414,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         List<Coordinate> usingCells = new ArrayList<>();
         for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             Cell cell = entry.getValue();
-            if (cell.getOriginalValue().contains("{SUM," + name + "}") || cell.getOriginalValue().contains("{AVG," + name + "}")) {
+            if (cell.getOriginalValue().contains("{SUM," + name + "}") || cell.getOriginalValue().contains("{AVERAGE," + name + "}")) {
                 usingCells.add(entry.getKey());
             }
         }
@@ -429,8 +430,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     private void addRangeHelper(String name, Coordinate start, Coordinate end) {
-        validateCoordinateInbound(start);
-        validateCoordinateInbound(end);
+        validateRangeCoordinates(start, end);
         if (!ranges.containsKey(name)) {
             ranges.put(name, new RangeImpl(start, end));
         } else {
@@ -438,9 +438,18 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         }
     }
 
+    private void validateRangeCoordinates(Coordinate start, Coordinate end) {
+        validateCoordinateInbound(start);
+        validateCoordinateInbound(end);
+
+        if (start.row() > end.row() || (start.row() == end.row() && start.column() > end.column())) {
+            throw new IllegalArgumentException("Invalid range: " + start + " to " + end + ". Start coordinate must be top-left of the end coordinate.");
+        }
+    }
+
     private List<Coordinate> extractRangeFunction(String expression) {
         List<Coordinate> rangeCoordinates = new ArrayList<>();
-        if (expression.startsWith("{SUM") || expression.startsWith("{AVG")) {
+        if (expression.startsWith("{SUM") || expression.startsWith("{AVERAGE")) {
             String rangeName = extractRangeNameFromBrackets(expression);
 
             rangeCoordinates = this.getRangeByName(rangeName).getCoordinates();

@@ -1,7 +1,8 @@
-package engine.api;
+package engine.engineimpl;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.api.Coordinate;
 
 import java.io.IOException;
 import java.util.List;

@@ -10,15 +10,13 @@
     -fx-background-color: #ffffff;
     -fx-text-fill: black;
 }
-
-.depends-on-cell {
+.influence-on-cell {
     -fx-effect: dropshadow(gaussian, rgba(0, 128, 255, 0.5), 5, 0.5, 0, 0);
     -fx-border-style: solid;
     -fx-border-width: 2px;
     -fx-border-color: rgba(0, 128, 255, 0.75);
 }
-
-.influence-on-cell {
+.depends-on-cell {
     -fx-effect: dropshadow(gaussian, rgba(127, 255, 0, 0.5), 5, 0.5, 0, 0);
     -fx-border-style: solid;
     -fx-border-width: 2px;

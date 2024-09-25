@@ -8,17 +8,18 @@ import application.model.DataManager;
 import application.model.TemporaryCellDataProvider;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.Coordinate;
-import engine.api.Engine;
+import engine.engineimpl.Engine;
 import engine.engineimpl.EngineImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -54,6 +55,8 @@ public class ShticellController {
     private AnchorPane leftComponent;
 
     private SortController sortComponentController;
+
+    private SimpleBooleanProperty isFileLoaded = new SimpleBooleanProperty(false);
 
     public ShticellController() {
         this.engine = new EngineImpl();
@@ -128,14 +131,16 @@ public class ShticellController {
             applicationWindow.setCenter(bodyController.getBody());
             headerComponentController.setVersionsChoiceBox();
             leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
+            headerComponentController.setPathTextField(filePath);
 
             progressAlert.close();
             System.out.println("Successfully loaded: " + filePath);
+            isFileLoaded.set(true);
         });
 
         loadTask.setOnFailed(event -> {
             progressAlert.close();
-            headerComponentController.clearNewValueTextField();
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Loading File");
             alert.setHeaderText("An error occurred while loading the file.");
@@ -179,8 +184,12 @@ public class ShticellController {
     }
 
     public void showSpreadsheetVersion(int version) {
+        SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version);
+        displayTempSheet("Spreadsheet Version " + version, spreadsheetDTO);
+    }
+
+    private void displayTempSheet(String title, SpreadsheetDTO spreadsheetDTO) {
         try {
-            SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version);
             TemporaryCellDataProvider tempProvider = new TemporaryCellDataProvider();
             convertDTOToCellData(tempProvider.getTemporaryCellDataMap(), spreadsheetDTO);
 
@@ -195,16 +204,17 @@ public class ShticellController {
 
             Stage newStage = new Stage();
             newStage.setScene(new Scene(tempBodyController.getBody()));
-            newStage.setTitle("Spreadsheet Version " + version);
+            newStage.setTitle(title);
+            newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public BodyController getBodyController()
-{
-    return bodyController;
-}
+
+    public BodyController getBodyController() {
+        return bodyController;
+    }
 
     public List<Coordinate> getDependents(String cellId) {
         SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
@@ -221,10 +231,16 @@ public class ShticellController {
     }
 
     public void sortSheet(String cellsRange, List<Character> selectedColumns) {
-        engine.sort(cellsRange,selectedColumns);
+       SpreadsheetDTO sortedSheet =  engine.sort(cellsRange,selectedColumns);
+        displayTempSheet("Sorted Sheet", sortedSheet);
+        
     }
 
     public int getNumberOfColumns() {
         return numberOfColumns;
+    }
+
+    public SimpleBooleanProperty isFileLoadedProperty() {
+        return isFileLoaded;
     }
 }

@@ -1,7 +1,7 @@
 package application.header;
 
 import application.app.ShticellController;
-import engine.api.Engine;
+import engine.engineimpl.Engine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -69,7 +69,6 @@ public class HeaderController {
 
         if (selectedFile != null) {
             String filePath = selectedFile.getAbsolutePath();
-            filePathTextField.setText(filePath);
             shticellController.loadFile(filePath);
             selectVersionChoiceBox.getItems().clear();
         }
@@ -94,6 +93,9 @@ public class HeaderController {
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
+        updateNewValueBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        newValueTextField.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        selectVersionChoiceBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
     }
 
     public void updateHeader(String cellId, String originalValue, int lastModifiedVersion) {
@@ -106,8 +108,8 @@ public class HeaderController {
         return this.newValueTextField;
     }
 
-    public void clearNewValueTextField() {
-        this.newValueTextField.setText("");;
+    public void setPathTextField(String path) {
+        this.filePathTextField.setText(path);;
     }
 
     public void setEngine(Engine engine) {

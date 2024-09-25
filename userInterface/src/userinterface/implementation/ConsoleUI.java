@@ -4,7 +4,7 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.Coordinate;
 import engine.api.EffectiveValue;
-import engine.api.Engine;
+import engine.engineimpl.Engine;
 import engine.engineimpl.EngineImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.utils.CellType;

@@ -27,7 +27,7 @@ public class LeftController {
     private Button setBackgroundColorBTN;
 
     @FXML
-    private Button setColorBTN;
+    private Button setTextColorBTN;
 
     @FXML
     private Button setColumnWidthBTN;
@@ -61,6 +61,17 @@ public class LeftController {
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
+        setBackgroundColorBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        setTextColorBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        setColumnWidthBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        setRowHeightBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        resetStyleBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        filterButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        sortButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        setAlignmentComboBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        addRangeButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        deleteRangeButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        rangesList.disableProperty().bind(shticellController.isFileLoadedProperty().not());
     }
 
     @FXML
@@ -68,14 +79,12 @@ public class LeftController {
         ObservableList<String> options = FXCollections.observableArrayList("Left", "Center", "Right");
         setAlignmentComboBox.setItems(options);
 
-        // Ensure selection is only cleared when a focus event happens, but not during deletion
         rangesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 shticellController.getBodyController().highlightSelectedRange(newValue);
             }
         });
 
-        // Clear selection when list loses focus, except during deletion
         rangesList.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && !deleteRangeButton.isPressed()) {
                 clearSelection();

@@ -5,7 +5,7 @@ import application.body.BasicCellData;
 import dto.dtoPackage.CellDTO;
 import engine.api.Coordinate;
 import engine.api.EffectiveValue;
-import engine.api.Engine;
+import engine.engineimpl.Engine;
 import engine.sheetimpl.utils.CellType;
 
 import java.util.HashMap;

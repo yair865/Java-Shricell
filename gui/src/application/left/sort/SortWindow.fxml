@@ -26,7 +26,7 @@
                         <Insets bottom="4.0" left="30.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="cellsToSortTextField" prefHeight="25.0" prefWidth="292.0" promptText="&lt;top-left-cell&gt;..&lt;bottom-right-cell&gt; (e.g., A1..C3) " />
+                  <TextField fx:id="cellsToSortTextField" prefHeight="25.0" prefWidth="292.0" promptText="&lt;top-left-cell&gt;..&lt;bottom-right-cell&gt; (e.g., A1..C3) " text="&lt;top-left-cell&gt;..&lt;bottom-right-cell&gt; (e.g., A1..C3) " />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="63.0" prefWidth="471.0" spacing="20.0">

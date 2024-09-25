@@ -5,7 +5,6 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.CellReadActions;
 import engine.api.Coordinate;
-import engine.api.Engine;
 import engine.api.Spreadsheet;
 import engine.generated.STLSheet;
 import engine.sheetimpl.SpreadsheetImpl;

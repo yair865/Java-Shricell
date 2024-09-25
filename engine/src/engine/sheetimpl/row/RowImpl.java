@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RowImpl implements Row , Serializable {
+public class RowImpl implements Row, Serializable {
     private final int rowNumber;
-    private Map<Character, Double> values;
+    private Map<Integer, Double> values;
     private List<Cell> cellsInRow;
 
     public RowImpl(int rowNumber) {
@@ -25,21 +25,31 @@ public class RowImpl implements Row , Serializable {
     }
 
     @Override
-    public Double getValue(char columnIndex) {
+    public Double getValue(int columnIndex) {
         return values.get(columnIndex);
     }
 
+    @Override
     public void addCellToRow(Cell cell, Double value) {
         if (cell != null) {
-
             cellsInRow.add(cell);
-
-            char columnIndex = (char) ('A' + cell.getCoordinate().column() - 1);
+            int columnIndex = cell.getCoordinate().column();
             values.put(columnIndex, value);
         }
     }
 
+    @Override
     public List<Cell> getCellsInRow() {
         return cellsInRow;
+    }
+
+    @Override
+    public Cell getCell(int columnIndex) {
+        for (Cell cell : cellsInRow) {
+            if (cell.getCoordinate().column() == columnIndex) {
+                return cell;
+            }
+        }
+        return null;
     }
 }

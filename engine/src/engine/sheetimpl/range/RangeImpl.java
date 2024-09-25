@@ -1,7 +1,6 @@
 package engine.sheetimpl.range;
 
 import engine.api.Coordinate;
-import engine.api.Range;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.Serializable;
@@ -27,10 +26,6 @@ public class RangeImpl implements Range , Serializable {
         int endRow = end.row();
         int startCol = start.column();
         int endCol = end.column();
-
-        if (startRow > endRow || startCol > endCol) {
-            throw new IllegalArgumentException("Invalid range: start coordinate must be less than or equal to end coordinate.");
-        }
 
         for (int row = startRow; row <= endRow; row++) {
             for (int col = startCol; col <= endCol; col++) {

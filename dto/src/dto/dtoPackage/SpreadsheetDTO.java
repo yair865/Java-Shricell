@@ -1,7 +1,7 @@
 package dto.dtoPackage;
 
 import engine.api.Coordinate;
-import engine.api.Range;
+import engine.sheetimpl.range.Range;
 
 import java.util.List;
 import java.util.Map;
