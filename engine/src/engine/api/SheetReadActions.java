@@ -4,6 +4,7 @@ import engine.sheetimpl.range.Range;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface SheetReadActions {
 
@@ -25,5 +26,6 @@ public interface SheetReadActions {
     Range getRangeByName(String name);
     boolean rangeExists(String rangeName);
     void sortSheet(String cellsRange, List<Character> selectedColumns);
+   List<String> getUniqueValuesFromColumn(char columnNumber);
 }
 

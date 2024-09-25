@@ -1,6 +1,7 @@
 package engine.sheetimpl.row;
 
 import engine.api.Cell;
+import engine.api.EffectiveValue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class RowImpl implements Row, Serializable {
     private final int rowNumber;
-    private Map<Integer, Double> values;
+    private Map<Integer, EffectiveValue> values;
     private List<Cell> cellsInRow;
 
     public RowImpl(int rowNumber) {
@@ -25,16 +26,16 @@ public class RowImpl implements Row, Serializable {
     }
 
     @Override
-    public Double getValue(int columnIndex) {
+    public EffectiveValue getValue(int columnIndex) {
         return values.get(columnIndex);
     }
 
     @Override
-    public void addCellToRow(Cell cell, Double value) {
+    public void addCellToRow(Cell cell, EffectiveValue effectiveValue) {
         if (cell != null) {
             cellsInRow.add(cell);
             int columnIndex = cell.getCoordinate().column();
-            values.put(columnIndex, value);
+            values.put(columnIndex, effectiveValue);
         }
     }
 

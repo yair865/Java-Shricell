@@ -6,8 +6,10 @@ import dto.dtoPackage.CellDTO;
 import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.engineimpl.Engine;
+import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.utils.CellType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,21 @@ public class DataManager implements CellDataProvider {
             }
         }
     }
+
+    public List<String> getEffectiveValuesForColumn(char column , int numberOfRows) {
+        List<String> effectiveValues = new ArrayList<>();
+
+        for (int row = 1; row <= numberOfRows; row++) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(row ,column - 'A' + 1);
+            BasicCellData cellData = getCellData(coordinate);
+
+            if (cellData != null && !(cellData.getEffectiveValue().isEmpty())) {
+                effectiveValues.add(cellData.getEffectiveValue());
+            }
+        }
+        return effectiveValues;
+    }
+
 
     public Map<Coordinate, BasicCellData> getCellDataMap() {
         return cellDataMap;

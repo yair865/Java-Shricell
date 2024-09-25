@@ -11,11 +11,15 @@ import engine.api.Coordinate;
 import engine.engineimpl.Engine;
 import engine.engineimpl.EngineImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -29,6 +33,7 @@ import static dto.converter.CellDataProviderConverter.convertDTOToCellData;
 public class ShticellController {
 
     int numberOfColumns;
+    int numberOfRows;
 
     private Engine engine;
 
@@ -60,16 +65,14 @@ public class ShticellController {
 
     public ShticellController() {
         this.engine = new EngineImpl();
-        this.dataManager = new DataManager(engine); // Pass the Engine instance
+        this.dataManager = new DataManager(engine);
         this.applicationWindow = new BorderPane();
         this.bodyController = new BodyController();
     }
 
     @FXML
     public void initialize() {
-        if (headerComponentController != null  && bodyController != null
-                && leftComponentController != null ) {
-
+        if (headerComponentController != null && bodyController != null && leftComponentController != null) {
             headerComponentController.setShticellController(this);
             bodyController.setShticellController(this);
             leftComponentController.setShticellController(this);
@@ -125,6 +128,7 @@ public class ShticellController {
             dataManager.getCellDataMap().clear();
             SpreadsheetDTO spreadSheet = engine.getSpreadsheetState();
             numberOfColumns = spreadSheet.columns();
+            numberOfRows = spreadSheet.rows();
             convertDTOToCellData(dataManager.getCellDataMap(), spreadSheet);
             bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(),
                     spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
@@ -155,37 +159,24 @@ public class ShticellController {
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
-            engine.updateCell(cellId, newValue);
+            engine.updateCell(cellId, newValue); // Risky operation
             List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
             dataManager.updateCellDataMap(cellsThatHaveChanged);
             headerComponentController.setVersionsChoiceBox();
             headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
 
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Update Error");
-            alert.setHeaderText("An error occurred while updating the cell.");
-            alert.setContentText("Error: " + e.getMessage() + "\nPlease try again.");
-
-            alert.showAndWait();
+            showErrorAlert("Update Error", "An error occurred while updating the cell.", e.getMessage());
         }
     }
 
-    public HeaderController getHeaderController() {
-        return headerComponentController;
-    }
-
-    public Engine getEngine() {
-        return this.engine;
-    }
-
-    public DataManager getDataManager() {
-        return dataManager;
-    }
-
     public void showSpreadsheetVersion(int version) {
-        SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version);
-        displayTempSheet("Spreadsheet Version " + version, spreadsheetDTO);
+        try {
+            SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version); // Risky operation
+            displayTempSheet("Spreadsheet Version " + version, spreadsheetDTO);
+        } catch (Exception e) {
+            showErrorAlert("Version Error", "An error occurred while retrieving the spreadsheet version.", e.getMessage());
+        }
     }
 
     private void displayTempSheet(String title, SpreadsheetDTO spreadsheetDTO) {
@@ -208,39 +199,86 @@ public class ShticellController {
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorAlert("Display Error", "An error occurred while displaying the temporary sheet.", e.getMessage());
         }
+    }
+
+    public List<Coordinate> getDependents(String cellId) {
+        try {
+            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState(); // Risky operation
+            return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+        } catch (Exception e) {
+            showErrorAlert("Dependency Error", "An error occurred while retrieving dependents.", e.getMessage());
+            return List.of();
+        }
+    }
+
+    public List<Coordinate> getReferences(String cellId) {
+        try {
+            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+            return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+        } catch (Exception e) {
+            showErrorAlert("Reference Error", "An error occurred while retrieving references.", e.getMessage());
+            return List.of();
+        }
+    }
+
+    public void sortSheet(String cellsRange, List<Character> selectedColumns) {
+        try {
+            SpreadsheetDTO sortedSheet = engine.sort(cellsRange, selectedColumns);
+            displayTempSheet("Sorted Sheet", sortedSheet);
+        } catch (Exception e) {
+            showErrorAlert("Sorting Error", "An error occurred while sorting the sheet.", e.getMessage());
+        }
+    }
+
+    public List<String> getEffectiveValuesForColumn(char column) {
+        try {
+            return engine.getUniqueValuesFromColumn(column);
+        } catch (Exception e) {
+            showErrorAlert("Column Retrieval Error", "An error occurred while retrieving values from the column.", e.getMessage());
+            return List.of();
+        }
+    }
+
+    public void applyFilter(Character selectedColumn, String filterArea, List<String> selectedValues) {
+        try {
+            SpreadsheetDTO filteredSheet = engine.filterSheet(selectedColumn, filterArea, selectedValues);
+            displayTempSheet("Filtered Sheet", filteredSheet);
+        } catch (Exception e) {
+            showErrorAlert("Filtering Error", "An error occurred while applying the filter.", e.getMessage());
+        }
+    }
+
+    private void showErrorAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public HeaderController getHeaderController() {
+        return headerComponentController;
+    }
+
+    public Engine getEngine() {
+        return engine;
     }
 
     public BodyController getBodyController() {
         return bodyController;
     }
 
-    public List<Coordinate> getDependents(String cellId) {
-        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
-        return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
-    }
-
-    public List<Coordinate> getReferences(String cellId) {
-        SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
-        return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
-    }
-
-    public LeftController getLeftComponentController() {
-        return null;
-    }
-
-    public void sortSheet(String cellsRange, List<Character> selectedColumns) {
-       SpreadsheetDTO sortedSheet =  engine.sort(cellsRange,selectedColumns);
-        displayTempSheet("Sorted Sheet", sortedSheet);
-        
+    public LeftController getLeftController() {
+        return leftComponentController;
     }
 
     public int getNumberOfColumns() {
         return numberOfColumns;
     }
 
-    public SimpleBooleanProperty isFileLoadedProperty() {
+    public BooleanProperty isFileLoadedProperty() {
         return isFileLoaded;
     }
 }

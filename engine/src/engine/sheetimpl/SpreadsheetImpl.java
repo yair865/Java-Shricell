@@ -7,6 +7,8 @@ import engine.generated.STLSheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.filter.FilterManager;
+import engine.sheetimpl.filter.FilterManagerImpl;
 import engine.sheetimpl.range.Range;
 import engine.sheetimpl.range.RangeImpl;
 import engine.sheetimpl.sort.SortManager;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static java.lang.Character.toUpperCase;
 
 public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private String sheetName;
@@ -35,6 +38,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private List<Coordinate> cellsThatHaveChanged;
     private Map<String, Range> ranges;
     private SortManager sortManager;
+    private FilterManager filterManager;
 
 
     public SpreadsheetImpl() {
@@ -44,6 +48,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         cellsThatHaveChanged = new ArrayList<>();
         ranges = new HashMap<>();
         sortManager = new SortManagerImpl();
+        filterManager = new FilterManagerImpl();
         sheetVersion = 1;
     }
 
@@ -406,6 +411,42 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
+    public List<String> getUniqueValuesFromColumn(char columnNumber) {
+        Set<EffectiveValue> uniqueValues = new HashSet<>();
+        int totalRows = this.getRows();
+        int colIndex = parseColumn(columnNumber);
+
+        for (int row = 1; row <= totalRows; row++) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(row, colIndex);
+            Cell cell = this.getActiveCells().get(coordinate);
+
+            if (cell != null) {
+                EffectiveValue effectiveValue = cell.getEffectiveValue();
+                if (effectiveValue != null) {
+                    uniqueValues.add(effectiveValue);
+                }
+            }
+        }
+
+        List<String> uniqueStrings = new ArrayList<>();
+
+        for (EffectiveValue effectiveValue : uniqueValues) {
+            Object value = effectiveValue.getValue();
+            if (value != null) {
+                uniqueStrings.add(String.valueOf(value));
+            }
+        }
+
+        return uniqueStrings;
+    }
+
+
+
+    private int parseColumn(char column) {
+        return (toUpperCase(column) - 'A' + 1);
+    }
+
+    @Override
     public void removeRange(String name) {
         if (!ranges.containsKey(name)) {
             throw new IllegalArgumentException("The range '" + name + "' does not exist.");
@@ -473,6 +514,13 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void filter(Character selectedColumn, String cellsRange, List<String> selectedValues) {
+        List<Coordinate> rangesToFilter = ExpressionUtils.parseRange(cellsRange);
+        validateRangeCoordinates(rangesToFilter.getFirst(), rangesToFilter.getLast());
+        filterManager.filterSheet(selectedColumn , rangesToFilter , selectedValues ,this);
     }
 }
 

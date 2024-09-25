@@ -69,7 +69,6 @@ public class SortController {
         });
     }
 
-
     private void addColumnPicker() {
         int numberOfColumns = 0;
         if (columnCountProperty.get() < 5) {
@@ -133,7 +132,7 @@ public class SortController {
     }
 
     private void closeWindow() {
-        Stage stage = (Stage) applyButton.getScene().getWindow();
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 

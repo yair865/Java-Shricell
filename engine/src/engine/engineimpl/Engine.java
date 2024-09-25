@@ -3,10 +3,12 @@ package engine.engineimpl;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.Coordinate;
+import engine.api.EffectiveValue;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface Engine {
 
@@ -42,4 +44,8 @@ public interface Engine {
 
     List<Coordinate> getRangeByName(String rangeName);
     SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns);
+
+    SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues);
+
+    List<String> getUniqueValuesFromColumn(char columnNumber);
 }

@@ -3,6 +3,7 @@ package engine.sheetimpl.sort;
 import engine.api.Cell;
 import engine.api.Coordinate;
 import engine.api.Spreadsheet;
+import engine.api.EffectiveValue;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.row.RowImpl;
 
@@ -16,11 +17,11 @@ public class SortManagerImpl implements SortManager, Serializable {
 
     public SortManagerImpl() {
     }
+
     @Override
     public void sortRowsByColumns(List<Coordinate> rangeCoordinates, List<Character> columnIndices, Spreadsheet spreadsheet) {
         Coordinate start = rangeCoordinates.get(0);
         Coordinate end = rangeCoordinates.get(1);
-
 
         List<Integer> columnIndicesToSort = new ArrayList<>();
         for (Character column : columnIndices) {
@@ -35,9 +36,10 @@ public class SortManagerImpl implements SortManager, Serializable {
 
         rows.sort((row1, row2) -> {
             for (Integer columnIndex : columnIndicesToSort) {
-                Double value1 = row1.getValue(columnIndex);
-                Double value2 = row2.getValue(columnIndex);
+                EffectiveValue value1 = row1.getValue(columnIndex);
+                EffectiveValue value2 = row2.getValue(columnIndex);
 
+                // Null handling
                 if (value1 == null && value2 == null) {
                     continue;
                 }
@@ -48,7 +50,20 @@ public class SortManagerImpl implements SortManager, Serializable {
                     return 1;
                 }
 
-                int comparisonResult = value1.compareTo(value2);
+                Double extractedValue1 = value1.extractValueWithExpectation(Double.class);
+                Double extractedValue2 = value2.extractValueWithExpectation(Double.class);
+
+                if (extractedValue1 == null && extractedValue2 == null) {
+                    continue;
+                }
+                if (extractedValue1 == null) {
+                    return -1;
+                }
+                if (extractedValue2 == null) {
+                    return 1;
+                }
+
+                int comparisonResult = extractedValue1.compareTo(extractedValue2);
                 if (comparisonResult != 0) {
                     return comparisonResult;
                 }
@@ -73,9 +88,12 @@ public class SortManagerImpl implements SortManager, Serializable {
             for (int col = start.column(); col <= end.column(); col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);
                 Cell cell = spreadsheet.getActiveCells().get(cellCoordinate);
-                Double value = (cell != null) ? cell.getEffectiveValue().extractValueWithExpectation(Double.class) : null;
-                rowImpl.addCellToRow(cell, value);
-                isEmptyRow = false;
+                EffectiveValue effectiveValue = (cell != null) ? cell.getEffectiveValue() : null;
+
+                rowImpl.addCellToRow(cell, effectiveValue);
+                if (effectiveValue != null) {
+                    isEmptyRow = false;
+                }
             }
 
             if (!isEmptyRow) {

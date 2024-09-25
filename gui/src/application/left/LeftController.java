@@ -1,6 +1,8 @@
 package application.left;
 
 import application.app.ShticellController;
+import application.error.ErrorDisplay;
+import application.left.filter.FilterController;
 import application.left.range.RangeController;
 import application.left.sort.SortController;
 import javafx.collections.FXCollections;
@@ -55,7 +57,6 @@ public class LeftController {
 
     @FXML
     private ListView<String> rangesList;
-
 
     private ShticellController shticellController;
 
@@ -247,18 +248,10 @@ public class LeftController {
                 shticellController.getBodyController().clearHighlightedCells();
                 clearSelection();
             } catch (IllegalStateException e) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Error");
-                alert.setHeaderText("Range In Use");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                new ErrorDisplay("Range In Use", e.getMessage()).showError(e.getMessage());
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No Selection");
-            alert.setHeaderText("No Range Selected");
-            alert.setContentText("Please select a range to delete.");
-            alert.showAndWait();
+            new ErrorDisplay("No Selection", "Please select a range to delete.").showError("");
         }
     }
 
@@ -297,23 +290,29 @@ public class LeftController {
             sortStage.setTitle("Sort Options");
             sortStage.initModality(Modality.APPLICATION_MODAL);
             sortStage.setScene(new Scene(root));
-
             sortStage.initOwner(sortButton.getScene().getWindow());
-
             sortStage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unable to open Sort Window");
-            alert.setContentText("An error occurred while opening the Sort Window: " + e.getMessage());
-            alert.showAndWait();
+            new ErrorDisplay("Unable to open Sort Window", "An error occurred while opening the Sort Window:").showError(e.getMessage());
         }
     }
 
     @FXML
     void filterListener(ActionEvent event) {
-
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("filter/FilterWindow.fxml"));
+            Parent root = loader.load();
+            FilterController filterController = loader.getController();
+            filterController.setShticellController(this.shticellController);
+            Stage filterStage = new Stage();
+            filterStage.setTitle("Filter Options");
+            filterStage.initModality(Modality.APPLICATION_MODAL);
+            filterStage.setScene(new Scene(root));
+            filterStage.initOwner(filterButton.getScene().getWindow());
+            filterStage.showAndWait();
+        } catch (IOException e) {
+            new ErrorDisplay("Unable to open Filter Window", "An error occurred while opening the Filter Window:").showError(e.getMessage());
+        }
     }
 
     public void updateRangeList(Set<String> strings) {
