@@ -22,6 +22,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -43,7 +44,7 @@ public class ShticellController {
     private BorderPane applicationWindow;
 
     @FXML
-    private ScrollPane headerComponent;
+    private GridPane headerComponent;
 
     @FXML
     private HeaderController headerComponentController;
