@@ -21,7 +21,7 @@ Button {
     -fx-font-size: 12px; /* Font size for buttons */
     -fx-font-weight: bold; /* Bold text */
     -fx-background-radius: 3px; /* Rounded corners */
-    -fx-border-color: rgba(170, 0, 25, 1); /* Thundercats red border */
+    -fx-border-color: rgb(12, 12, 12); /* Thundercats red border */
     -fx-border-width: 1px; /* Border width */
 }
 
@@ -54,9 +54,8 @@ StackPane .label {
     -fx-font-weight: bold; /* Bold text */
 }
 
-/* ComboBox styles */
 .combo-box-base {
-    -fx-background-color: rgba(170, 0, 25, 0.9); /* Thundercats red */
+    -fx-background-color: rgba(170, 0, 25, 0.9);
     -fx-prompt-text-fill: white; /* White prompt text */
     -fx-font-size: 12px; /* Font size for combo box */
     -fx-font-weight: bold; /* Bold text */

@@ -6,6 +6,13 @@ GridPane {
     -fx-vgap: 5px;
 }
 
+.header-label{
+    -fx-font-family: "Aharoni";
+    -fx-font-size: 35px;
+    -fx-font-weight: bold;
+}
+
+
 TextField {
     -fx-background-color: white;
     -fx-border-color: #d9d9d9;
@@ -36,6 +43,12 @@ Button:pressed {
 }
 
 ChoiceBox  {
+    -fx-background-color: #4caf50;
+    -fx-border-color: #388e3c;
+    -fx-border-width: 1px;
+}
+
+ComboBox  {
     -fx-background-color: #4caf50;
     -fx-border-color: #388e3c;
     -fx-border-width: 1px;

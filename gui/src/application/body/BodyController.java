@@ -35,6 +35,9 @@ public class BodyController {
         this.gridPane = new GridPane();
         this.scrollPane = new ScrollPane(gridPane);
         scrollPane.getStyleClass().add("scroll-pane");
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        gridPane.setStyle(" -fx-background-color: #e4f1db;");
         gridPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("bodyStyle.css")).toExternalForm());
     }
 

@@ -1,7 +1,4 @@
 
-.scroll-pane .grid {
-    -fx-background-color: #ffdd00;
-}
 
 .cell, .header {
     -fx-border-color: #c0c0c0;
@@ -9,6 +6,7 @@
     -fx-font-weight: bold;
 }
 
+/* Customize cell appearance */
 .cell {
     -fx-background-color: #ffffff;
     -fx-text-fill: black;
