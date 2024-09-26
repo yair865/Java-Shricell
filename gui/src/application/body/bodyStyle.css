@@ -1,6 +1,6 @@
-/* Apply this style to both headers and regular cells */
+
 .cell, .header {
-    -fx-border-color: #c0c0c0; /* Light gray border */
+    -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
     -fx-font-weight: bold;
 }

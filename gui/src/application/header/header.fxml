@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<GridPane maxWidth="1.7976931348623157E308" minHeight="238.0" minWidth="1050.0" prefHeight="238.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.header.HeaderController">
+<GridPane maxWidth="1.7976931348623157E308" minHeight="238.0" minWidth="1050.0" prefHeight="238.0" prefWidth="1050.0" stylesheets="@skin/headerThunderCats.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.header.HeaderController">
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
    </columnConstraints>
@@ -25,22 +26,11 @@
       <RowConstraints maxHeight="33.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="231.0" text="Shticell App" textFill="#009c60" underline="true">
-         <font>
-            <Font name="Aharoni Bold" size="33.0" />
-         </font>
+      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="231.0" text="Shticell App" underline="true">
          <GridPane.margin>
             <Insets left="400.0" />
          </GridPane.margin>
       </Label>
-      <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <padding>
-            <Insets bottom="1.0" />
-         </padding>
-      </Separator>
       <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
          <children>
             <Button fx:id="btnFileChooser" minHeight="40.0" minWidth="30.0" mnemonicParsing="false" onAction="#loadFileButtonListener" prefHeight="40.0" prefWidth="109.0" text="Load File" />
@@ -52,13 +42,13 @@
             <TextField fx:id="filePathTextField" disable="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="773.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <HBox alignment="CENTER_LEFT" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+      <HBox alignment="CENTER_LEFT" prefHeight="95.0" prefWidth="1030.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
          <children>
-            <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" style="-fx-border-color: black;" text="Selected Cell Id" textAlignment="CENTER" />
-            <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" style="-fx-border-color: black;" styleClass="ActionLine" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+            <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" text="Selected Cell Id" textAlignment="CENTER" />
+            <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
             <TextField fx:id="newValueTextField" prefHeight="25.0" prefWidth="181.0" promptText="Enter new value" HBox.hgrow="ALWAYS" />
             <Button fx:id="updateNewValueBTN" mnemonicParsing="false" onAction="#updateValueButtonListener" prefHeight="25.0" prefWidth="124.0" text="Update value" />
-            <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" style="-fx-border-color: black;" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
+            <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
             <StackPane prefHeight="25.0" prefWidth="152.0">
                <children>
                   <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="151.0">
@@ -78,6 +68,30 @@
             </StackPane>
          </children>
       </HBox>
+      <VBox alignment="BOTTOM_CENTER" spacing="10.0">
+         <GridPane.margin>
+            <Insets left="850.0" />
+         </GridPane.margin>
+         <children>
+            <Label text="Change skin" underline="true">
+               <font>
+                  <Font name="Aharoni Bold" size="14.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="skinChoiceBox" prefHeight="25.0" prefWidth="150.0">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="Option 1" />
+                     <String fx:value="Option 2" />
+                     <String fx:value="Option 3" />
+                  </FXCollections>
+               </items>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ChoiceBox>
+         </children>
+      </VBox>
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -28,15 +28,13 @@ public class BodyController {
 
     private ScrollPane scrollPane;
 
-    private StackPane centeredGridPane;
 
     private Set<String> highlightedCells = new HashSet<>();
 
     public BodyController() {
         this.gridPane = new GridPane();
-        this.centeredGridPane = new StackPane(gridPane);
-        this.scrollPane = new ScrollPane(centeredGridPane);
-
+        this.scrollPane = new ScrollPane(gridPane);
+        scrollPane.getStyleClass().add("scroll-pane");
         gridPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("bodyStyle.css")).toExternalForm());
     }
 
@@ -44,6 +42,9 @@ public class BodyController {
         gridPane.getChildren().clear();
         gridPane.getRowConstraints().clear();
         gridPane.getColumnConstraints().clear();
+
+        gridPane.setMinWidth((columnWidthUnits*columns) + 30);
+        gridPane.setMinHeight((rowHeightUnits*rows) + 30);
 
         for (int row = 0; row <= rows; row++) {
             RowConstraints rowConstraints = new RowConstraints();
@@ -62,7 +63,6 @@ public class BodyController {
         }
         gridPane.getColumnConstraints().set(0, new ColumnConstraints(30));
 
-        // Create header labels
         for (int col = 0; col < columns; col++) {
             Label columnLabel = new Label(getColumnLetter(col + 1));
             columnLabel.setAlignment(Pos.CENTER);
@@ -80,7 +80,6 @@ public class BodyController {
             rowLabel.getStyleClass().add("header");
             gridPane.add(rowLabel, 0, row + 1);
         }
-
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -114,12 +113,9 @@ public class BodyController {
                 }
             }
         }
-
         gridPane.setGridLinesVisible(false);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
-        centeredGridPane.setPrefSize(ScrollPane.USE_COMPUTED_SIZE, ScrollPane.USE_COMPUTED_SIZE);
-        centeredGridPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
     }
 
     public ScrollPane getBody() {

@@ -4,6 +4,7 @@ import application.app.ShticellController;
 import engine.engineimpl.Engine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -43,6 +44,9 @@ public class HeaderController {
     @FXML
     private ChoiceBox<Integer> selectVersionChoiceBox;
 
+    @FXML
+    private ChoiceBox<String> skinChoiceBox;
+
     private static final String DEFAULT_NEW_VALUE_PROMPT = "Enter new value";
 
     @FXML
@@ -54,8 +58,28 @@ public class HeaderController {
                 selectVersionChoiceBox.getSelectionModel().clearSelection();
             }
         });
+
+        skinChoiceBox.setOnAction(event -> {
+            String selectedSkin = skinChoiceBox.getValue();
+            switch (selectedSkin) {
+                case "Skin 1":
+                    applySkin("/application/skin/skin1.css");
+                    break;
+                case "Skin 2":
+                    applySkin("/application/skin/skin2.css");
+                    break;
+                default:
+                    applySkin("/application/skin/default.css");
+            }
+        });
     }
 
+    private void applySkin(String cssFile) {
+        Stage stage = (Stage) btnFileChooser.getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    }
     @FXML
     public void loadFileButtonListener() {
         FileChooser fileChooser = new FileChooser();

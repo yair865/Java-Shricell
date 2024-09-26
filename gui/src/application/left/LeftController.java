@@ -47,7 +47,13 @@ public class LeftController {
     private Button sortButton;
 
     @FXML
-    private ComboBox<String> setAlignmentComboBox;
+    private Button leftAlignment;
+
+    @FXML
+    private Button rightAlignment;
+
+    @FXML
+    private Button centerAlignment;
 
     @FXML
     private Button addRangeButton;
@@ -69,7 +75,9 @@ public class LeftController {
         resetStyleBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         filterButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         sortButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
-        setAlignmentComboBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        leftAlignment.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        rightAlignment.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        centerAlignment.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         addRangeButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         deleteRangeButton.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         rangesList.disableProperty().bind(shticellController.isFileLoadedProperty().not());
@@ -77,9 +85,6 @@ public class LeftController {
 
     @FXML
     private void initialize() {
-        ObservableList<String> options = FXCollections.observableArrayList("Left", "Center", "Right");
-        setAlignmentComboBox.setItems(options);
-
         rangesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 shticellController.getBodyController().highlightSelectedRange(newValue);
@@ -109,11 +114,7 @@ public class LeftController {
                 int newValue = Integer.parseInt(value);
                 onSuccess.accept(newValue);
             } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Invalid Input");
-                alert.setHeaderText("Invalid input");
-                alert.setContentText("Please enter a valid number.");
-                alert.showAndWait();
+                new ErrorDisplay("Invalid Input", "Please enter a valid number.").showError(null);
             }
         });
     }
@@ -186,30 +187,38 @@ public class LeftController {
     }
 
     @FXML
-    void setAlignmentListener(ActionEvent event) {
-        int selectedIndex = setAlignmentComboBox.getSelectionModel().getSelectedIndex();
-        switch (selectedIndex) {
-            case 0:
-                this.shticellController.getBodyController().alignCells(javafx.geometry.Pos.CENTER_LEFT);
-                break;
-            case 1:
-                this.shticellController.getBodyController().alignCells(Pos.CENTER);
-                break;
-            case 2:
-                this.shticellController.getBodyController().alignCells(Pos.CENTER_RIGHT);
-                break;
-        }
+    void leftAlignmentListener(ActionEvent event) {
+        this.shticellController.getBodyController().alignCells(javafx.geometry.Pos.CENTER_LEFT);
+    }
+
+    @FXML
+    void centerAlignmentListener(ActionEvent event) {
+        this.shticellController.getBodyController().alignCells(Pos.CENTER);
+    }
+
+    @FXML
+    void rightAlignmentListener(ActionEvent event) {
+        this.shticellController.getBodyController().alignCells(Pos.CENTER_RIGHT);
     }
 
     @FXML
     void resetStyleListener(ActionEvent event) {
         String cellId = this.shticellController.getHeaderController().getCellId();
 
-        //Reset text color
+        if (cellId == null || cellId.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Cell Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please choose a cell before resetting styles.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Reset text color
         this.shticellController.getEngine().setSingleCellTextColor(cellId, null);
         this.shticellController.getBodyController().updateCellTextColor(cellId, null);
 
-        //Reset background color
+        // Reset background color
         this.shticellController.getEngine().setSingleCellBackGroundColor(cellId, null);
         this.shticellController.getBodyController().updateCellBackgroundColor(cellId, null);
     }
@@ -248,7 +257,7 @@ public class LeftController {
                 shticellController.getBodyController().clearHighlightedCells();
                 clearSelection();
             } catch (IllegalStateException e) {
-                new ErrorDisplay("Range In Use", e.getMessage()).showError(e.getMessage());
+                new ErrorDisplay("Range In Use", "").showError(e.getMessage()); // remove that
             }
         } else {
             new ErrorDisplay("No Selection", "Please select a range to delete.").showError("");

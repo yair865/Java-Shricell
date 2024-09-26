@@ -1,5 +1,6 @@
 package application.app;
 
+import application.app.load.LoadingStage;
 import application.body.BodyController;
 import application.header.HeaderController;
 import application.left.LeftController;
@@ -17,13 +18,11 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -58,7 +57,7 @@ public class ShticellController {
     private LeftController leftComponentController;
 
     @FXML
-    private AnchorPane leftComponent;
+    private VBox leftComponent;
 
     private SortController sortComponentController;
 
@@ -85,12 +84,7 @@ public class ShticellController {
         Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
         progressAlert.setTitle("Loading File");
         progressAlert.setHeaderText("Please wait while the file is loading.");
-
-        progressAlert.getButtonTypes().clear();
-
-        ButtonType okButtonType = new ButtonType("OK");
-        progressAlert.getButtonTypes().add(okButtonType);
-
+        progressAlert.close();
         BorderPane progressPane = new BorderPane();
         progressPane.setCenter(progressBar);
         progressAlert.getDialogPane().setContent(progressPane);
@@ -103,10 +97,8 @@ public class ShticellController {
 
     @FXML
     public void loadFile(String filePath) {
-        ProgressBar progressBar = new ProgressBar();
-        progressBar.setPrefWidth(300);
-
-        Alert progressAlert = createProgressAlert(progressBar);
+        LoadingStage loadingStage = new LoadingStage();
+        loadingStage.showLoadingStage();
 
         Task<Void> loadTask = new Task<Void>() {
             @Override
@@ -123,7 +115,9 @@ public class ShticellController {
             }
         };
 
-        progressBar.progressProperty().bind(loadTask.progressProperty());
+        loadTask.progressProperty().addListener((obs, oldValue, newValue) -> {
+            loadingStage.updateProgress(newValue.doubleValue());
+        });
 
         loadTask.setOnSucceeded(event -> {
             dataManager.getCellDataMap().clear();
@@ -138,13 +132,13 @@ public class ShticellController {
             leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
             headerComponentController.setPathTextField(filePath);
 
-            progressAlert.close();
+            loadingStage.closeLoadingStage();
             System.out.println("Successfully loaded: " + filePath);
             isFileLoaded.set(true);
         });
 
         loadTask.setOnFailed(event -> {
-            progressAlert.close();
+            loadingStage.closeLoadingStage();
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Loading File");
@@ -154,13 +148,11 @@ public class ShticellController {
         });
 
         new Thread(loadTask).start();
-
-        progressAlert.show();
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
-            engine.updateCell(cellId, newValue); // Risky operation
+            engine.updateCell(cellId, newValue);
             List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
             dataManager.updateCellDataMap(cellsThatHaveChanged);
             headerComponentController.setVersionsChoiceBox();
