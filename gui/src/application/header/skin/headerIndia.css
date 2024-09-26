@@ -76,7 +76,6 @@ ComboBox {
     -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
     -fx-border-radius: 20px;
     -fx-border-width: 2px;
-    -fx-padding: 5px 10px; /* Adjusted padding for smaller height */
     -fx-min-height: 30px; /* Set minimum height for the ComboBox */
 }
 

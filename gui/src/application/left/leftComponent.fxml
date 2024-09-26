@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefHeight="829.0" prefWidth="209.0" spacing="12.0" styleClass="Vbox" stylesheets="@skin/leftDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.left.LeftController">
+<VBox fx:id="leftComponent" alignment="TOP_CENTER" prefHeight="829.0" prefWidth="209.0" spacing="12.0" styleClass="Vbox" stylesheets="@skin/leftDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.left.LeftController">
    <children>
       <Label alignment="TOP_CENTER" text="Visual Commands" underline="true">
          <font>

@@ -274,4 +274,10 @@ public class ShticellController {
     public BooleanProperty isFileLoadedProperty() {
         return isFileLoaded;
     }
+
+    public void changeTheme(String name){
+        leftComponentController.setSkin(name);
+        headerComponentController.setSkin(name);
+        bodyController.setSkin(name);
+    }
 }

@@ -4,10 +4,10 @@ import application.app.ShticellController;
 import engine.engineimpl.Engine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -45,7 +45,10 @@ public class HeaderController {
     private ChoiceBox<Integer> selectVersionChoiceBox;
 
     @FXML
-    private ComboBox<SkinItem> skinComboBox; // Use SkinItem instead of Image
+    private ComboBox<SkinItem> skinComboBox;
+
+    @FXML
+    private GridPane headerComponent;
 
     private static final String DEFAULT_NEW_VALUE_PROMPT = "Enter new value";
 
@@ -62,11 +65,12 @@ public class HeaderController {
         skinComboBox.setOnAction(event -> {
             SkinItem selectedSkin = skinComboBox.getValue();
             if (selectedSkin != null) {
-                applySkin(selectedSkin.getImage());
+                shticellController.changeTheme(selectedSkin.getName());
             }
         });
 
         addSkinIcons();
+        skinComboBox.getSelectionModel().selectFirst();
         configureSkinComboBox();
     }
 
@@ -96,7 +100,7 @@ public class HeaderController {
                             imageView.setFitHeight(30);
                             imageView.setFitWidth(30);
                             setGraphic(imageView);
-                            setText(item.getName()); // Set the name next to the icon
+                            setText(item.getName());
                         }
                     }
                 };
@@ -121,14 +125,6 @@ public class HeaderController {
                 }
             }
         });
-    }
-
-    private void applySkin(Image selectedSkin) {
-        String cssFile = ""; // Determine CSS file based on selectedSkin
-        Stage stage = (Stage) btnFileChooser.getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
     }
 
     @FXML
@@ -169,6 +165,7 @@ public class HeaderController {
         updateNewValueBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         newValueTextField.disableProperty().bind(shticellController.isFileLoadedProperty().not());
         selectVersionChoiceBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
+        skinComboBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
     }
 
     public void updateHeader(String cellId, String originalValue, int lastModifiedVersion) {
@@ -209,7 +206,23 @@ public class HeaderController {
         this.cellOriginalValueLabel.setText(originalValue);
     }
 
-    // Inner class to hold image and name
+    public void setSkin(String name) {
+        headerComponent.getStylesheets().clear();
+
+        switch (name) {
+            case "Default":
+                headerComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/headerDefault.css")).toExternalForm());
+                break;
+            case "Thunder Cats":
+                headerComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/headerThunderCats.css")).toExternalForm());
+                break;
+            case "India":
+                headerComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/headerIndia.css")).toExternalForm());
+                break;
+        }
+    }
+
+
     public static class SkinItem {
         private final String name;
         private final Image image;
@@ -229,7 +242,7 @@ public class HeaderController {
 
         @Override
         public String toString() {
-            return name; // Display name in ComboBox
+            return name;
         }
     }
 }

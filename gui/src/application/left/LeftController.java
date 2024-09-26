@@ -14,11 +14,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -65,6 +67,9 @@ public class LeftController {
     private ListView<String> rangesList;
 
     private ShticellController shticellController;
+
+    @FXML
+    private VBox leftComponent;
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
@@ -327,6 +332,22 @@ public class LeftController {
     public void updateRangeList(Set<String> strings) {
         rangesList.getItems().clear();
         strings.forEach(rangesList.getItems()::add);
+    }
+
+    public void setSkin(String name) {
+        leftComponent.getStylesheets().clear();
+
+        switch (name) {
+            case "Default":
+                leftComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/leftDefault.css")).toExternalForm());
+                break;
+            case "Thunder Cats":
+                leftComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/leftThunderCats.css")).toExternalForm());
+                break;
+            case "India":
+                leftComponent.getStylesheets().add(Objects.requireNonNull(getClass().getResource("skin/leftIndia.css")).toExternalForm());
+                break;
+        }
     }
 }
 

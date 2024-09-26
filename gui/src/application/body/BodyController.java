@@ -315,5 +315,18 @@ public class BodyController {
         }
     }
 
+    public void setSkin(String name) {
+        switch (name) {
+            case "Default":
+                gridPane.setStyle(" -fx-background-color: #e4f1db;");
+                break;
+            case "Thunder Cats":
+                gridPane.setStyle(" -fx-background-color: #ffa1a1;");
+                break;
+            case "India":
+                gridPane.setStyle(" -fx-background-color: #ffcc99;");
+                break;
+        }
+    }
 }
 
