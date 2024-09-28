@@ -20,7 +20,7 @@ public class Not extends UnaryExpression {
         Boolean boolValue = effectiveValue.extractValueWithExpectation(Boolean.class);
 
         if (boolValue == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "Argument must be a boolean");
+            return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
 
         boolean result = !boolValue;

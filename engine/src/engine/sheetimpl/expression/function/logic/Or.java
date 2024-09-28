@@ -21,19 +21,16 @@ public class Or extends BinaryExpression {
         Boolean boolValue1 = effectiveValue1.extractValueWithExpectation(Boolean.class);
         Boolean boolValue2 = effectiveValue2.extractValueWithExpectation(Boolean.class);
         if (boolValue1 == null || boolValue2 == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
 
-        // Perform the OR operation
         boolean result = boolValue1 || boolValue2;
 
-        // Return the result as an EffectiveValue with BOOLEAN type
         return new EffectiveValueImpl(CellType.BOOLEAN, result);
     }
 
     @Override
     public CellType getFunctionResultType() {
-        // The result of the OR operation is always a BOOLEAN
         return CellType.BOOLEAN;
     }
 }

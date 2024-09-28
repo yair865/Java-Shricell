@@ -23,7 +23,7 @@ public class Less extends BinaryExpression {
         Double rightNumber = rightEffectiveValue.extractValueWithExpectation(Double.class);
 
         if (leftNumber == null || rightNumber == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
         boolean result = leftNumber <= rightNumber;
 

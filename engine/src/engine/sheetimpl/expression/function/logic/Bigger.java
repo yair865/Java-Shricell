@@ -22,7 +22,7 @@ public class Bigger extends BinaryExpression {
         Double rightNumber = rightEffectiveValue.extractValueWithExpectation(Double.class);
 
         if (leftNumber == null || rightNumber == null) {
-            return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
+            return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
 
         boolean isBiggerOrEqual = leftNumber >= rightNumber;

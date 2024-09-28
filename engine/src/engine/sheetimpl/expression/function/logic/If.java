@@ -20,7 +20,7 @@ public class If extends TrinaryExpression {
         Boolean conditionResult = conditionEffectiveValue.extractValueWithExpectation(Boolean.class);
 
         if (conditionResult == null) {
-            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
 
         EffectiveValue result;
@@ -28,13 +28,6 @@ public class If extends TrinaryExpression {
             result = thenExpression.evaluate(spreadsheet);
         } else {
             result = elseExpression.evaluate(spreadsheet);
-        }
-
-        EffectiveValue thenValue = thenExpression.evaluate(spreadsheet);
-        EffectiveValue elseValue = elseExpression.evaluate(spreadsheet);
-
-        if (!thenValue.getCellType().equals(elseValue.getCellType())) {
-            return new EffectiveValueImpl(CellType.ERROR, "Mismatched return types for then and else expressions");
         }
 
         return result;

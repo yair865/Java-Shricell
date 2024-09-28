@@ -26,7 +26,6 @@ public class Sum extends UnaryExpression {
             return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
-        // Retrieve the list of coordinates for the specified range
         List<Coordinate> selectedRange = spreadsheet.getRangeByName(rangeName).getCoordinates();
         double sum = 0;
         boolean hasNumericValue = false;

@@ -46,7 +46,7 @@ public class Equal extends BinaryExpression {
                         leftValue.equals(rightValue);
                 break;
             default:
-                return new EffectiveValueImpl(CellType.ERROR, null);
+                return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");
         }
 
         return new EffectiveValueImpl(CellType.BOOLEAN, isEqual);

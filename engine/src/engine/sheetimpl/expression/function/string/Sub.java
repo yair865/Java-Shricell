@@ -15,7 +15,6 @@ public class Sub extends TrinaryExpression {
 
     @Override
     public EffectiveValue evaluate(Expression sourceString, Expression startIndex, Expression endIndex, SheetReadActions spreadsheet) {
-        // Evaluate expressions to get EffectiveValues
         EffectiveValue sourceStringValue = sourceString.evaluate(spreadsheet);
         EffectiveValue startIndexValue = startIndex.evaluate(spreadsheet);
         EffectiveValue endIndexValue = endIndex.evaluate(spreadsheet);
@@ -32,9 +31,7 @@ public class Sub extends TrinaryExpression {
 
         // Ensure start and end are actually integers
         if (start % 1 != 0 || end % 1 != 0) {
-            throw new IllegalArgumentException("Start and end indices must be integers. "
-                    + "Received values: startIndex = " + start + ", endIndex = " + end + ".");
-        }
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");        }
 
         int startIndexInt = start.intValue();
         int endIndexInt = end.intValue();

@@ -7,17 +7,16 @@ GridPane {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 25, 0, 0, 5); /* Stronger shadow for more depth */
 }
 
-.header-label{
+.header-label {
     -fx-font-family: 'Cookie', sans-serif;
     -fx-font-size: 40px;
     -fx-font-weight: bold;
     -fx-text-fill: rgba(0, 0, 139, 1);
 }
 
-/* Label Styles (Non-header labels) */
 Label {
-    -fx-font-size: 20px; /* Larger label size */
-    -fx-text-fill: rgba(0, 0, 139, 1); /* Ashoka Chakra blue */
+    -fx-font-size: 20px;
+    -fx-text-fill: rgba(0, 0, 139, 1);
     -fx-font-weight: bold;
     -fx-font-family: 'Cookie', sans-serif;
 }

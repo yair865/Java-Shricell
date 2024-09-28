@@ -490,14 +490,18 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
     private List<Coordinate> extractRangeFunction(String expression) {
         List<Coordinate> rangeCoordinates = new ArrayList<>();
-        if (expression.startsWith("{SUM") || expression.startsWith("{AVERAGE")) {
-            String rangeName = extractRangeNameFromBrackets(expression);
 
-            rangeCoordinates = this.getRangeByName(rangeName).getCoordinates();
+            String functionPattern = "(?i)\\{(sum|average),\\s*([^}]+)\\}";
+            Pattern pattern = Pattern.compile(functionPattern);
+            Matcher matcher = pattern.matcher(expression);
+
+            while (matcher.find()) {
+                String rangeName = matcher.group(2);
+                rangeCoordinates = this.getRangeByName(rangeName).getCoordinates();
+            }
+
+            return rangeCoordinates;
         }
-
-        return rangeCoordinates;
-    }
 
     private String extractRangeNameFromBrackets(String expression) {
         int start = expression.indexOf(",") + 1;
