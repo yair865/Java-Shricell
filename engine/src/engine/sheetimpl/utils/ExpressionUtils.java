@@ -1,7 +1,9 @@
 package engine.sheetimpl.utils;
 
+import engine.api.Coordinate;
 import engine.api.Expression;
 import engine.exception.InvalidOperationException;
+import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.expression.type.Bool;
 import engine.sheetimpl.expression.type.Number;
 import engine.sheetimpl.expression.type.Text;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class ExpressionUtils {
 
-    public static Expression buildExpressionFromString(String someExpression){
+    public static Expression buildExpressionFromString(String someExpression) {
         Node tokenized = tokenizeExpression(someExpression.trim());
         return buildExpression(tokenized);
     }
@@ -37,7 +39,7 @@ public class ExpressionUtils {
             }
             OperationMenu operation;
             try {
-                 operation = OperationMenu.valueOf(expression.value.toUpperCase());
+                operation = OperationMenu.valueOf(expression.value.toUpperCase());
 
             } catch (IllegalArgumentException e) {
                 throw new InvalidOperationException("Invalid operation- " + expression.value);
@@ -56,7 +58,7 @@ public class ExpressionUtils {
         Expression parsingResult;
 
         try {
-            if(expression.matches(numberPattern)) {
+            if (expression.matches(numberPattern)) {
                 parsingResult = new Number(
                         Double.parseDouble(expression));
             } else if (expression.equalsIgnoreCase("true") || expression.equalsIgnoreCase("false")) {
@@ -88,8 +90,8 @@ public class ExpressionUtils {
         int commaIndex = input.indexOf(','), bracketCounter = 0;
         String argument;
 
-        for(int i = commaIndex + 1; i < input.length(); i++) {
-            if(input.charAt(i) == '{') {
+        for (int i = commaIndex + 1; i < input.length(); i++) {
+            if (input.charAt(i) == '{') {
                 bracketCounter++;
             } else if (input.charAt(i) == '}') {
                 bracketCounter--;
@@ -105,6 +107,20 @@ public class ExpressionUtils {
 
         return root;
     }
-}
 
+    public static List<Coordinate> parseRange(String rangeDefinition) {
+
+        List<Coordinate> coordinates = new ArrayList<>();
+        String[] parts = rangeDefinition.split("\\.\\.");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid range format");
+        }
+
+        Coordinate topLeft = CoordinateFactory.createCoordinate(parts[0]);
+        Coordinate bottomRight = CoordinateFactory.createCoordinate(parts[1]);
+        coordinates.add(topLeft);
+        coordinates.add(bottomRight);
+        return coordinates;
+    }
+}
 

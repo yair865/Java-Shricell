@@ -1,21 +1,29 @@
 package engine.sheetimpl;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.api.Spreadsheet;
+import engine.api.*;
 import engine.generated.STLCell;
+import engine.generated.STLRange;
 import engine.generated.STLSheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.filter.FilterManager;
+import engine.sheetimpl.filter.FilterManagerImpl;
+import engine.sheetimpl.range.Range;
+import engine.sheetimpl.range.RangeImpl;
+import engine.sheetimpl.sort.SortManager;
+import engine.sheetimpl.sort.SortManagerImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
 
 import java.io.*;
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static java.lang.Character.toUpperCase;
 
 public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private String sheetName;
@@ -27,15 +35,20 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private int columns;
     private int rowHeightUnits;
     private int columnWidthUnits;
-    private List<Cell> cellsThatHaveChanged;
+    private List<Coordinate> cellsThatHaveChanged;
+    private Map<String, Range> ranges;
+    private SortManager sortManager;
+    private FilterManager filterManager;
 
 
-
-    public SpreadsheetImpl()  {
+    public SpreadsheetImpl() {
         activeCells = new HashMap<>();
         dependenciesAdjacencyList = new HashMap<>();
         referencesAdjacencyList = new HashMap<>();
         cellsThatHaveChanged = new ArrayList<>();
+        ranges = new HashMap<>();
+        sortManager = new SortManagerImpl();
+        filterManager = new FilterManagerImpl();
         sheetVersion = 1;
     }
 
@@ -50,7 +63,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return (SpreadsheetImpl) ois.readObject();
         } catch (Exception e) {
-            // deal with the runtime error that was discovered as part of invocation
             return this;
         }
     }
@@ -73,10 +85,19 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         for (STLCell stlCell : loadedSheetFromXML.getSTLCells().getSTLCell()) {
             String originalValue = stlCell.getSTLOriginalValue();
-            Coordinate coordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
-            Cell cell = CreateNewEmptyCell(coordinate);
+            Coordinate coordinate = createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
+            Cell cell = createNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
             activeCells.put(coordinate, cell);
+        }
+
+        for (STLRange stlRange : loadedSheetFromXML.getSTLRanges().getSTLRange()) {
+            String from = stlRange.getSTLBoundaries().getFrom();
+            String to = stlRange.getSTLBoundaries().getTo();
+            String rangeName = stlRange.getName();
+            Coordinate start = CoordinateFactory.createCoordinate(from);
+            Coordinate end = CoordinateFactory.createCoordinate(to);
+            addRangeHelper(rangeName, start, end);
         }
 
         calculateSheetEffectiveValues();
@@ -88,7 +109,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         for (Coordinate coordinate : calculationOrder) {
             if (getCell(coordinate) != EmptyCell.INSTANCE) {
-                Cell cell = CreateNewEmptyCell(coordinate);
+                Cell cell = createNewEmptyCell(coordinate);
                 calculateCellEffectiveValue(cell);
             }
         }
@@ -105,7 +126,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             if (!dependencyGraph.containsKey(cellCoordinate)) {
                 dependencyGraph.put(cellCoordinate, new LinkedList<>());
             }
-            List<Coordinate> coordinateList = extractRefCoordinates(cell.getOriginalValue());
+            List<Coordinate> coordinateList = extractDependencies(cell.getOriginalValue());
 
             for (Coordinate coordinate : coordinateList) {
                 if (!dependencyGraph.containsKey(coordinate)) {
@@ -123,15 +144,12 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     private List<Coordinate> extractRefCoordinates(String expression) {
         List<Coordinate> coordinates = new ArrayList<>();
 
-        // Regular expression to match patterns like {REF,A4}
         Pattern pattern = Pattern.compile("\\{REF,([A-Z]+\\d+)\\}", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(expression);
 
-        // Find all matches in the expression
         while (matcher.find()) {
             String cellId = matcher.group(1);
-            // Convert the coordinate string to a Coordinate object
-            Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
+            Coordinate coordinate = createCoordinate(cellId);
             coordinates.add(coordinate);
         }
 
@@ -143,23 +161,20 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         Map<Coordinate, Integer> inDegree = new HashMap<>();
         Queue<Coordinate> queue = new LinkedList<>();
 
-        // Step 1: Calculate in-degree for each node
         for (Coordinate node : dependencyGraph.keySet()) {
-            inDegree.putIfAbsent(node, 0); // Ensure all nodes are in the in-degree map
+            inDegree.putIfAbsent(node, 0);
 
             for (Coordinate dependent : dependencyGraph.get(node)) {
                 inDegree.put(dependent, inDegree.getOrDefault(dependent, 0) + 1);
             }
         }
 
-        // Step 2: Add all nodes with in-degree 0 to the queue
         for (Map.Entry<Coordinate, Integer> entry : inDegree.entrySet()) {
             if (entry.getValue() == 0) {
                 queue.add(entry.getKey());
             }
         }
 
-        // Step 3: Process nodes in queue
         while (!queue.isEmpty()) {
             Coordinate node = queue.poll();
             sortedList.add(node);
@@ -175,7 +190,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             }
         }
 
-        // Step 4: Check for cycles (i.e., if sortedList doesn't contain all nodes)
         if (sortedList.size() != inDegree.size()) {
             throw new IllegalStateException("This update may result circular dependency, " +
                     "thus, can`t use this value to update the cell.");
@@ -189,10 +203,11 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
         EffectiveValue previousEffectiveValue = cellToCalculate.getEffectiveValue();
         EffectiveValue effectiveValue = ExpressionUtils.buildExpressionFromString(originalValue).evaluate(this);
 
-        if(!(effectiveValue.equals(previousEffectiveValue))) {
+
+        if (!(effectiveValue.equals(previousEffectiveValue))) {
             cellToCalculate.setEffectiveValue(effectiveValue);
             cellToCalculate.setLastModifiedVersion(sheetVersion);
-            cellsThatHaveChanged.add(cellToCalculate);
+            cellsThatHaveChanged.add(cellToCalculate.getCoordinate());
         }
 
     }
@@ -232,7 +247,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
         Cell cell = activeCells.get(coordinate);
         if (cell == null) {
-            activeCells.put(coordinate,EmptyCell.INSTANCE);
+            activeCells.put(coordinate, EmptyCell.INSTANCE);
             return EmptyCell.INSTANCE;
         }
         return cell;
@@ -249,60 +264,65 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
-    public int getColumns() {return this.columns;}
+    public int getColumns() {
+        return this.columns;
+    }
 
     @Override
-    public int getRowHeightUnits() {return rowHeightUnits;}
+    public int getRowHeightUnits() {
+        return rowHeightUnits;
+    }
 
     @Override
-    public int getColumnWidthUnits() {return columnWidthUnits;}
+    public int getColumnWidthUnits() {
+        return columnWidthUnits;
+    }
 
     @Override
-    public Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList() {return referencesAdjacencyList;}
+    public Map<Coordinate, List<Coordinate>> getReferencesAdjacencyList() {
+        return referencesAdjacencyList;
+    }
 
     @Override
-    public int getSheetVersion() {return sheetVersion;}
+    public int getSheetVersion() {
+        return sheetVersion;
+    }
 
     @Override
-    public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {return dependenciesAdjacencyList;}
+    public Map<Coordinate, List<Coordinate>> getDependenciesAdjacencyList() {
+        return dependenciesAdjacencyList;
+    }
 
     @Override
-    public int getNumberOfModifiedCells()
-    {
+    public int getNumberOfModifiedCells() {
         return cellsThatHaveChanged.size();
     }
 
     //  Setters:
     @Override
     public void setCell(Coordinate coordinate, String value) {
-        if (value.isEmpty()) {
-            if(activeCells.get(coordinate) == EmptyCell.INSTANCE){
-               throw new InvalidParameterException(); //consider making my own exception.
-            }
-            cellsThatHaveChanged.clear();
-            activeCells.remove(coordinate);
-        }else {
-            Cell cellToCalculate = CreateNewEmptyCell(coordinate);
-            try {
-                cellToCalculate.setCellOriginalValue(value);
-                cellsThatHaveChanged.clear();
-                calculateSheetEffectiveValues();
-                cellToCalculate.setLastModifiedVersion(sheetVersion);
-            } catch (Exception e) {
-                throw e;
-            }
-        }
+        Cell cellToCalculate = createNewEmptyCell(coordinate);
+
+        cellToCalculate.setCellOriginalValue(value);
+        cellsThatHaveChanged.clear();
+        calculateSheetEffectiveValues();
+        cellToCalculate.setLastModifiedVersion(sheetVersion);
     }
+
     @Override
     public void setTitle(String sheetName) {
         this.sheetName = sheetName;
     }
 
     @Override
-    public void setRows(int rows) {this.rows = rows;}
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
 
     @Override
-    public void setColumns(int columns) {this.columns = columns;}
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
 
     @Override
     public void setRowHeightUnits(int rowHeightUnits) {
@@ -321,24 +341,184 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
-    public List<Cell> getCellsThatHaveChanged() {return cellsThatHaveChanged;}
+    public List<Coordinate> getCellsThatHaveChanged() {
+        return cellsThatHaveChanged;
+    }
+
+    @Override
+    public Map<String, Range> getRanges() {
+        return ranges;
+    }
 
     @Override
     public void setSheetVersion(int sheetVersion) {
         this.sheetVersion = sheetVersion;
     }
 
+    @Override
+    public void setBackgroundColor(String cellId, String backGroundColor) {
+        Coordinate coordinate = createCoordinate(cellId);
+        Cell cell = this.createNewEmptyCell(coordinate);
+        cell.setBackgroundColor(backGroundColor);
+    }
+
+    @Override
+    public void setTextColor(String cellId, String textColor) {
+        Coordinate coordinate = createCoordinate(cellId);
+        Cell cell = this.createNewEmptyCell(coordinate);
+        cell.setTextColor(textColor);
+    }
+
     //INSIDE
-    private Cell CreateNewEmptyCell (Coordinate coordinate) {
+    private Cell createNewEmptyCell(Coordinate coordinate) {
         Cell newCell = getCell(coordinate);
 
-        if(newCell instanceof EmptyCell){
-            Cell cell = new CellImpl();
+        if (newCell instanceof EmptyCell) {
+            Cell cell = new CellImpl(coordinate);
             activeCells.put(coordinate, cell);
             return cell;
         }
 
-        return  newCell;
+        return newCell;
+    }
+
+    @Override
+    public void addRange(String name, String rangeDefinition) {
+        List<Coordinate> startToEnd = ExpressionUtils.parseRange(rangeDefinition);
+        addRangeHelper(name, startToEnd.getFirst(), startToEnd.get(1));
+    }
+
+    @Override
+    public Range getRangeByName(String name) {
+
+        if (ranges.get(name) != null) {
+            return ranges.get(name);
+        } else {
+            throw new IllegalArgumentException("Range " + name + " not found");
+        }
+    }
+
+    @Override
+    public boolean rangeExists(String rangeName) {
+        return ranges.containsKey(rangeName);
+    }
+
+    @Override
+    public void sortSheet(String cellsRange, List<Character> selectedColumns) {
+    List<Coordinate> rangesToSort = ExpressionUtils.parseRange(cellsRange);
+        validateRangeCoordinates(rangesToSort.getFirst(), rangesToSort.getLast());
+        sortManager.sortRowsByColumns(rangesToSort , selectedColumns , this);
+    }
+
+    @Override
+    public List<String> getUniqueValuesFromColumn(char columnNumber) {
+        Set<EffectiveValue> uniqueValues = new HashSet<>();
+        int totalRows = this.getRows();
+        int colIndex = parseColumn(columnNumber);
+
+        for (int row = 1; row <= totalRows; row++) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(row, colIndex);
+            Cell cell = this.getActiveCells().get(coordinate);
+
+            if (cell != null) {
+                EffectiveValue effectiveValue = cell.getEffectiveValue();
+                if (effectiveValue != null) {
+                    uniqueValues.add(effectiveValue);
+                }
+            }
+        }
+
+        List<String> uniqueStrings = new ArrayList<>();
+
+        for (EffectiveValue effectiveValue : uniqueValues) {
+            Object value = effectiveValue.getValue();
+            if (value != null) {
+                uniqueStrings.add(String.valueOf(value));
+            }
+        }
+
+        return uniqueStrings;
+    }
+
+
+
+    private int parseColumn(char column) {
+        return (toUpperCase(column) - 'A' + 1);
+    }
+
+    @Override
+    public void removeRange(String name) {
+        if (!ranges.containsKey(name)) {
+            throw new IllegalArgumentException("The range '" + name + "' does not exist.");
+        }
+
+        List<Coordinate> usingCells = new ArrayList<>();
+        for (Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
+            Cell cell = entry.getValue();
+            if (cell.getOriginalValue().contains("{SUM," + name + "}") || cell.getOriginalValue().contains("{AVERAGE," + name + "}")) {
+                usingCells.add(entry.getKey());
+            }
+        }
+
+        if (!usingCells.isEmpty()) {
+            String cellReferences = usingCells.stream()
+                    .map(Coordinate::toString)
+                    .collect(Collectors.joining(", "));
+            throw new IllegalStateException("Cannot delete the range '" + name + "' because it is in use by cells: " + cellReferences);
+        }
+
+        ranges.remove(name);
+    }
+
+    private void addRangeHelper(String name, Coordinate start, Coordinate end) {
+        validateRangeCoordinates(start, end);
+        if (!ranges.containsKey(name)) {
+            ranges.put(name, new RangeImpl(start, end));
+        } else {
+            throw new IllegalArgumentException("Range '" + name + "' already exists");
+        }
+    }
+
+    private void validateRangeCoordinates(Coordinate start, Coordinate end) {
+        validateCoordinateInbound(start);
+        validateCoordinateInbound(end);
+
+        if (start.row() > end.row() || (start.row() == end.row() && start.column() > end.column())) {
+            throw new IllegalArgumentException("Invalid range: " + start + " to " + end + ". Start coordinate must be top-left of the end coordinate.");
+        }
+    }
+
+    private List<Coordinate> extractRangeFunction(String expression) {
+        List<Coordinate> rangeCoordinates = new ArrayList<>();
+
+            String functionPattern = "(?i)\\{(sum|average),\\s*([^}]+)\\}";
+            Pattern pattern = Pattern.compile(functionPattern);
+            Matcher matcher = pattern.matcher(expression);
+
+            while (matcher.find()) {
+                String rangeName = matcher.group(2);
+                rangeCoordinates = this.getRangeByName(rangeName).getCoordinates();
+            }
+
+            return rangeCoordinates;
+        }
+
+    private List<Coordinate> extractDependencies(String expression) {
+        List<Coordinate> rangeList = extractRangeFunction(expression);
+        List<Coordinate> refList = extractRefCoordinates(expression);
+
+        return Stream.of(rangeList, refList)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void filter(Character selectedColumn, String cellsRange, List<String> selectedValues) {
+        List<Coordinate> rangesToFilter = ExpressionUtils.parseRange(cellsRange);
+        validateRangeCoordinates(rangesToFilter.getFirst(), rangesToFilter.getLast());
+        filterManager.filterSheet(selectedColumn , rangesToFilter , selectedValues ,this);
     }
 }
 

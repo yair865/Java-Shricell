@@ -2,6 +2,8 @@ package engine.api;
 
 import engine.generated.STLSheet;
 
+import java.util.List;
+
 public interface SheetWriteActions {
 
     void setTitle(String sheetName);
@@ -12,4 +14,9 @@ public interface SheetWriteActions {
     void setColumnWidthUnits(int columnWidthUnits);
     void setSheetVersion(int sheetVersion);
     void init(STLSheet loadedSheetFromXML);
+    void setBackgroundColor(String cellId, String backGroundColor);
+    void setTextColor(String cellId,String textColor);
+    void addRange(String name, String rangeDefinition);
+    void removeRange(String name);
+    void filter(Character selectedColumn, String filterArea, List<String> selectedValues);
 }

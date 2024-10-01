@@ -1,0 +1,93 @@
+/* Main background for the GridPane */
+GridPane {
+    -fx-background-color: rgba(255, 153, 51, 0.95); /* Saffron (orange) from Indian flag */
+    -fx-hgap: 10px; /* Larger gaps for a cleaner look */
+    -fx-vgap: 10px;
+    -fx-background-radius: 20px; /* More rounded corners for the GridPane */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 25, 0, 0, 5); /* Stronger shadow for more depth */
+}
+
+.header-label {
+    -fx-font-family: 'Cookie', sans-serif;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(0, 0, 139, 1);
+}
+
+Label {
+    -fx-font-size: 20px;
+    -fx-text-fill: rgba(0, 0, 139, 1);
+    -fx-font-weight: bold;
+    -fx-font-family: 'Cookie', sans-serif;
+}
+
+/* TextField Styles */
+TextField {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(19, 136, 8, 1)); /* White to green gradient */
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(0, 0, 139, 1); /* Ashoka Chakra blue for text */
+    -fx-font-weight: bold;
+    -fx-font-family: 'Cookie', sans-serif;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
+    -fx-border-radius: 20px;
+    -fx-border-width: 2px;
+}
+
+/* Button Styles */
+Button {
+    -fx-background-color: linear-gradient(to right, rgba(255, 153, 51, 0.9), rgba(19, 136, 8, 1)); /* Saffron to green gradient */
+    -fx-text-fill: white; /* White text */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Cookie', sans-serif;
+    -fx-background-radius: 50px; /* Fully circular corners */
+    -fx-border-color: rgba(0, 0, 139, 0.9); /* Blue border matching the button's shape */
+    -fx-border-width: 2px;
+    -fx-border-radius: 50px; /* Ensuring border matches circular shape */
+}
+
+/* Button Hover Effect */
+Button:hover {
+    -fx-background-color: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 153, 51, 1)); /* White to saffron on hover */
+}
+
+/* Button Pressed Effect */
+Button:pressed {
+    -fx-background-color: linear-gradient(to right, rgba(19, 136, 8, 1), rgba(0, 100, 0, 1)); /* Darker green on press */
+}
+
+/* ChoiceBox Styles */
+ChoiceBox {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(19, 136, 8, 1)); /* White to green gradient */
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
+    -fx-border-radius: 20px;
+    -fx-border-width: 2px;
+    -fx-padding: 5px 10px; /* Adjusted padding for smaller height */
+    -fx-min-height: 30px; /* Set minimum height for the ChoiceBox */
+}
+
+/* ComboBox Styles */
+ComboBox {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(19, 136, 8, 1)); /* White to green gradient */
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
+    -fx-border-radius: 20px;
+    -fx-border-width: 2px;
+    -fx-min-height: 30px; /* Set minimum height for the ComboBox */
+}
+
+/* Style for the ChoiceBox arrow button */
+ChoiceBox .arrow-button {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Subtle background */
+}
+
+
+/* ScrollPane (if applicable) */
+ScrollPane {
+    -fx-background-color: rgba(255, 255, 255, 0.9); /* White background */
+    -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
+    -fx-border-width: 2px;
+    -fx-background-radius: 15px;
+}

@@ -1,0 +1,81 @@
+/* Main background for the GridPane */
+GridPane {
+    -fx-background-color: rgba(170, 0, 25, 0.99); /* Thundercats red */
+    -fx-border-color: rgba(255, 0, 0, 0.8); /* Light red border */
+    -fx-border-width: 1px;
+    -fx-hgap: 5px;
+    -fx-vgap: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 20, 0, 0, 4); /* Stronger shadow effect for depth */
+}
+
+.header-label{
+    -fx-font-family: "Aharoni";
+    -fx-font-size: 35px;
+    -fx-font-weight: bold;
+}
+
+TextField {
+    -fx-background-color: linear-gradient(to bottom, rgba(5, 5, 5, 0.8), rgba(170, 0, 25, 1)); /* Gradient background */
+    -fx-font-size: 12px; /* Font size for text */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-font-family: 'Arial Black'; /* Default font */
+    -fx-background-radius: 15px; /* Softer, more rounded corners */
+    -fx-padding: 8px; /* Padding for input fields */
+    -fx-border-color: rgba(170, 0, 25, 0.8); /* Border color matching the theme */
+    -fx-border-radius: 15px; /* Rounded border */
+    -fx-border-width: 2; /* Slightly thicker border */
+}
+
+Button {
+    -fx-background-color: linear-gradient(to right, rgba(255, 0, 0, 0.8), rgba(170, 0, 25, 1)); /* Gradient background */
+    -fx-text-fill: white; /* White text */
+    -fx-font-size: 12px; /* Font size for buttons */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-font-family: 'Arial Black'; /* Default font */
+    -fx-background-radius: 3px; /* Rounded corners */
+    -fx-border-color: rgb(2, 2, 2); /* Thundercats red border */
+    -fx-border-width: 1px; /* Border width */
+}
+
+Button:hover {
+    -fx-background-color: linear-gradient(to right, rgba(255, 0, 0, 1), rgba(255, 120, 120, 1)); /* Light red on hover */
+}
+
+Button:pressed {
+    -fx-background-color: linear-gradient(to right, rgba(200, 0, 0, 1), rgba(150, 0, 0, 1)); /* Darker red on press */
+}
+
+ChoiceBox {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(170, 0, 25, 1)); /* Gradient background */
+    -fx-background-radius: 15px; /* Softer, more rounded edges */
+    -fx-border-color: rgba(255, 255, 255, 0.3); /* Subtle border */
+    -fx-border-radius: 15px; /* Rounded border */
+    -fx-border-width: 1; /* Subtle border width */
+}
+
+ComboBox {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(170, 0, 25, 1)); /* Gradient background */
+    -fx-background-radius: 15px; /* Softer, more rounded edges */
+    -fx-border-color: rgba(255, 255, 255, 0.3); /* Subtle border */
+    -fx-border-radius: 15px; /* Rounded border */
+    -fx-border-width: 1; /* Subtle border width */
+}
+
+StackPane .label {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Arial Black';
+}
+/* Style for ChoiceBox arrow button */
+ChoiceBox .arrow-button {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+}
+
+Label {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Arial Black';
+}
+

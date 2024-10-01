@@ -1,10 +1,11 @@
 package engine.engineimpl;
 
+import dto.converter.SheetConverter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.api.CellReadActions;
 import engine.api.Coordinate;
-import engine.api.Engine;
+import engine.api.EffectiveValue;
 import engine.api.Spreadsheet;
 import engine.generated.STLSheet;
 import engine.sheetimpl.SpreadsheetImpl;
@@ -15,8 +16,7 @@ import jakarta.xml.bind.Unmarshaller;
 
 import java.io.*;
 import java.security.InvalidParameterException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static dto.converter.CellConverter.convertCellToDTO;
 import static dto.converter.SheetConverter.convertSheetToDTO;
@@ -103,8 +103,7 @@ public class EngineImpl implements Engine, Serializable{
     }
 
     @Override
-    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId)
-    {
+    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
         spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
@@ -185,5 +184,77 @@ public class EngineImpl implements Engine, Serializable{
     @Override
     public void exitProgram() {
         System.exit(0);
+    }
+
+
+    @Override
+    public SpreadsheetDTO getSpreadSheetByVersion(int version) {
+        validateSheetIsLoaded();
+        return convertSheetToDTO(spreadsheetsByVersions.get(version));
+    }
+
+    @Override
+    public Integer getCurrentVersion() {
+        return currentSpreadSheetVersion;
+    }
+
+    @Override
+    public void setSingleCellTextColor(String cellId, String textColor) {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).setTextColor(cellId,textColor);
+    }
+
+    @Override
+    public void setSingleCellBackGroundColor(String cellId, String backGroundColor) {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
+    }
+
+    @Override
+    public void addRangeToSheet(String rangeName, String rangeDefinition) {
+        validateSheetIsLoaded();
+        if (spreadsheetsByVersions.get(currentSpreadSheetVersion).rangeExists(rangeName)) {
+            throw new IllegalArgumentException("A range with the name '" + rangeName + "' already exists.");
+        }
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).addRange(rangeName,rangeDefinition);
+    }
+
+    @Override
+    public void removeRangeFromSheet(String name) {
+        validateSheetIsLoaded();
+        spreadsheetsByVersions.get(currentSpreadSheetVersion).removeRange(name);
+    }
+
+    @Override
+    public List<Coordinate> getRangeByName(final String rangeName) {
+        validateSheetIsLoaded();
+        return spreadsheetsByVersions.get(currentSpreadSheetVersion).getRangeByName(rangeName).getCoordinates();
+    }
+
+    @Override
+    public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) {
+        validateSheetIsLoaded();
+         Spreadsheet sheetToSort = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
+         sheetToSort.sortSheet(cellsRange,selectedColumns);
+
+         return SheetConverter.convertSheetToDTO(sheetToSort);
+    }
+
+    @Override
+    public SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues) {
+        validateSheetIsLoaded();
+        Spreadsheet sheetToFilter = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
+        sheetToFilter.filter(selectedColumn,filterArea,selectedValues);
+
+        return SheetConverter.convertSheetToDTO(sheetToFilter);
+    }
+
+    @Override
+    public List<String> getUniqueValuesFromColumn(char columnNumber) {
+        List<String> uniqueValues = new ArrayList<>();
+        Spreadsheet sheetToScan = spreadsheetsByVersions.get(currentSpreadSheetVersion);
+
+        return sheetToScan.getUniqueValuesFromColumn(columnNumber);
+
     }
 }

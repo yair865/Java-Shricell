@@ -2,7 +2,10 @@ package engine.sheetimpl.utils;
 
 import engine.api.Expression;
 import engine.sheetimpl.expression.function.general.Ref;
+import engine.sheetimpl.expression.function.logic.*;
 import engine.sheetimpl.expression.function.math.*;
+import engine.sheetimpl.expression.function.math.range.Avg;
+import engine.sheetimpl.expression.function.math.range.Sum;
 import engine.sheetimpl.expression.function.string.Concat;
 import engine.sheetimpl.expression.function.string.Sub;
 
@@ -14,7 +17,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Divide.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Divide.class);
             return new Divide(parameters.get(0), parameters.get(1));
         }
     },
@@ -22,7 +24,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Minus.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Minus.class);
             return new Minus(parameters.get(0), parameters.get(1));
         }
     },
@@ -30,7 +31,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Mod.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Mod.class);
             return new Mod(parameters.get(0), parameters.get(1));
         }
     },
@@ -38,7 +38,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Plus.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Plus.class);
             return new Plus(parameters.get(0), parameters.get(1));
         }
     },
@@ -46,7 +45,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Pow.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Pow.class);
             return new Pow(parameters.get(0), parameters.get(1));
         }
     },
@@ -54,7 +52,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Times.class, parameters);
-            validateTypesForBinaryExpressionNumeric(parameters.getFirst(), parameters.get(1), Times.class);
             return new Times(parameters.get(0), parameters.get(1));
         }
     },
@@ -62,7 +59,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Abs.class, parameters);
-            validateTypeForAbs(parameters.getFirst());
             return new Abs(parameters.getFirst());
         }
     },
@@ -70,7 +66,6 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Concat.class, parameters);
-            validateTypesForBinaryExpressionText(parameters.getFirst(), parameters.get(1));
             return new Concat(parameters.get(0), parameters.get(1));
         }
     },
@@ -78,8 +73,28 @@ public enum OperationMenu {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateParameters(Sub.class, parameters);
-            validateTypeForSub(parameters.getFirst(), parameters.get(1), parameters.get(2));
             return new Sub(parameters.get(0), parameters.get(1), parameters.get(2));
+        }
+    },
+   SUM {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Sum.class, parameters);
+            return new Sum(parameters.getFirst());
+        }
+    },
+   PERCENT{
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Percent.class, parameters);
+            return new Percent(parameters.getFirst(), parameters.get(1));
+        }
+    },
+    AVERAGE{
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Avg.class, parameters);
+            return new Avg(parameters.getFirst());
         }
     },
     REF {
@@ -88,6 +103,58 @@ public enum OperationMenu {
             validateParameters(Ref.class, parameters);
             return new Ref(parameters.getFirst());
         }
+    },
+    EQUAL {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Equal.class, parameters);
+            return new Equal(parameters.get(0), parameters.get(1));
+        }
+    },
+    BIGGER {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Bigger.class, parameters);
+            return new Bigger(parameters.get(0), parameters.get(1));
+        }
+    },
+    LESS {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Less.class, parameters);
+            return new Less(parameters.get(0), parameters.get(1));
+        }
+    },
+    NOT {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Not.class, parameters);
+            return new Not(parameters.getFirst());
+        }
+    },
+    AND {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(And.class, parameters);
+            return new And(parameters.get(0), parameters.get(1));
+        }
+    },
+    IF {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(If.class, parameters);
+            return new If(parameters.get(0), parameters.get(1),parameters.get(2));
+        }
+    },
+
+    OR {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateParameters(Or.class, parameters);
+            return new Or(parameters.get(0), parameters.get(1));
+        }
+
+
     };
 
     public abstract Expression createExpression(List<Expression> parameters);
@@ -107,54 +174,7 @@ public enum OperationMenu {
 
         if (!matchFound) {
             throw new IllegalArgumentException("Not enough arguments for function " + operationClazz.getSimpleName() +
-                    "expected " + constructorParameterCount + " but received " + parameters.size());
+                    ", expected " + constructorParameterCount + " but received " + parameters.size());
         }
     }
-
-    private static void validateTypesForBinaryExpressionNumeric(Expression left, Expression right, Class<?> clazz) {
-
-        if (left.getFunctionResultType() != CellType.NUMERIC && left.getFunctionResultType() != CellType.UNKNOWN
-                || (right.getFunctionResultType() != CellType.NUMERIC && right.getFunctionResultType() != CellType.UNKNOWN)) {
-
-            throw new IllegalArgumentException("Invalid arguments in function " + clazz.getSimpleName() + ".\n"
-                    + "the arguments expected are from type " + CellType.NUMERIC + " but the first argument is from type - " + left.getFunctionResultType()
-                    + ", and the second argument is from type - " + right.getFunctionResultType() + ".");
-        }
-    }
-
-    private static void validateTypesForBinaryExpressionText(Expression left, Expression right) {
-
-        if ((left.getFunctionResultType() != CellType.STRING && left.getFunctionResultType() != CellType.UNKNOWN)
-                || (right.getFunctionResultType() != CellType.STRING && right.getFunctionResultType() != CellType.UNKNOWN)) {
-
-            throw new IllegalArgumentException("Invalid arguments in function " + Concat.class.getSimpleName() + ".\n"
-                    + "The arguments expected are of type " + CellType.STRING + ", but the first argument is of type "
-                    + left.getFunctionResultType() + " and the second argument is of type "
-                    + right.getFunctionResultType() + ".");
-        }
-    }
-
-    private static void validateTypeForAbs(Expression expression) {
-
-        if (expression.getFunctionResultType() != CellType.NUMERIC && expression.getFunctionResultType() != CellType.UNKNOWN) {
-
-            throw new IllegalArgumentException("Invalid argument in function " + Abs.class.getSimpleName() + ".\n"
-                    + "The argument expected is of type " + CellType.NUMERIC + " but received an argument of type - "
-                    + expression.getFunctionResultType() + ".");
-        }
-    }
-
-    private static void validateTypeForSub(Expression source, Expression start, Expression end) {
-        if (source.getFunctionResultType() != CellType.STRING && source.getFunctionResultType() != CellType.UNKNOWN
-                || start.getFunctionResultType() != CellType.NUMERIC && start.getFunctionResultType() != CellType.UNKNOWN
-                || end.getFunctionResultType() != CellType.NUMERIC && end.getFunctionResultType() != CellType.UNKNOWN) {
-            throw new IllegalArgumentException("Invalid argument types in function " + Sub.class.getSimpleName() + ".\n"
-                    + "Expected argument types: " + CellType.STRING + " or " + CellType.UNKNOWN + " for source, and " + CellType.NUMERIC + " or " + CellType.UNKNOWN + " for indices. "
-                    + "But received: "
-                    + "source - " + source.getFunctionResultType() + ", "
-                    + "startIndex - " + start.getFunctionResultType() + ", "
-                    + "endIndex - " + end.getFunctionResultType() + ".");
-        }
-    }
-
 }

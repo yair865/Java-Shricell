@@ -1,6 +1,7 @@
 package engine.sheetimpl.cellimpl;
 
 import engine.api.Cell;
+import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
 
@@ -25,6 +26,16 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public Coordinate getCoordinate() {
+        return null;
+    }
+
+    @Override
+    public CellStyle getCellStyle() {
+        return null;
+    }
+
+    @Override
     public void setCellOriginalValue(String value) {
         throw new UnsupportedOperationException();
     }
@@ -37,5 +48,15 @@ public enum EmptyCell implements Cell, Serializable {
     @Override
     public void setLastModifiedVersion(int sheetVersion) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+
+    }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+
     }
 }

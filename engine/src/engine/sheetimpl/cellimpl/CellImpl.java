@@ -1,6 +1,7 @@
 package engine.sheetimpl.cellimpl;
 
 import engine.api.Cell;
+import engine.api.Coordinate;
 import engine.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
 
@@ -11,17 +12,16 @@ public class CellImpl implements Cell , Serializable {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
+    private final Coordinate coordinate;
+    private CellStyle cellStyle;
+    
 
-    public CellImpl(String originalValue, EffectiveValue effectiveValue, int version) {
-        this.originalValue = originalValue;
-        this.effectiveValue = effectiveValue;
-        this.lastModifiedVersion = version;
-    }
-
-    public CellImpl() {
+    public CellImpl(Coordinate coordinate) {
         this.originalValue = "";
         this.effectiveValue = new EffectiveValueImpl(CellType.STRING , "");
         this.lastModifiedVersion = 1;
+        this.coordinate = coordinate;
+        this.cellStyle = new CellStyle();
     }
 
     @Override
@@ -45,6 +45,11 @@ public class CellImpl implements Cell , Serializable {
     }
 
     @Override
+    public Coordinate getCoordinate() {
+        return coordinate;
+    }
+
+    @Override
     public void setEffectiveValue(EffectiveValue newEffectiveValue) {this.effectiveValue = newEffectiveValue;}
 
     @Override
@@ -52,4 +57,18 @@ public class CellImpl implements Cell , Serializable {
         this.lastModifiedVersion = sheetVersion;
     }
 
+    @Override
+    public CellStyle getCellStyle() {
+        return cellStyle;
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+        this.cellStyle.setTextColor(textColor);
+    }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+        this.cellStyle.setBackgroundColor(backgroundColor);
+    }
 }
