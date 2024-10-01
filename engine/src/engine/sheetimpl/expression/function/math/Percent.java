@@ -21,12 +21,10 @@ public class Percent extends BinaryExpression {
         Double partValue = partEffectiveValue.extractValueWithExpectation(Double.class);
         Double wholeValue = wholeEffectiveValue.extractValueWithExpectation(Double.class);
 
-        // Check for null values
         if (partValue == null || wholeValue == null) {
             return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
-        // Calculate the percentage
         double percentValue = (partValue * wholeValue) / 100.0;
 
         return new EffectiveValueImpl(CellType.NUMERIC, percentValue);

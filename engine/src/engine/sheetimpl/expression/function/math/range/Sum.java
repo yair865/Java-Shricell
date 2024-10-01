@@ -18,7 +18,6 @@ public class Sum extends UnaryExpression {
 
     @Override
     public EffectiveValue evaluate(Expression expression, SheetReadActions spreadsheet) {
-        // Get the range name from the expression
         EffectiveValue rangeEffectiveValue = expression.evaluate(spreadsheet);
         String rangeName = rangeEffectiveValue.extractValueWithExpectation(String.class);
 

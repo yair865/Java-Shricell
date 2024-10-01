@@ -35,8 +35,6 @@ public class BodyController {
         this.gridPane = new GridPane();
         this.scrollPane = new ScrollPane(gridPane);
         scrollPane.getStyleClass().add("scroll-pane");
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
         gridPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("bodyStyle.css")).toExternalForm());
     }
 

@@ -143,7 +143,6 @@ public class LeftController {
                 "Enter the new height for the row:",
                 "Height:",
                 newHeight -> {
-                    // Call the logic to set the row height
                     this.shticellController.getBodyController().setRowHeight(newHeight);
                 }
         );
@@ -162,7 +161,6 @@ public class LeftController {
             Color selectedColor = colorPicker.getValue();
             String cellId = this.shticellController.getHeaderController().getCellId();
             this.shticellController.getEngine().setSingleCellTextColor(cellId, toHexString(selectedColor));
-
             this.shticellController.getBodyController().updateCellTextColor(cellId, toHexString(selectedColor));
         }
     }

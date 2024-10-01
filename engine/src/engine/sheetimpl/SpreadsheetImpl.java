@@ -503,12 +503,6 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             return rangeCoordinates;
         }
 
-    private String extractRangeNameFromBrackets(String expression) {
-        int start = expression.indexOf(",") + 1;
-        int end = expression.indexOf("}");
-        return expression.substring(start, end).trim();
-    }
-
     private List<Coordinate> extractDependencies(String expression) {
         List<Coordinate> rangeList = extractRangeFunction(expression);
         List<Coordinate> refList = extractRefCoordinates(expression);
