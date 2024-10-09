@@ -9,5 +9,10 @@ public interface VersionManager {
     SpreadsheetDTO getVersion(int version);
     Map<Integer, SpreadsheetDTO> getAllVersions();
     void removeVersion(int version);
-    int getCurrentVersion();
+    SpreadsheetDTO getCurrentVersionDTO();
+    int getCurrentVersionNumber();
+
+    Spreadsheet getCurrentVersion();
+
+    void setVersionNumber(int loadVersion);
 }

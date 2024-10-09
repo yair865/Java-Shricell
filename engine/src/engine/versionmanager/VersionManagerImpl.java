@@ -1,4 +1,4 @@
-package engine.engineimpl;
+package engine.versionmanager;
 
 import dto.converter.SheetConverter;
 import dto.dtoPackage.SpreadsheetDTO;
@@ -11,17 +11,17 @@ import java.util.Map;
 
 public class VersionManagerImpl implements VersionManager , Serializable {
     private final Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    private int currentVersion;
+    private int currentVersionNumber;
 
     public VersionManagerImpl() {
         spreadsheetsByVersions = new HashMap<>();
-        currentVersion = 0;
+        currentVersionNumber = 0;
     }
 
     @Override
     public void addVersion(int version, Spreadsheet spreadsheet) {
         spreadsheetsByVersions.put(version, spreadsheet);
-        currentVersion = version; // Update current version
+        currentVersionNumber = version;
     }
 
     @Override
@@ -45,13 +45,28 @@ public class VersionManagerImpl implements VersionManager , Serializable {
     @Override
     public void removeVersion(int version) {
         spreadsheetsByVersions.remove(version);
-        if (version == currentVersion) {
-            currentVersion--; // Decrement current version if the current one is removed
+        if (version == currentVersionNumber) {
+            currentVersionNumber--;
         }
     }
 
     @Override
-    public int getCurrentVersion() {
-        return currentVersion;
+    public int getCurrentVersionNumber() {
+        return currentVersionNumber;
+    }
+
+    @Override
+    public SpreadsheetDTO getCurrentVersionDTO() {
+        return SheetConverter.convertSheetToDTO(spreadsheetsByVersions.get(currentVersionNumber));
+    }
+
+    @Override
+    public Spreadsheet getCurrentVersion(){
+        return spreadsheetsByVersions.get(currentVersionNumber);
+    }
+
+    @Override
+    public void setVersionNumber(int version) {
+        currentVersionNumber = version;
     }
 }

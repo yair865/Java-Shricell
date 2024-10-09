@@ -3,12 +3,10 @@ package engine.engineimpl;
 import dto.converter.SheetConverter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.CellReadActions;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.api.Spreadsheet;
+import engine.api.*;
 import engine.generated.STLSheet;
 import engine.sheetimpl.SpreadsheetImpl;
+import engine.versionmanager.*;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -29,9 +27,11 @@ public class EngineImpl implements Engine, Serializable{
     public static final int MAX_COLUMNS = 20;
     public static final int LOAD_VERSION = 1;
 
-    private Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    int currentSpreadSheetVersion;
+    private VersionManager versionManager;
 
+    public EngineImpl() {
+        this.versionManager = new VersionManagerImpl();
+    }
 
     @Override
     public void loadSpreadsheet(String filePath) throws Exception {
@@ -39,10 +39,9 @@ public class EngineImpl implements Engine, Serializable{
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
         validateSTLSheet(loadedSheetFromXML);
         Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
-        spreadsheetsByVersions = new HashMap<>();
-        currentSpreadSheetVersion = LOAD_VERSION;
+        versionManager.setVersionNumber(LOAD_VERSION);
         loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
-        spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
+        versionManager.addVersion(LOAD_VERSION ,convertSTLSheet2SpreadSheet(loadedSheetFromXML));
     }
 
     private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
@@ -92,30 +91,29 @@ public class EngineImpl implements Engine, Serializable{
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (STLSheet) jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new RuntimeException("Failed to load the data from the XML file."); // consider creating special Exception to throw.
+            throw new RuntimeException("Failed to load the data from the XML file.");
         }
     }
 
     @Override
     public SpreadsheetDTO getSpreadsheetState() {
         validateSheetIsLoaded();
-        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
+        return versionManager.getCurrentVersionDTO();
     }
 
     @Override
     public SpreadsheetDTO pokeCellAndReturnSheet(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
-        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
+        versionManager.getCurrentVersion().getCell(cellCoordinate);
+        return versionManager.getCurrentVersionDTO();
     }
 
     @Override
     public CellDTO getCellInfo(String cellId) {
         validateSheetIsLoaded();
         Coordinate cellCoordinate = createCoordinate(cellId);
-        CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
-
+        CellReadActions cellToDTO = versionManager.getCurrentVersion().getCell(cellCoordinate);
         return convertCellToDTO(cellToDTO);
     }
 
@@ -123,45 +121,35 @@ public class EngineImpl implements Engine, Serializable{
     public void updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
+        Spreadsheet currentSpreadsheet = versionManager.getCurrentVersion().copySheet();
 
         try {
-            currentSpreadSheetVersion++;
-            currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
-            spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
-            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue); // consider set before put
-        } catch (InvalidParameterException e) { //roll-back only.
-            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
-            currentSpreadSheetVersion--;
+            int nextVersion = versionManager.getCurrentVersionNumber() + 1;
+            currentSpreadsheet.setSheetVersion(nextVersion);
+            versionManager.addVersion(nextVersion, currentSpreadsheet);
+            versionManager.getCurrentVersion().setCell(coordinate, newValue); // consider set before addVersion
+        } catch (InvalidParameterException e) { // roll-back only.
+            versionManager.removeVersion(versionManager.getCurrentVersionNumber());
         } catch (Exception e) {
-            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
-            currentSpreadSheetVersion--;
+            versionManager.removeVersion(versionManager.getCurrentVersionNumber());
             throw e;
         }
     }
 
     private void validateSheetIsLoaded() {
-        if (spreadsheetsByVersions == null) {
+        if (versionManager.getCurrentVersionNumber() == 0) {
             throw new IllegalStateException("File is not loaded yet.");
         }
-        if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
+        if (versionManager.getCurrentVersion() == null) {
             throw new IllegalStateException("File is not loaded yet.");
         }
     }
-
 
     @Override
     public Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory() {
         validateSheetIsLoaded();
-        Map<Integer, SpreadsheetDTO> spreadSheetByVersionDTO = new HashMap<>();
-
-        for (Map.Entry<Integer, Spreadsheet> entry : spreadsheetsByVersions.entrySet()) {
-            spreadSheetByVersionDTO.put(entry.getKey(), convertSheetToDTO(spreadsheetsByVersions.get(entry.getKey())));
-        }
-
-        return spreadSheetByVersionDTO;
+        return versionManager.getAllVersions();
     }
-
 
     @Override
     public void saveSystemToFile(String fileName) throws IOException {
@@ -176,8 +164,7 @@ public class EngineImpl implements Engine, Serializable{
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
             EngineImpl loadedEngine = (EngineImpl) in.readObject();
 
-            this.spreadsheetsByVersions = loadedEngine.spreadsheetsByVersions;
-            this.currentSpreadSheetVersion = loadedEngine.currentSpreadSheetVersion;
+            this.versionManager = loadedEngine.versionManager;
         }
     }
 
@@ -186,75 +173,72 @@ public class EngineImpl implements Engine, Serializable{
         System.exit(0);
     }
 
-
     @Override
     public SpreadsheetDTO getSpreadSheetByVersion(int version) {
         validateSheetIsLoaded();
-        return convertSheetToDTO(spreadsheetsByVersions.get(version));
+        return versionManager.getVersion(version);
     }
 
     @Override
     public Integer getCurrentVersion() {
-        return currentSpreadSheetVersion;
+        return versionManager.getCurrentVersionNumber();
     }
 
     @Override
     public void setSingleCellTextColor(String cellId, String textColor) {
         validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).setTextColor(cellId,textColor);
+        versionManager.getCurrentVersion().setTextColor(cellId, textColor);
     }
 
     @Override
     public void setSingleCellBackGroundColor(String cellId, String backGroundColor) {
         validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
+        versionManager.getCurrentVersion().setBackgroundColor(cellId, backGroundColor);
     }
 
     @Override
     public void addRangeToSheet(String rangeName, String rangeDefinition) {
         validateSheetIsLoaded();
-        if (spreadsheetsByVersions.get(currentSpreadSheetVersion).rangeExists(rangeName)) {
+        if (versionManager.getCurrentVersion().rangeExists(rangeName)) {
             throw new IllegalArgumentException("A range with the name '" + rangeName + "' already exists.");
         }
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).addRange(rangeName,rangeDefinition);
+        versionManager.getCurrentVersion().addRange(rangeName, rangeDefinition);
     }
 
     @Override
     public void removeRangeFromSheet(String name) {
         validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).removeRange(name);
+        versionManager.getCurrentVersion().removeRange(name);
     }
 
     @Override
     public List<Coordinate> getRangeByName(final String rangeName) {
         validateSheetIsLoaded();
-        return spreadsheetsByVersions.get(currentSpreadSheetVersion).getRangeByName(rangeName).getCoordinates();
+        return versionManager.getCurrentVersion().getRangeByName(rangeName).getCoordinates();
     }
 
     @Override
     public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) {
         validateSheetIsLoaded();
-         Spreadsheet sheetToSort = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
-         sheetToSort.sortSheet(cellsRange,selectedColumns);
+        Spreadsheet sheetToSort = versionManager.getCurrentVersion().copySheet();
+        sheetToSort.sortSheet(cellsRange, selectedColumns);
 
-         return SheetConverter.convertSheetToDTO(sheetToSort);
+        return SheetConverter.convertSheetToDTO(sheetToSort);
     }
 
     @Override
     public SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues) {
         validateSheetIsLoaded();
-        Spreadsheet sheetToFilter = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
-        sheetToFilter.filter(selectedColumn,filterArea,selectedValues);
+        Spreadsheet sheetToFilter = versionManager.getCurrentVersion().copySheet();
+        sheetToFilter.filter(selectedColumn, filterArea, selectedValues);
 
         return SheetConverter.convertSheetToDTO(sheetToFilter);
     }
 
     @Override
     public List<String> getUniqueValuesFromColumn(char columnNumber) {
-        List<String> uniqueValues = new ArrayList<>();
-        Spreadsheet sheetToScan = spreadsheetsByVersions.get(currentSpreadSheetVersion);
-
-        return sheetToScan.getUniqueValuesFromColumn(columnNumber);
-
+        validateSheetIsLoaded();
+        return versionManager.getCurrentVersion().getUniqueValuesFromColumn(columnNumber);
     }
+
 }
