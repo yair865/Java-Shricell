@@ -1,8 +1,8 @@
 package engine.sheetimpl.expression.function.logic;
 
-import engine.api.EffectiveValue;
-import engine.api.Expression;
-import engine.api.SheetReadActions;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetimpl.expression.Expression;
+import engine.sheetimpl.api.SheetReadActions;
 import engine.sheetimpl.cellimpl.EffectiveValueImpl;
 import engine.sheetimpl.utils.CellType;
 import engine.sheetimpl.expression.type.UnaryExpression;

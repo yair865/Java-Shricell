@@ -8,9 +8,9 @@ import application.left.sort.SortController;
 import application.model.DataManager;
 import application.model.TemporaryCellDataProvider;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
-import engine.engineimpl.Engine;
-import engine.engineimpl.EngineImpl;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetmanager.SheetManager;
+import engine.sheetmanager.SheetManagerImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,7 +35,7 @@ public class ShticellController {
     int numberOfColumns;
     int numberOfRows;
 
-    private Engine engine;
+    private SheetManager engine;
 
     private DataManager dataManager;
 
@@ -64,7 +64,7 @@ public class ShticellController {
     private SimpleBooleanProperty isFileLoaded = new SimpleBooleanProperty(false);
 
     public ShticellController() {
-        this.engine = new EngineImpl();
+        this.engine = new SheetManagerImpl();
         this.dataManager = new DataManager(engine);
         this.applicationWindow = new BorderPane();
         this.bodyController = new BodyController();
@@ -255,7 +255,7 @@ public class ShticellController {
         return headerComponentController;
     }
 
-    public Engine getEngine() {
+    public SheetManager getEngine() {
         return engine;
     }
 

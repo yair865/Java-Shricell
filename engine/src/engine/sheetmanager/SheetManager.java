@@ -1,16 +1,14 @@
-package engine.engineimpl;
+package engine.sheetmanager;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public interface Engine {
+public interface SheetManager {
 
     void loadSpreadsheet(String filePath) throws Exception;
 

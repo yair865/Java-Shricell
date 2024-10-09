@@ -1,6 +1,6 @@
 package engine.sheetimpl.cellimpl;
 
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
 
 import java.io.Serializable;

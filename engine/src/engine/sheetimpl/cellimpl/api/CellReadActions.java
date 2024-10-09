@@ -1,5 +1,6 @@
-package engine.api;
+package engine.sheetimpl.cellimpl.api;
 
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.CellStyle;
 
 public interface CellReadActions {

@@ -1,10 +1,12 @@
-package engine.api;
+package engine.sheetimpl.api;
 
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.cellimpl.api.CellReadActions;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.range.Range;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface SheetReadActions {
 

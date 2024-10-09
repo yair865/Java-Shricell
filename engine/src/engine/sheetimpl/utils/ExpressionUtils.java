@@ -1,7 +1,7 @@
 package engine.sheetimpl.utils;
 
-import engine.api.Coordinate;
-import engine.api.Expression;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.expression.Expression;
 import engine.exception.InvalidOperationException;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.expression.type.Bool;

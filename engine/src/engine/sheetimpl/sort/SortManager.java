@@ -1,7 +1,7 @@
 package engine.sheetimpl.sort;
 
-import engine.api.Coordinate;
-import engine.api.Spreadsheet;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.api.Spreadsheet;
 
 import java.util.List;
 

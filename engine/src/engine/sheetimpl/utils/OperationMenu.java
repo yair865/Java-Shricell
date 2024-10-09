@@ -1,6 +1,6 @@
 package engine.sheetimpl.utils;
 
-import engine.api.Expression;
+import engine.sheetimpl.expression.Expression;
 import engine.sheetimpl.expression.function.general.Ref;
 import engine.sheetimpl.expression.function.logic.*;
 import engine.sheetimpl.expression.function.math.*;

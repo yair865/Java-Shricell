@@ -1,8 +1,8 @@
 package engine.sheetimpl.filter;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.SpreadsheetImpl;
 import engine.sheetimpl.row.RowImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;

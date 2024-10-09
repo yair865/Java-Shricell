@@ -1,7 +1,5 @@
 package engine.sheetimpl.cellimpl.coordinate;
 
-import engine.api.Coordinate;
-
 import java.util.HashMap;
 import java.util.Map;
 

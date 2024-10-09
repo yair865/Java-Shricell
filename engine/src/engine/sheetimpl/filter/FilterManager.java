@@ -1,6 +1,6 @@
 package engine.sheetimpl.filter;
 
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.SpreadsheetImpl;
 
 import java.util.List;

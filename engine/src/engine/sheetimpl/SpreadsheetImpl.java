@@ -1,11 +1,14 @@
 package engine.sheetimpl;
 
-import engine.api.*;
 import engine.generated.STLCell;
 import engine.generated.STLRange;
 import engine.generated.STLSheet;
+import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.filter.FilterManager;
 import engine.sheetimpl.filter.FilterManagerImpl;

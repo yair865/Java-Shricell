@@ -1,7 +1,7 @@
 package engine.sheetimpl.row;
 
-import engine.api.Cell;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package engine.sheetimpl.cellimpl;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
 
 import java.io.Serializable;

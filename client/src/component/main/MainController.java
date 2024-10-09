@@ -2,17 +2,14 @@ package component.main;
 
 import application.model.DataManager;
 import component.dashboard.DashboardController;
-import engine.engineimpl.Engine;
+import engine.sheetmanager.SheetManager;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import component.login.LoginController;
 import javafx.scene.layout.StackPane;
@@ -26,7 +23,7 @@ import static constants.Constants.*;
 
 public class MainController implements Closeable {
 
-    private Engine engine;
+    private SheetManager engine;
     private DataManager dataManager;
     private Stage stage;
 

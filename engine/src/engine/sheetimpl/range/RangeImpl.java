@@ -1,6 +1,6 @@
 package engine.sheetimpl.range;
 
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 
 import java.io.Serializable;

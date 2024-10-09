@@ -2,8 +2,7 @@ package engine.versionmanager;
 
 import dto.converter.SheetConverter;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Spreadsheet;
-import engine.api.VersionManager;
+import engine.sheetimpl.api.Spreadsheet;
 
 import java.io.Serializable;
 import java.util.HashMap;

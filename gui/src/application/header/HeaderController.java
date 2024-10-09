@@ -1,7 +1,7 @@
 package application.header;
 
 import application.app.ShticellController;
-import engine.engineimpl.Engine;
+import engine.sheetmanager.SheetManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -18,7 +18,7 @@ import java.util.Objects;
 public class HeaderController {
 
     private ShticellController shticellController;
-    private Engine engine;
+    private SheetManager engine;
 
     @FXML
     private Button btnFileChooser;
@@ -182,7 +182,7 @@ public class HeaderController {
         this.filePathTextField.setText(path);
     }
 
-    public void setEngine(Engine engine) {
+    public void setEngine(SheetManager engine) {
         this.engine = engine;
     }
 

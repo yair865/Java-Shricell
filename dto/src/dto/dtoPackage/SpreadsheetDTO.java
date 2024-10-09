@@ -1,6 +1,6 @@
 package dto.dtoPackage;
 
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.range.Range;
 
 import java.util.List;

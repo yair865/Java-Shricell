@@ -3,9 +3,9 @@ package application.model;
 import application.body.BasicCellData;
 
 import dto.dtoPackage.CellDTO;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.engineimpl.Engine;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetmanager.SheetManager;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.utils.CellType;
 
@@ -17,9 +17,9 @@ import java.util.Map;
 public class DataManager implements CellDataProvider {
 
     private Map<Coordinate, BasicCellData> cellDataMap;
-    private Engine engine;
+    private SheetManager engine;
 
-    public DataManager(Engine engine) {
+    public DataManager(SheetManager engine) {
         this.engine = engine;
         this.cellDataMap = new HashMap<>();
     }

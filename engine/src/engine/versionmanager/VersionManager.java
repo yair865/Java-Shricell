@@ -1,6 +1,7 @@
-package engine.api;
+package engine.versionmanager;
 
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.sheetimpl.api.Spreadsheet;
 
 import java.util.Map;
 

@@ -1,11 +1,13 @@
-package engine.engineimpl;
+package engine.sheetmanager;
 
 import dto.converter.SheetConverter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.*;
 import engine.generated.STLSheet;
 import engine.sheetimpl.SpreadsheetImpl;
+import engine.sheetimpl.api.Spreadsheet;
+import engine.sheetimpl.cellimpl.api.CellReadActions;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.versionmanager.*;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import jakarta.xml.bind.JAXBContext;
@@ -17,11 +19,10 @@ import java.security.InvalidParameterException;
 import java.util.*;
 
 import static dto.converter.CellConverter.convertCellToDTO;
-import static dto.converter.SheetConverter.convertSheetToDTO;
 import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
 
 
-public class EngineImpl implements Engine, Serializable{
+public class SheetManagerImpl implements SheetManager, Serializable{
 
     public static final int MAX_ROWS = 50;
     public static final int MAX_COLUMNS = 20;
@@ -29,7 +30,7 @@ public class EngineImpl implements Engine, Serializable{
 
     private VersionManager versionManager;
 
-    public EngineImpl() {
+    public SheetManagerImpl() {
         this.versionManager = new VersionManagerImpl();
     }
 
@@ -162,7 +163,7 @@ public class EngineImpl implements Engine, Serializable{
     @Override
     public void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
-            EngineImpl loadedEngine = (EngineImpl) in.readObject();
+            SheetManagerImpl loadedEngine = (SheetManagerImpl) in.readObject();
 
             this.versionManager = loadedEngine.versionManager;
         }
@@ -240,5 +241,4 @@ public class EngineImpl implements Engine, Serializable{
         validateSheetIsLoaded();
         return versionManager.getCurrentVersion().getUniqueValuesFromColumn(columnNumber);
     }
-
 }

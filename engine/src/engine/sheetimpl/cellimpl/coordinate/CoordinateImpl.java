@@ -1,7 +1,5 @@
 package engine.sheetimpl.cellimpl.coordinate;
 
-import engine.api.Coordinate;
-
 import java.io.Serializable;
 
 public record CoordinateImpl(int row, int column) implements Coordinate, Serializable {

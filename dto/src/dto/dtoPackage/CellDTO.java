@@ -1,7 +1,7 @@
 package dto.dtoPackage;
 
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.cellimpl.CellStyle;
 
 public record CellDTO(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue,

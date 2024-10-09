@@ -1,10 +1,10 @@
 package dto.converter;
 
-import engine.api.Cell;
-import engine.api.Spreadsheet;
+import engine.sheetimpl.cellimpl.api.Cell;
+import engine.sheetimpl.api.Spreadsheet;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;

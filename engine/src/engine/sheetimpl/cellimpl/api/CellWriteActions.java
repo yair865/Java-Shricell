@@ -1,4 +1,4 @@
-package engine.api;
+package engine.sheetimpl.cellimpl.api;
 
 public interface CellWriteActions {
     void setCellOriginalValue(String value);
