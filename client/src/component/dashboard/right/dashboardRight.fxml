@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<HBox fx:id="right" maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.right.DashboardRightController">
+   <children>
+      <Separator maxHeight="1.7976931348623157E308" orientation="VERTICAL" prefHeight="200.0" />
+      <VBox fx:id="dashboardRight" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="333.0" prefWidth="186.0" spacing="20.0">
+         <children>
+            <Label text="Commands" underline="true" />
+            <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0" text="View sheet" />
+            <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0" text="Request permission" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0" text="ack\deny permission request" textAlignment="CENTER" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="30.0" />
+         </padding>
+      </VBox>
+   </children>
+</HBox>

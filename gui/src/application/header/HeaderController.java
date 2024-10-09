@@ -121,7 +121,7 @@ public class HeaderController {
                     imageView.setFitHeight(30);
                     imageView.setFitWidth(30);
                     setGraphic(imageView);
-                    setText(item.getName()); // Set the name for the button cell
+                    setText(item.getName());
                 }
             }
         });
