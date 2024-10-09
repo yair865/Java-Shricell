@@ -33,9 +33,6 @@ public class DashboardHeaderController {
     private Button loadFileButton;
 
     @FXML
-    private Label userGreetingLabel;
-
-    @FXML
     private Label userNameLabel;
 
     @FXML
@@ -46,39 +43,10 @@ public class DashboardHeaderController {
 
         File selectedFile = fileChooser.showOpenDialog(header.getScene().getWindow());
 
-
         if (selectedFile == null) {
             showErrorAlert("File Selection Error", "No file selected. Please select an XML file.");
             return;
         }
-
-        // Build URL for file upload
-        String finalUrl = HttpUrl.parse(Constants.UPLOAD_FILE_PAGE)
-                .newBuilder()
-                .addQueryParameter("fileName", selectedFile.getName())
-                .build()
-                .toString();
-
-        // Asynchronously upload the file to the server
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> showErrorAlert("Connection Error", "Failed to upload file: " + e.getMessage()));
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> showErrorAlert("Upload Failed", "Error uploading file: " + responseBody));
-                } else {
-                    Platform.runLater(() -> {
-                        showSuccessAlert("Upload Success", "File uploaded successfully.");
-                        // Additional actions can be added here, like refreshing UI
-                    });
-                }
-            }
-        });
     }
 
     private void showErrorAlert(String title, String message) {
@@ -100,6 +68,5 @@ public class DashboardHeaderController {
     public void setMainController(MainController mainController) {
         userNameLabel.textProperty().bind(Bindings.concat(mainController.currentUserProperty()));
         this.mainController = mainController;
-
     }
 }

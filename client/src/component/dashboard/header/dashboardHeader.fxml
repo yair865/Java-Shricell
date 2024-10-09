@@ -27,7 +27,7 @@
          <children>
             <HBox>
                <children>
-                  <Label fx:id="userGreetingLabel" prefHeight="17.0" prefWidth="34.0" text="Hello," />
+                  <Label prefHeight="17.0" prefWidth="34.0" text="Hello," />
                   <Label fx:id="userNameLabel" />
                </children>
             </HBox>

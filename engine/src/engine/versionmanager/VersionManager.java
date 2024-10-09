@@ -12,8 +12,6 @@ public interface VersionManager {
     void removeVersion(int version);
     SpreadsheetDTO getCurrentVersionDTO();
     int getCurrentVersionNumber();
-
     Spreadsheet getCurrentVersion();
-
     void setVersionNumber(int loadVersion);
 }
