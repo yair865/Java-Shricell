@@ -4,13 +4,17 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 public interface SheetManager {
 
     void loadSpreadsheet(String filePath) throws Exception;
+
+    String loadSpreadsheet(InputStream fileContent) throws Exception;
 
     SpreadsheetDTO getSpreadsheetState();
 
@@ -46,4 +50,14 @@ public interface SheetManager {
     SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues);
 
     List<String> getUniqueValuesFromColumn(char columnNumber);
+
+    String getUserName();
+
+    void setUserName(String userName);
+
+    String getSheetTitle();
+
+    int getSheetNumberOfRows();
+
+    int getSheetNumberOfColumns();
 }

@@ -4,7 +4,6 @@ import component.main.MainController;
 import constants.Constants;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -12,10 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import util.HttpClientUtil;
 
@@ -47,6 +43,34 @@ public class DashboardHeaderController {
             showErrorAlert("File Selection Error", "No file selected. Please select an XML file.");
             return;
         }
+
+        String userName = mainController.currentUserProperty().get();
+
+        RequestBody fileBody = RequestBody.create(selectedFile, MediaType.parse("application/xml"));
+
+
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", selectedFile.getName(), fileBody)
+                .addFormDataPart("userName", userName)
+                .build();
+
+        HttpClientUtil.runAsyncPost(Constants.UPLOAD_FILE_PAGE, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> showErrorAlert("Connection Error", "Failed to load file: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> System.out.println(responseBody));
+                } else {
+                    Platform.runLater(() -> showSuccessAlert("Load Success", "File loaded successfully."));
+                }
+            }
+        });
     }
 
     private void showErrorAlert(String title, String message) {

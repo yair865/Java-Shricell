@@ -48,4 +48,8 @@ public class DashboardController {
     @FXML public void logOutListener(ActionEvent event) {
         mainController.switchToLogin();
     }
+
+    public void setActive(){
+        bodyController.setActive();
+    }
 }

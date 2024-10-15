@@ -64,7 +64,6 @@ public class ShticellController {
     private SimpleBooleanProperty isFileLoaded = new SimpleBooleanProperty(false);
 
     public ShticellController() {
-        this.engine = new SheetManagerImpl();
         this.dataManager = new DataManager(engine);
         this.applicationWindow = new BorderPane();
         this.bodyController = new BodyController();

@@ -1,10 +1,17 @@
 package engine.engineimpl;
 
+import dto.converter.SheetListConverter;
+import dto.dtoPackage.SheetInfoDTO;
 import engine.sheetmanager.SheetManager;
+import engine.sheetmanager.SheetManagerImpl;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
 
@@ -12,25 +19,30 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, SheetManager> sheets;
     private SheetManager currentSheet;
 
-    private EngineImpl() {
+    public EngineImpl() {
         this.sheets = new HashMap<>();
     }
 
-    public static EngineImpl getInstance() {
-        return instance;
-    }
-
     @Override
-    public void addSheet(String sheetName, SheetManager sheetManager, String filePath) {
-        if (sheets.containsKey(sheetName)) {
-            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' already exists.");
-        }
+    public void addSheet(InputStream fileContent , String userName) {
+        String sheetName = null;
+        SheetManager sheetManager = new SheetManagerImpl(userName);
+
         try {
-            sheetManager.loadSpreadsheet(filePath);
-        } catch (Exception e) {
+             sheetName = sheetManager.loadSpreadsheet(fileContent);
+             validateSheetExists(sheetName);
+
+        }catch (Exception e) {
             throw new IllegalArgumentException("Could not load sheet '" + sheetName + "'.");
         }
+
         sheets.put(sheetName, sheetManager);
+    }
+
+    private void validateSheetExists(String sheetName) {
+        if (sheets.containsKey(sheetName)) {
+            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' does not exist.");
+        }
     }
 
     @Override
@@ -46,5 +58,15 @@ public class EngineImpl implements Engine, Serializable {
         this.currentSheet = currentSheet;
     }
 
-    // Other methods from the Engine interface...
+    @Override
+    public synchronized List<SheetInfoDTO> getSheets() {
+        System.out.println("Current sheets size: " + sheets.size());
+        sheets.forEach((key, value) -> System.out.println("Sheet Key: " + key + ", Value: " + value));
+
+        List<SheetInfoDTO> sheetInfoDTOs = SheetListConverter.convertSheetsListToDTO(
+                new ArrayList<>(sheets.values())
+        );
+        System.out.println("Sheets list size: " + sheetInfoDTOs.size()); // Debug log
+        return sheetInfoDTOs;
+    }
 }

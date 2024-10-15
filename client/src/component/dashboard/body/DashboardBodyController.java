@@ -1,24 +1,32 @@
 package component.dashboard.body;
 
+import component.dashboard.body.permissionListArea.PermissionListController;
+import component.dashboard.body.sheetListArea.SheetsListController;
 import component.main.MainController;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 public class DashboardBodyController {
 
     MainController mainController;
+    @FXML VBox sheetsListComponent;
+    @FXML private SheetsListController sheetsListComponentController;
+    @FXML VBox permissionListComponent;
+    @FXML private PermissionListController permissionListComponentController;
 
-    @FXML
-    private GridPane dashBoardBody;
+    @FXML public void initialize() {
 
-    @FXML
-    private TableView<String> permissionTableView;
+    }
 
-    @FXML
-    private TableView<String> sheetsTableView;
+    public SheetsListController getSheetListController() {
+        return this.sheetsListComponentController;
+    }
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setActive() {
+        sheetsListComponentController.startListRefresher();
     }
 }

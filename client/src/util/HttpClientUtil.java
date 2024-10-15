@@ -4,6 +4,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import java.util.function.Consumer;
 
@@ -24,13 +25,24 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
+    // Existing method for GET requests
     public static void runAsync(String finalUrl, Callback callback) {
         Request request = new Request.Builder()
                 .url(finalUrl)
                 .build();
 
-        Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
+        Call call = HTTP_CLIENT.newCall(request);
+        call.enqueue(callback);
+    }
 
+    // New method for POST requests with a request body (such as multipart form-data)
+    public static void runAsyncPost(String url, RequestBody requestBody, Callback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        Call call = HTTP_CLIENT.newCall(request);
         call.enqueue(callback);
     }
 

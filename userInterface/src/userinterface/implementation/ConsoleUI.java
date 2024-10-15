@@ -2,6 +2,7 @@ package userinterface.implementation;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.engineimpl.Engine;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetmanager.SheetManager;
@@ -24,7 +25,7 @@ public class ConsoleUI implements UI {
     @Override
     public void executeProgram()
     {
-        engine = new SheetManagerImpl();
+        engine = new SheetManagerImpl(null);
         scanner = new Scanner(System.in);
 
         while (true) {

@@ -29,20 +29,34 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     public static final int LOAD_VERSION = 1;
 
     private VersionManager versionManager;
+    private String userName;
 
-    public SheetManagerImpl() {
+    public SheetManagerImpl(String userName) {
         this.versionManager = new VersionManagerImpl();
+        this.userName = userName;
     }
 
     @Override
     public void loadSpreadsheet(String filePath) throws Exception {
         validateXmlFile(filePath);
-        STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
+        STLSheet loadedSheetFromXML = loadSheetFromXmlFilePath(filePath);
         validateSTLSheet(loadedSheetFromXML);
         Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
         versionManager.setVersionNumber(LOAD_VERSION);
         loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
         versionManager.addVersion(LOAD_VERSION ,convertSTLSheet2SpreadSheet(loadedSheetFromXML));
+    }
+
+    @Override
+    public String loadSpreadsheet(InputStream fileContent) throws Exception {
+        STLSheet loadedSheetFromXML = loadSheetFromXmlFile(fileContent);
+        validateSTLSheet(loadedSheetFromXML);
+        Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
+        versionManager.setVersionNumber(LOAD_VERSION);
+        loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
+        versionManager.addVersion(LOAD_VERSION ,convertSTLSheet2SpreadSheet(loadedSheetFromXML));
+
+        return loadedSpreadSheet.getSheetName();
     }
 
     private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
@@ -85,12 +99,22 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         }
     }
 
-    private STLSheet loadSheetFromXmlFile(String filePath) {
+    private STLSheet loadSheetFromXmlFilePath(String filePath) {
         try {
             File file = new File(filePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (STLSheet) jaxbUnmarshaller.unmarshal(file);
+        } catch (JAXBException e) {
+            throw new RuntimeException("Failed to load the data from the XML file.");
+        }
+    }
+
+    private STLSheet loadSheetFromXmlFile(InputStream fileContent) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            return (STLSheet) jaxbUnmarshaller.unmarshal(fileContent);
         } catch (JAXBException e) {
             throw new RuntimeException("Failed to load the data from the XML file.");
         }
@@ -241,4 +265,25 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         validateSheetIsLoaded();
         return versionManager.getCurrentVersion().getUniqueValuesFromColumn(columnNumber);
     }
+    @Override
+    public String getUserName() {
+        return userName;
+    }
+    @Override
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    @Override
+    public String getSheetTitle(){
+        return versionManager.getCurrentVersion().getSheetName();
+    }
+    @Override
+    public int getSheetNumberOfRows(){
+        return versionManager.getCurrentVersion().getRows();
+    }
+    @Override
+    public int getSheetNumberOfColumns(){
+        return versionManager.getCurrentVersion().getColumns();
+    }
+
 }

@@ -2,6 +2,7 @@ package component.main;
 
 import application.model.DataManager;
 import component.dashboard.DashboardController;
+import component.dashboard.body.sheetListArea.SheetsListController;
 import engine.sheetmanager.SheetManager;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,8 +24,6 @@ import static constants.Constants.*;
 
 public class MainController implements Closeable {
 
-    private SheetManager engine;
-    private DataManager dataManager;
     private Stage stage;
 
     @FXML private ScrollPane dashboardWindow;
@@ -40,7 +39,6 @@ public class MainController implements Closeable {
     }
 
     @FXML public void initialize() {
-
         loadLoginPage();
     }
 
@@ -79,6 +77,7 @@ public class MainController implements Closeable {
             dashboardController = fxmlLoader.getController();
             dashboardController.setShticellController(this);
             setMainPanelTo(dashboardWindow);
+            dashboardController.setActive();
             stage.setWidth(dashboardWindow.getPrefWidth());
             stage.setHeight(dashboardWindow.getPrefHeight() + 15);
         } catch (IOException e) {
@@ -102,5 +101,7 @@ public class MainController implements Closeable {
     public void updateUserName (String userName){
         currentUser.set(userName);
     }
+
+
 }
 
