@@ -65,7 +65,6 @@ public class ShticellController {
 
     private SortController sortComponentController;
 
-    private SimpleBooleanProperty isFileLoaded = new SimpleBooleanProperty(false);
     private MainController mainController;
 
     public ShticellController() {
@@ -99,7 +98,7 @@ public class ShticellController {
         return progressAlert;
     }
 
-    @FXML
+/*    @FXML
     public void loadFile(String filePath) {
         LoadingStage loadingStage = new LoadingStage();
         loadingStage.showLoadingStage();
@@ -137,15 +136,11 @@ public class ShticellController {
     private void handleLoadSuccess(String filePath, LoadingStage loadingStage) {
         loadingStage.closeLoadingStage();
 
-        // Retrieve the spreadsheet state
         SpreadsheetDTO spreadSheet = engine.getSpreadsheetState();
 
-        // Process the spreadsheet data and update UI components
         updateUIWithSpreadsheetData(spreadSheet);
 
-        headerComponentController.setPathTextField(filePath);
         System.out.println("Successfully loaded: " + filePath);
-        isFileLoaded.set(true);
     }
 
     private void handleLoadFailure(Task<Void> loadTask, LoadingStage loadingStage) {
@@ -156,25 +151,19 @@ public class ShticellController {
         alert.setHeaderText("An error occurred while loading the file.");
         alert.setContentText("Error: " + loadTask.getException().getMessage() + "\nPlease try to load the file again.");
         alert.showAndWait();
-    }
+    }*/
 
     public void updateUIWithSpreadsheetData(SpreadsheetDTO spreadSheet) {
         dataManager.getCellDataMap().clear();
         numberOfColumns = spreadSheet.columns();
         numberOfRows = spreadSheet.rows();
         convertDTOToCellData(dataManager.getCellDataMap(), spreadSheet);
-
-        // Create the grid pane for the application body
         bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(),
                 spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
-
-        // Update the left component's range list
+        applicationWindow.setCenter(bodyController.getBody());
         leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
-
-        // Set versions choice box
         headerComponentController.setVersionsChoiceBox();
     }
-
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
@@ -198,7 +187,7 @@ public class ShticellController {
         }
     }
 
-    private void displayTempSheet(String title, SpreadsheetDTO spreadsheetDTO) {
+    public void displayTempSheet(String title, SpreadsheetDTO spreadsheetDTO) {
         try {
             TemporaryCellDataProvider tempProvider = new TemporaryCellDataProvider();
             convertDTOToCellData(tempProvider.getTemporaryCellDataMap(), spreadsheetDTO);
@@ -323,10 +312,6 @@ public class ShticellController {
         return numberOfColumns;
     }
 
-    public BooleanProperty isFileLoadedProperty() {
-        return isFileLoaded;
-    }
-
     public void changeTheme(String name){
         leftComponentController.setSkin(name);
         headerComponentController.setSkin(name);
@@ -336,4 +321,5 @@ public class ShticellController {
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
+
 }

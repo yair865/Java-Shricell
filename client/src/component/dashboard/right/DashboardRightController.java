@@ -1,8 +1,15 @@
 package component.dashboard.right;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import component.main.MainController;
 import constant.Constants;
+import dto.deserialize.CoordinateTypeAdapter;
+import dto.deserialize.EffectiveValueTypeAdapter;
+import dto.deserialize.SpreadsheetDTODeserializer;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -71,14 +78,19 @@ public class DashboardRightController {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-
                     String responseBody = response.body().string();
 
-                    SpreadsheetDTO spreadsheetDTO = GSON_INSTANCE.fromJson(responseBody, SpreadsheetDTO.class);
+
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(SpreadsheetDTO.class, new SpreadsheetDTODeserializer())
+                            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
+                            .registerTypeAdapter(EffectiveValue.class ,new EffectiveValueTypeAdapter())
+                            .create();
+
+                    SpreadsheetDTO spreadsheetDTO = gson.fromJson(responseBody, SpreadsheetDTO.class);
 
                     System.out.println("Spreadsheet data received: " + spreadsheetDTO);
                     handleSpreadsheetData(spreadsheetDTO);
-
                 } else {
                     System.out.println("Failed to get spreadsheet data: " + response.message());
                 }

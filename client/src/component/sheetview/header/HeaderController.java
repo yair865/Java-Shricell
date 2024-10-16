@@ -21,12 +21,6 @@ public class HeaderController {
     private SheetManager engine;
 
     @FXML
-    private Button btnFileChooser;
-
-    @FXML
-    private TextField filePathTextField;
-
-    @FXML
     private TextField newValueTextField;
 
     @FXML
@@ -128,23 +122,6 @@ public class HeaderController {
     }
 
     @FXML
-    public void loadFileButtonListener() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open File");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
-
-        Stage stage = (Stage) btnFileChooser.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-
-        if (selectedFile != null) {
-            String filePath = selectedFile.getAbsolutePath();
-            shticellController.loadFile(filePath);
-            selectVersionChoiceBox.getItems().clear();
-        }
-    }
-
-    @FXML
     void updateValueButtonListener(ActionEvent event) {
         String newValue = newValueTextField.getText();
         String cellId = cellIdLabel.getText();
@@ -162,10 +139,6 @@ public class HeaderController {
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
-        updateNewValueBTN.disableProperty().bind(shticellController.isFileLoadedProperty().not());
-        newValueTextField.disableProperty().bind(shticellController.isFileLoadedProperty().not());
-        selectVersionChoiceBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
-        skinComboBox.disableProperty().bind(shticellController.isFileLoadedProperty().not());
     }
 
     public void updateHeader(String cellId, String originalValue, int lastModifiedVersion) {
@@ -178,16 +151,12 @@ public class HeaderController {
         return this.newValueTextField;
     }
 
-    public void setPathTextField(String path) {
-        this.filePathTextField.setText(path);
-    }
-
     public void setEngine(SheetManager engine) {
         this.engine = engine;
     }
 
     public void setVersionsChoiceBox() {
-        selectVersionChoiceBox.getItems().add(engine.getCurrentVersion());
+        //selectVersionChoiceBox.getItems().add(engine.getCurrentVersion());
     }
 
     public char getSelectedCellColumn() {
@@ -221,7 +190,6 @@ public class HeaderController {
                 break;
         }
     }
-
 
     public static class SkinItem {
         private final String name;

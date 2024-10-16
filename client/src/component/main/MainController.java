@@ -28,7 +28,7 @@ public class MainController implements Closeable {
     private Stage stage;
 
     @FXML private ScrollPane dashboardWindow;
-    @FXML private BorderPane applicationWindow;
+    @FXML private ScrollPane applicationWindow;
     @FXML private ShticellController shticellController;
     @FXML private GridPane loginWindow;
     @FXML private LoginController loginController;
@@ -98,8 +98,6 @@ public class MainController implements Closeable {
             shticellController.setMainController(this);
             shticellController.updateUIWithSpreadsheetData(spreadsheetDTO);
             setMainPanelTo(applicationWindow);
-            stage.setWidth(applicationWindow.getPrefWidth());
-            stage.setHeight(applicationWindow.getPrefHeight() + 15);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -45,11 +45,11 @@ ChoiceBox .arrow-button {
     -fx-background-color: #e6e6e6;
 }
 
-StackPane .label{
+/*StackPane .label{
     -fx-text-fill: white;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-}
+}*/
 
 .combo-box-base {
     -fx-background-color: #4caf50;

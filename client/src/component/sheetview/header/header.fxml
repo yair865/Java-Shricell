@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<GridPane fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="238.0" minWidth="1050.0" prefHeight="238.0" prefWidth="1120.0" stylesheets="@skin/headerDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.header.HeaderController">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="199.0" minWidth="1050.0" prefHeight="214.0" prefWidth="1130.0" stylesheets="@skin/headerDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.header.HeaderController">
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
-      <RowConstraints maxHeight="63.0" minHeight="10.0" prefHeight="63.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="142.0" minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="138.0" minHeight="10.0" prefHeight="138.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="33.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <HBox alignment="CENTER" spacing="10.0">
+      <HBox alignment="CENTER" prefHeight="84.0" prefWidth="1098.0" spacing="10.0">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" prefWidth="10000.0" styleClass="header-label" text="Shticell" underline="true" />
-            <VBox alignment="BOTTOM_CENTER" minWidth="150.0" spacing="10.0">
+            <VBox alignment="CENTER" minWidth="150.0" spacing="10.0">
                <children>
                   <Label text="Change skin" underline="true" />
                   <ComboBox fx:id="skinComboBox" />
@@ -28,14 +37,7 @@
             </VBox>
          </children>
       </HBox>
-      <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-         <children>
-            <Button fx:id="btnFileChooser" minHeight="40.0" minWidth="30.0" mnemonicParsing="false" onAction="#loadFileButtonListener" prefHeight="40.0" prefWidth="109.0" text="Load File" />
-            <Label text="file path:" />
-            <TextField fx:id="filePathTextField" disable="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="773.0" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="95.0" prefWidth="1030.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+      <HBox alignment="CENTER_LEFT" prefHeight="95.0" prefWidth="1030.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
          <children>
             <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" text="Selected Cell Id" textAlignment="CENTER" />
             <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />

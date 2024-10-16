@@ -48,11 +48,11 @@ ChoiceBox .arrow-button {
 }
 
 /* Style for StackPane labels */
-StackPane .label {
-    -fx-text-fill: white; /* White text for labels */
-    -fx-font-size: 12px; /* Font size for labels */
-    -fx-font-weight: bold; /* Bold text */
-}
+/*StackPane .label {
+    -fx-text-fill: white; !* White text for labels *!
+    -fx-font-size: 12px; !* Font size for labels *!
+    -fx-font-weight: bold; !* Bold text *!
+}*/
 
 .combo-box-base {
     -fx-background-color: rgba(170, 0, 25, 0.9);
