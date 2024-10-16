@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,31 +22,26 @@ public class LoadFileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-
         Part filePart = request.getPart("file");
-        Part userNamePart = request.getPart("userName");
 
         if (filePart == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Missing file.");
             return;
         }
 
-        if (userNamePart == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing user name.");
-            return;
-        }
-
-        String userName = new String(userNamePart.getInputStream().readAllBytes());
+        String usernameFromSession = SessionUtils.getUsername(request);
 
         try (InputStream fileContent = filePart.getInputStream()) {
-            engine.addSheet(fileContent, userName);
+            engine.addSheet(fileContent, usernameFromSession);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("Sheet loaded successfully by user '" + userName + "'.");
-
+            response.getWriter().write("File loaded successfully.");
         } catch (IllegalArgumentException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(e.getMessage());
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the sheet: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Failed to load the sheet: " + e.getMessage());
         }
     }
 }

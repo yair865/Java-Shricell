@@ -29,11 +29,11 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     public static final int LOAD_VERSION = 1;
 
     private VersionManager versionManager;
-    private String userName;
+    private String ownerName;
 
     public SheetManagerImpl(String userName) {
         this.versionManager = new VersionManagerImpl();
-        this.userName = userName;
+        this.ownerName = userName;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     }
 
     @Override
-    public String loadSpreadsheet(InputStream fileContent) throws Exception {
+    public String loadSpreadsheet(InputStream fileContent) {
         STLSheet loadedSheetFromXML = loadSheetFromXmlFile(fileContent);
         validateSTLSheet(loadedSheetFromXML);
         Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
@@ -265,13 +265,14 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         validateSheetIsLoaded();
         return versionManager.getCurrentVersion().getUniqueValuesFromColumn(columnNumber);
     }
+
     @Override
     public String getUserName() {
-        return userName;
+        return ownerName;
     }
     @Override
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.ownerName = userName;
     }
     @Override
     public String getSheetTitle(){

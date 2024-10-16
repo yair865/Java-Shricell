@@ -1,0 +1,58 @@
+
+.scroll-pane .grid {
+    -fx-background-color: #ffdd00;
+}
+
+.cell, .header {
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+    -fx-font-weight: bold;
+}
+
+.cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: black;
+}
+.influence-on-cell {
+    -fx-effect: dropshadow(gaussian, rgba(0, 128, 255, 0.5), 5, 0.5, 0, 0);
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
+    -fx-border-color: rgba(0, 128, 255, 0.75);
+}
+.depends-on-cell {
+    -fx-effect: dropshadow(gaussian, rgba(127, 255, 0, 0.5), 5, 0.5, 0, 0);
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
+    -fx-border-color: rgba(127, 255, 0, 0.75);
+}
+
+.selected-cell {
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-color: #007BFF;
+    -fx-background-color: rgba(173, 216, 230, 0.5);
+}
+
+.selected-cell:hover {
+    -fx-background-color: rgba(173, 216, 230, 0.7);
+}
+
+.selected-range-cell {
+    -fx-border-width: 3px; /* Slightly thicker border for emphasis */
+    -fx-border-style: solid;
+    -fx-border-color: #FF8C00; /* Dark orange for the border */
+    -fx-background-color: rgba(255, 140, 0, 0.3); /* Light orange background with transparency */
+    -fx-effect: dropshadow(gaussian, rgba(255, 140, 0, 0.5), 5, 0.5, 0, 0); /* Soft orange shadow */
+}
+
+.selected-range-cell:hover {
+    -fx-background-color: rgba(255, 140, 0, 0.5); /* Slightly darker on hover */
+    -fx-border-color: #FFA500; /* Brighter orange on hover */
+}
+
+/* Customize header appearance */
+.header {
+    -fx-background-color: #e0e0e0; /* Light gray for header */
+    -fx-border-width: 1px;
+    -fx-border-color: #c0c0c0; /* Match the cell border color */
+}

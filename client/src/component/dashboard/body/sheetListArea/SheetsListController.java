@@ -1,22 +1,22 @@
 package component.dashboard.body.sheetListArea;
 
-import dto.dtoPackage.SheetInfoDTO;
+import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static constants.Constants.REFRESH_RATE;
+import static consts.Constants.REFRESH_RATE;
 
 public class SheetsListController implements Closeable {
 
@@ -25,46 +25,65 @@ public class SheetsListController implements Closeable {
     private final IntegerProperty totalSheets;
 
     @FXML
-    private TableView<SheetInfoDTO> sheetsTableView;
+    private TableView<SingleSheetData> sheetsTableView;
 
     @FXML
-    private TableColumn<SheetInfoDTO, String> userNameColumn;
+    private TableColumn<SingleSheetData, String> userNameColumn;
 
     @FXML
-    private TableColumn<SheetInfoDTO, String> sheetNameColumn;
+    private TableColumn<SingleSheetData, String> sheetNameColumn;
 
     @FXML
-    private TableColumn<SheetInfoDTO, String> sizeColumn;
+    private TableColumn<SingleSheetData, String> sizeColumn;
+
+    private StringProperty currentSheetName;
 
     public SheetsListController() {
         totalSheets = new SimpleIntegerProperty();
     }
 
     @FXML
-    public void initialize() {
-        userNameColumn.setCellValueFactory(new PropertyValueFactory<>("userName"));
+    void initialize() {
+        userNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUserName()));
 
-        sheetNameColumn.setCellValueFactory(new PropertyValueFactory<>("sheetName"));
+        sheetNameColumn.setCellValueFactory(cellData ->
+                cellData.getValue().sheetNameProperty());
 
-        sizeColumn.setCellValueFactory(cellData -> {
-            SheetInfoDTO sheetInfo = cellData.getValue();
-            String size = sheetInfo.numberOfRow() + " x " + sheetInfo.numberOfColumn();
-            return new javafx.beans.property.SimpleStringProperty(size);
+        sizeColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getSheetSize()));
+
+        currentSheetName = new SimpleStringProperty(null);
+
+        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                currentSheetName.bind(newSelection.sheetNameProperty());
+            } else {
+                currentSheetName.unbind();
+                currentSheetName.set(null);
+            }
         });
     }
 
-    private void updateSheetsList(List<SheetInfoDTO> sheets) {
-        Platform.runLater(() -> {
-            ObservableList<SheetInfoDTO> items = sheetsTableView.getItems();
-            items.clear();
-            items.addAll(sheets);
-            totalSheets.set(sheets.size());
-        });
+    private void updateSheetsList(List<SingleSheetData> sheets) {
+        ObservableList<SingleSheetData> currentItems = sheetsTableView.getItems();
+        SingleSheetData selectedItem = sheetsTableView.getSelectionModel().getSelectedItem();
+
+        if (currentItems.size() != sheets.size()) {
+            Platform.runLater(() -> {
+                currentItems.clear();
+                currentItems.addAll(sheets);
+                totalSheets.set(sheets.size());
+
+                if (selectedItem != null && sheets.contains(selectedItem)) {
+                    sheetsTableView.getSelectionModel().select(selectedItem);
+                }
+            });
+        }
     }
 
     public void startListRefresher() {
-        listRefresher = new SheetsListRefresher(
-                this::updateSheetsList);
+        listRefresher = new SheetsListRefresher(this::updateSheetsList);
         timer = new Timer();
         timer.schedule(listRefresher, REFRESH_RATE, REFRESH_RATE);
     }
@@ -79,5 +98,11 @@ public class SheetsListController implements Closeable {
         }
     }
 
+    public String getCurrentSheetName() {
+        return currentSheetName.get();
+    }
 
+    public StringProperty currentSheetNameProperty() {
+        return currentSheetName;
+    }
 }

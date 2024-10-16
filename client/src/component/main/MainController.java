@@ -1,9 +1,10 @@
 package component.main;
 
-import application.model.DataManager;
 import component.dashboard.DashboardController;
-import component.dashboard.body.sheetListArea.SheetsListController;
-import engine.sheetmanager.SheetManager;
+import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
+import component.login.LoginController;
+import component.sheetview.app.ShticellController;
+import dto.dtoPackage.SpreadsheetDTO;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -11,8 +12,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import component.login.LoginController;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -20,13 +21,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 
-import static constants.Constants.*;
+import static consts.Constants.*;
 
 public class MainController implements Closeable {
 
     private Stage stage;
 
     @FXML private ScrollPane dashboardWindow;
+    @FXML private BorderPane applicationWindow;
+    @FXML private ShticellController shticellController;
     @FXML private GridPane loginWindow;
     @FXML private LoginController loginController;
     @FXML private DashboardController dashboardController;
@@ -63,7 +66,7 @@ public class MainController implements Closeable {
 
     public void switchToLogin () {
         Platform.runLater(() -> {
-            dashboardController.setInActive();
+            //dashboardController.setInActive();
             setMainPanelTo(loginWindow);
         });
     }
@@ -75,7 +78,7 @@ public class MainController implements Closeable {
             fxmlLoader.setLocation(dashboardPageUrl);
             dashboardWindow = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
-            dashboardController.setShticellController(this);
+            dashboardController.setMainController(this);
             setMainPanelTo(dashboardWindow);
             dashboardController.setActive();
             stage.setWidth(dashboardWindow.getPrefWidth());
@@ -85,13 +88,31 @@ public class MainController implements Closeable {
         }
     }
 
+    public void loadApplicationPage(SpreadsheetDTO spreadsheetDTO) {
+        URL applicationPageUrl = getClass().getResource(APPLICATION_PAGE_FXML_RESOURCE_LOCATION);
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(applicationPageUrl);
+            applicationWindow = fxmlLoader.load();
+            shticellController = fxmlLoader.getController();
+            shticellController.setMainController(this);
+            shticellController.updateUIWithSpreadsheetData(spreadsheetDTO);
+            setMainPanelTo(applicationWindow);
+            stage.setWidth(applicationWindow.getPrefWidth());
+            stage.setHeight(applicationWindow.getPrefHeight() + 15);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void setPrimaryStage(Stage primaryStage) {
         this.stage = primaryStage;
     }
-
     @Override
     public void close() throws IOException {
-        //shticellController.close();
+        if(dashboardController != null) {
+            dashboardController.close();
+        }
     }
 
     public StringProperty currentUserProperty() {
@@ -102,6 +123,8 @@ public class MainController implements Closeable {
         currentUser.set(userName);
     }
 
-
+    public SingleSheetData getSelectedSheet() {
+        return null;
+    }
 }
 

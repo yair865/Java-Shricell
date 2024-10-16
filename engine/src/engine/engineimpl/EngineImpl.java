@@ -28,20 +28,15 @@ public class EngineImpl implements Engine, Serializable {
         String sheetName = null;
         SheetManager sheetManager = new SheetManagerImpl(userName);
 
-        try {
              sheetName = sheetManager.loadSpreadsheet(fileContent);
              validateSheetExists(sheetName);
-
-        }catch (Exception e) {
-            throw new IllegalArgumentException("Could not load sheet '" + sheetName + "'.");
-        }
 
         sheets.put(sheetName, sheetManager);
     }
 
     private void validateSheetExists(String sheetName) {
         if (sheets.containsKey(sheetName)) {
-            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' does not exist.");
+            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' already exists.");
         }
     }
 
@@ -69,4 +64,7 @@ public class EngineImpl implements Engine, Serializable {
         System.out.println("Sheets list size: " + sheetInfoDTOs.size()); // Debug log
         return sheetInfoDTOs;
     }
+
+
+
 }

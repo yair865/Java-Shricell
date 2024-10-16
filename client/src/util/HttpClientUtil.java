@@ -35,7 +35,6 @@ public class HttpClientUtil {
         call.enqueue(callback);
     }
 
-    // New method for POST requests with a request body (such as multipart form-data)
     public static void runAsyncPost(String url, RequestBody requestBody, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)

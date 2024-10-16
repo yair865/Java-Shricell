@@ -1,8 +1,7 @@
 package component.dashboard.body.sheetListArea;
 
-import constants.Constants;
+import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
 import dto.dtoPackage.SheetInfoDTO;
-import javafx.beans.property.BooleanProperty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -10,19 +9,20 @@ import org.jetbrains.annotations.NotNull;
 import util.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import static constants.Constants.GSON_INSTANCE;
+import static consts.Constants.GSON_INSTANCE;
+import static consts.Constants.SHEETS_LIST;
 
 public class SheetsListRefresher extends TimerTask {
 
-    private final Consumer<List<SheetInfoDTO>> sheetsListConsumer;
+    private final Consumer<List<SingleSheetData>> sheetsListConsumer;
     private int requestNumber;
 
-    public SheetsListRefresher(Consumer<List<SheetInfoDTO>> sheetListConsumer) {
+    public SheetsListRefresher(Consumer<List<SingleSheetData>> sheetListConsumer) {
         this.sheetsListConsumer = sheetListConsumer;
         requestNumber = 0;
     }
@@ -30,7 +30,7 @@ public class SheetsListRefresher extends TimerTask {
     @Override
     public void run() {
         final int finalRequestNumber = ++requestNumber;
-        HttpClientUtil.runAsync(Constants.SHEETS_LIST, new Callback() {
+        HttpClientUtil.runAsync(SHEETS_LIST, new Callback() {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -43,15 +43,21 @@ public class SheetsListRefresher extends TimerTask {
 
                 System.out.println("Response JSON: " + jsonArrayOfSheets);
 
-                SheetInfoDTO[] sheets = GSON_INSTANCE.fromJson(jsonArrayOfSheets, SheetInfoDTO[].class);
+                SheetInfoDTO[] sheetsDTO = GSON_INSTANCE.fromJson(jsonArrayOfSheets, SheetInfoDTO[].class);
+
+                List<SingleSheetData> sheets = List.of(sheetsDTO).stream()
+                        .map(dto -> new SingleSheetData(
+                                dto.userName(),
+                                dto.sheetName(),
+                                dto.numberOfRow() + " x " + dto.numberOfColumn()))
+                        .collect(Collectors.toList());
 
                 if (sheets != null) {
-                    sheetsListConsumer.accept(List.of(sheets));
+                    sheetsListConsumer.accept(sheets);
                 } else {
                     sheetsListConsumer.accept(List.of());
                 }
             }
-
         });
     }
 }

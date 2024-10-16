@@ -2,9 +2,8 @@ package component.login;
 
 import component.dashboard.DashboardController;
 import component.main.MainController;
-import constants.Constants;
+import constant.Constants;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -12,11 +11,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import util.HttpClientUtil;
 
 import java.io.IOException;
+
+import static consts.Constants.LOGIN_PAGE;
 
 public class LoginController {
 
@@ -40,7 +44,7 @@ public class LoginController {
         }
 
         String finalUrl = HttpUrl
-                .parse(Constants.LOGIN_PAGE)
+                .parse(LOGIN_PAGE)
                 .newBuilder()
                 .addQueryParameter("username", userName)
                 .build()

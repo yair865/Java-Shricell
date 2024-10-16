@@ -1,7 +1,7 @@
 package component.dashboard.header;
 
 import component.main.MainController;
-import constants.Constants;
+import constant.Constants;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -17,6 +17,8 @@ import util.HttpClientUtil;
 
 import java.io.File;
 import java.io.IOException;
+
+import static consts.Constants.UPLOAD_FILE_PAGE;
 
 public class DashboardHeaderController {
 
@@ -55,7 +57,7 @@ public class DashboardHeaderController {
                 .addFormDataPart("userName", userName)
                 .build();
 
-        HttpClientUtil.runAsyncPost(Constants.UPLOAD_FILE_PAGE, requestBody, new Callback() {
+        HttpClientUtil.runAsyncPost(UPLOAD_FILE_PAGE, requestBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> showErrorAlert("Connection Error", "Failed to load file: " + e.getMessage()));
@@ -63,11 +65,12 @@ public class DashboardHeaderController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
+
                 if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> System.out.println(responseBody));
+                    Platform.runLater(() -> showErrorAlert("Load Failed", responseBody));
                 } else {
-                    Platform.runLater(() -> showSuccessAlert("Load Success", "File loaded successfully."));
+                    Platform.runLater(() -> showSuccessAlert("Load Success", responseBody));
                 }
             }
         });

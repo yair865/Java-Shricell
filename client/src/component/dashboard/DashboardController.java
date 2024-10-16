@@ -11,13 +11,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.w3c.dom.events.Event;
 
-import static constants.Constants.UNKNOWN;
+import java.io.Closeable;
+import java.io.IOException;
 
-public class DashboardController {
+import static consts.Constants.UNKNOWN;
 
-    @FXML private DashboardHeaderController headerController;
+public class DashboardController implements Closeable {
+
+    @FXML
+    private DashboardHeaderController headerController;
     @FXML private GridPane header;
     @FXML private DashboardBodyController bodyController;
     @FXML private GridPane body;
@@ -26,6 +29,8 @@ public class DashboardController {
     @FXML private Button logOutButton;
     private MainController mainController;
 
+    private StringProperty currentSheetName = new SimpleStringProperty();
+
     private final StringProperty currentUserName;
 
     public DashboardController() {
@@ -33,16 +38,20 @@ public class DashboardController {
     }
 
     @FXML public void initialize() {
+        initializeSheetSelectionBinding();
+
     }
 
-    public void setInActive() {
+    private void initializeSheetSelectionBinding() {
+        currentSheetName.bind(bodyController.getSheetListController().currentSheetNameProperty());
     }
 
-    public void setShticellController(MainController mainController) {
+    public void setMainController(MainController mainController) {
         this.mainController = mainController;
         headerController.setMainController(this.mainController);
         bodyController.setMainController(this.mainController);
         rightController.setMainController(this.mainController);
+        rightController.setCurrentSheetNameProperty(currentSheetName);
     }
 
     @FXML public void logOutListener(ActionEvent event) {
@@ -51,5 +60,26 @@ public class DashboardController {
 
     public void setActive(){
         bodyController.setActive();
+    }
+
+    @Override
+    public void close() throws IOException {
+        bodyController.close();
+    }
+
+    public String getCurrentSheetName() {
+        return currentSheetName.get();
+    }
+
+    public StringProperty currentSheetNameProperty() {
+        return currentSheetName;
+    }
+
+    public void setCurrentSheetName(String currentSheetName) {
+        this.currentSheetName.set(currentSheetName);
+    }
+
+    public String CurrentUserNameProperty() {
+        return currentUserName.get();
     }
 }

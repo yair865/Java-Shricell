@@ -3,7 +3,6 @@ package servlets;
 import com.google.gson.Gson;
 import dto.dtoPackage.SheetInfoDTO;
 import engine.engineimpl.Engine;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

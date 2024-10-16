@@ -1,8 +1,6 @@
 package servlets;
 
-import constants.Constants;
 import engine.usermanager.UserManager;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +10,7 @@ import utils.SessionUtils;
 
 import java.io.IOException;
 
-import static constants.Constants.USERNAME;
+import static constant.Constants.USERNAME;
 
 @WebServlet(name = "Login Servlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
@@ -41,13 +39,14 @@ public class LoginServlet extends HttpServlet {
                     }
                     else {
                         userManager.addUser(usernameFromParameter);
-                        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+                        request.getSession(true).setAttribute(USERNAME, usernameFromParameter);
 
                         System.out.println("On login, request URI is: " + request.getRequestURI());
                         response.setStatus(HttpServletResponse.SC_OK);
                     }
                 }
             }
+
         } else {
             response.setStatus(HttpServletResponse.SC_OK);
         }

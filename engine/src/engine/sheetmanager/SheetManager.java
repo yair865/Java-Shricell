@@ -14,7 +14,7 @@ public interface SheetManager {
 
     void loadSpreadsheet(String filePath) throws Exception;
 
-    String loadSpreadsheet(InputStream fileContent) throws Exception;
+    String loadSpreadsheet(InputStream fileContent);
 
     SpreadsheetDTO getSpreadsheetState();
 

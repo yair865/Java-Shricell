@@ -6,7 +6,10 @@ import component.main.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
-public class DashboardBodyController {
+import java.io.Closeable;
+import java.io.IOException;
+
+public class DashboardBodyController implements Closeable {
 
     MainController mainController;
     @FXML VBox sheetsListComponent;
@@ -28,5 +31,11 @@ public class DashboardBodyController {
 
     public void setActive() {
         sheetsListComponentController.startListRefresher();
+    }
+
+    @Override
+    public void close() throws IOException {
+        sheetsListComponentController.close();
+        permissionListComponentController.close();
     }
 }
