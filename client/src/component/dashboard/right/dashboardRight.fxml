@@ -15,7 +15,7 @@
             <Label text="Commands" underline="true" />
             <Button fx:id="viewSheetButton" mnemonicParsing="false" onAction="#viewSheetListener" prefHeight="50.0" prefWidth="125.0" text="View sheet" />
             <Button fx:id="requestPermissionButton" mnemonicParsing="false" onAction="#requestPermissionButtonListener" prefHeight="50.0" prefWidth="125.0" text="Request permission" />
-            <Button fx:id="permissionApproveButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#permissionApproveListener" prefHeight="50.0" prefWidth="125.0" text="ack\deny permission request" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="permissionApproveButton" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#permissionApproveListener" prefHeight="50.0" prefWidth="125.0" text="ack\deny permission request" textAlignment="CENTER" wrapText="true" />
          </children>
          <padding>
             <Insets bottom="30.0" />

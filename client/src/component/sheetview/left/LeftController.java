@@ -5,6 +5,7 @@ import component.sheetview.error.ErrorDisplay;
 import component.sheetview.left.filter.FilterController;
 import component.sheetview.left.range.RangeController;
 import component.sheetview.left.sort.SortController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,12 +17,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+import util.HttpClientUtil;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import static consts.Constants.CHANGE_DIMENSIONS_URL;
 
 public class LeftController {
 
@@ -92,7 +98,7 @@ public class LeftController {
         rangesList.getSelectionModel().clearSelection();
     }
 
-    private void showInputDialog(String title, String header, String content, Consumer<Integer> onSuccess) {
+    private void showInputDialogForDimensionsChange(String title, String header, String content, Consumer<Integer> onSuccess) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
         dialog.setHeaderText(header);
@@ -102,7 +108,31 @@ public class LeftController {
         result.ifPresent(value -> {
             try {
                 int newValue = Integer.parseInt(value);
-                onSuccess.accept(newValue);
+
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("newValue", String.valueOf(newValue))
+                        .build();
+
+                HttpClientUtil.runAsyncPost(CHANGE_DIMENSIONS_URL, requestBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Platform.runLater(() -> showErrorAlert("Connection Error", "Failed to set value: " + e.getMessage()));
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseBody = response.body().string();
+
+                        if (response.code() != 200) {
+                            Platform.runLater(() -> showErrorAlert("Set Value Failed", responseBody));
+                        } else {
+                            Platform.runLater(() -> {
+                                onSuccess.accept(newValue);
+                                showSuccessAlert("Success", "Value set successfully.");
+                            });
+                        }
+                    }
+                });
             } catch (NumberFormatException e) {
                 new ErrorDisplay("Invalid Input", "Please enter a valid number.").showError(null);
             }
@@ -111,26 +141,38 @@ public class LeftController {
 
     @FXML
     void setColumnWidthListener(ActionEvent event) {
-        showInputDialog(
+        showInputDialogForDimensionsChange(
                 "Set Column Width",
                 "Enter the new width for the column:",
                 "Width:",
-                newWidth -> {
-                    this.shticellController.getBodyController().setColumnWidth(newWidth);
-                }
+                newWidth -> this.shticellController.getBodyController().setColumnWidth(newWidth)
         );
     }
 
     @FXML
     void setRowHeightListener(ActionEvent event) {
-        showInputDialog(
+        showInputDialogForDimensionsChange(
                 "Set Row Height",
                 "Enter the new height for the row:",
                 "Height:",
-                newHeight -> {
-                    this.shticellController.getBodyController().setRowHeight(newHeight);
-                }
+                newHeight -> this.shticellController.getBodyController().setRowHeight(newHeight)
         );
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML
@@ -202,11 +244,9 @@ public class LeftController {
             return;
         }
 
-        // Reset text color
         this.shticellController.getEngine().setSingleCellTextColor(cellId, null);
         this.shticellController.getBodyController().updateCellTextColor(cellId, null);
 
-        // Reset background color
         this.shticellController.getEngine().setSingleCellBackGroundColor(cellId, null);
         this.shticellController.getBodyController().updateCellBackgroundColor(cellId, null);
     }
