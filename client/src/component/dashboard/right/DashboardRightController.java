@@ -14,6 +14,7 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -63,7 +64,7 @@ public class DashboardRightController {
         String selectedSheetName = currentSheetName.get();
 
         if (selectedSheetName == null || selectedSheetName.isEmpty()) {
-            System.out.println("No sheet selected.");
+            showErrorAlert("Sheet Selection Error", "No sheet selected.");
             return;
         }
 
@@ -72,7 +73,7 @@ public class DashboardRightController {
         HttpClientUtil.runAsync(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println("Failed to send request: " + e.getMessage());
+                Platform.runLater(() -> showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
             }
 
             @Override
@@ -80,22 +81,28 @@ public class DashboardRightController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
 
-
                     Gson gson = new GsonBuilder()
                             .registerTypeAdapter(SpreadsheetDTO.class, new SpreadsheetDTODeserializer())
                             .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                            .registerTypeAdapter(EffectiveValue.class ,new EffectiveValueTypeAdapter())
+                            .registerTypeAdapter(EffectiveValue.class, new EffectiveValueTypeAdapter())
                             .create();
 
                     SpreadsheetDTO spreadsheetDTO = gson.fromJson(responseBody, SpreadsheetDTO.class);
 
-                    System.out.println("Spreadsheet data received: " + spreadsheetDTO);
-                    handleSpreadsheetData(spreadsheetDTO);
+                    Platform.runLater(() -> handleSpreadsheetData(spreadsheetDTO));
                 } else {
-                    System.out.println("Failed to get spreadsheet data: " + response.message());
+                    Platform.runLater(() -> showErrorAlert("Data Error", "Failed to get spreadsheet data: " + response.message()));
                 }
             }
         });
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void handleSpreadsheetData(SpreadsheetDTO spreadsheetDTO) {
@@ -103,6 +110,7 @@ public class DashboardRightController {
             mainController.loadApplicationPage(spreadsheetDTO);
         });
     }
+
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;

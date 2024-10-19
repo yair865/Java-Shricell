@@ -296,10 +296,6 @@ public class ShticellController {
         return headerComponentController;
     }
 
-    public SheetManager getEngine() {
-        return engine;
-    }
-
     public BodyController getBodyController() {
         return bodyController;
     }
@@ -322,4 +318,23 @@ public class ShticellController {
         this.mainController = mainController;
     }
 
+    public void setSingleCellBackGroundColor(String cellId, String hexString) {
+        engine.setSingleCellBackGroundColor(cellId, hexString);
+    }
+
+    public void setSingleCellTextColor(String cellId, String hexString) {
+        engine.setSingleCellTextColor(cellId, hexString);
+    }
+
+    public void removeRangeFromSheet(String selectedRange) {
+        engine.removeRangeFromSheet(selectedRange);
+    }
+
+    public void addRangeToSheet(String rangeName, String coordinates) {
+        engine.addRangeToSheet(rangeName, coordinates);
+    }
+
+    public List<Coordinate> getRangeByName(String rangeName) {
+        return engine.getRangeByName(rangeName);
+    }
 }

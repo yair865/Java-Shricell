@@ -54,8 +54,8 @@ ComboBox  {
     -fx-border-width: 1px;
 }
 
-StackPane .label{
-    -fx-text-fill: white;
+/*StackPane .label{
+    !*-fx-text-fill: white;*!
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }*/

@@ -10,9 +10,10 @@
       <Label alignment="CENTER" prefHeight="31.0" prefWidth="600.0" text="Available Sheets" />
       <TableView fx:id="sheetsTableView" prefHeight="200.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="userNameColumn" prefWidth="125.0" text="username" />
-            <TableColumn fx:id="sheetNameColumn" prefWidth="366.0" text="sheet name" />
-            <TableColumn fx:id="sizeColumn" prefWidth="108.0" text="size" />
+            <TableColumn fx:id="userNameColumn" prefWidth="125.0" text="Uploaded By" />
+            <TableColumn fx:id="sheetNameColumn" prefWidth="179.0" text="sheet name" />
+            <TableColumn fx:id="sizeColumn" prefWidth="155.0" text="size" />
+            <TableColumn prefWidth="155.0" text="My permission" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

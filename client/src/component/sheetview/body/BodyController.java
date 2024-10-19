@@ -299,7 +299,7 @@ public class BodyController {
     public void highlightSelectedRange(String rangeName) {
         clearHighlightedCells();
 
-        List<Coordinate> selectedRange = shticellController.getEngine().getRangeByName(rangeName);
+        List<Coordinate> selectedRange = shticellController.getRangeByName(rangeName);
 
         for (Coordinate coordinate : selectedRange) {
             Node cellView = findCellViewById(coordinate.toString());
