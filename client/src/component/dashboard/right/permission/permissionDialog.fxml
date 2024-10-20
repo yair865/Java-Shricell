@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.right.permission.PermissionController">
+   <top>
+      <Label prefHeight="70.0" prefWidth="220.0" text="Request Permission" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Aharoni Bold" size="24.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <HBox fx:id="permissionTypeVbox" alignment="TOP_CENTER" prefHeight="296.0" prefWidth="500.0" spacing="10.0" BorderPane.alignment="BOTTOM_CENTER">
+         <children>
+            <RadioButton fx:id="ReaderRB" mnemonicParsing="false" onAction="#ReaderRBListener" text="Reader" />
+            <RadioButton fx:id="WriterRB" mnemonicParsing="false" onAction="#WriterRBListener" text="Writer" />
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButtonListener" text="Cancel" />
+            <Button fx:id="requestButton" mnemonicParsing="false" onAction="#requestButtonListener" text="Request" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
+</BorderPane>
