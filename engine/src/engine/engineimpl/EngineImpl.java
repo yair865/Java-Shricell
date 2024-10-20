@@ -93,7 +93,6 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public List<PermissionInfoDTO> getPermissions(String sheetName) {
        return permissionManager.getAllPermissionsForSheet(sheetName);
-
     }
 
 

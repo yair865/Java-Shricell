@@ -64,7 +64,8 @@ public class PermissionListController implements Closeable {
             SinglePermissionData singlePermissionData = new SinglePermissionData(
                     info.username(),
                     info.permissionType(),
-                    info.status()
+                    info.status(),
+                    info.requestId()
             );
             currentItems.add(singlePermissionData);
         }

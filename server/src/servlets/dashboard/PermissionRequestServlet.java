@@ -1,4 +1,4 @@
-package servlets;
+package servlets.dashboard;
 
 import engine.engineimpl.Engine;
 import engine.permissionmanager.PermissionType;

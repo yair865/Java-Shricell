@@ -62,7 +62,7 @@ public class PermissionManagerImpl implements PermissionManager {
 
         String owner = owners.get(sheetName);
         if (owner != null) {
-            permissions.add(PermissionInfoConverter.ConvertPermissionsInformationToDTO(owner, PermissionType.OWNER, null));
+            permissions.add(PermissionInfoConverter.ConvertPermissionsInformationToDTO(owner, PermissionType.OWNER, null, -1));
         }
 
         if (!permissionRequests.containsKey(sheetName)) {
@@ -72,14 +72,15 @@ public class PermissionManagerImpl implements PermissionManager {
         Map<Integer, PermissionRequest> requestsForSheet = permissionRequests.get(sheetName);
 
 
-
         for (Map.Entry<Integer, PermissionRequest> entry : requestsForSheet.entrySet()) {
             PermissionRequest request = entry.getValue();
 
             PermissionInfoDTO dto = PermissionInfoConverter.ConvertPermissionsInformationToDTO(
                     request.getUserName(),
                     request.getType(),
-                    request.getStatus()
+                    request.getStatus(),
+                    entry.getKey()
+
             );
 
             permissions.add(dto);

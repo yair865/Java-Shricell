@@ -1,4 +1,4 @@
-package servlets;
+package servlets.dashboard;
 
 import com.google.gson.Gson;
 import dto.dtoPackage.PermissionInfoDTO;
