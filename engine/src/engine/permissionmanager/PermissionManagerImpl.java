@@ -1,30 +1,41 @@
 package engine.permissionmanager;
 
+import dto.converter.PermissionInfoConverter;
+import dto.dtoPackage.PermissionInfoDTO;
+import engine.permissionmanager.request.PermissionRequest;
+import engine.permissionmanager.request.PermissionRequestImpl;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PermissionManagerImpl implements PermissionManager {
 
     // This map stores permissions for each sheet <sheetName, <userName, PermissionType>>
     private Map<String, Map<String, PermissionType>> sheetPermissions;
+    private Map<String, Map<Integer, PermissionRequest>> permissionRequests; // Sheet Name -> (Request ID -> (User, PermissionType, Status))
+    private Map<String,String> owners; // Sheet Name -> UserName
+    private static int requestID = 1;
 
-    // Constructor
+
     public PermissionManagerImpl() {
         this.sheetPermissions = new HashMap<>();
+        this.permissionRequests = new HashMap<>();
+        this.owners = new HashMap<>();
     }
 
-    // Assign permission to a user for a specific sheet
     @Override
     public void assignPermission(String sheetName, String userName, PermissionType permission) {
-        // Ensure the sheet's permission map exists
         sheetPermissions.putIfAbsent(sheetName, new HashMap<>());
-
-        // Assign the permission to the user
         Map<String, PermissionType> userPermissions = sheetPermissions.get(sheetName);
         userPermissions.put(userName, permission);
+
+        if(permission == PermissionType.OWNER) {
+            owners.put(sheetName, userName);
+        }
     }
 
-    // Get the permission of a user for a specific sheet
     @Override
     public PermissionType getPermission(String sheetName, String userName) {
         if (sheetPermissions.containsKey(sheetName)) {
@@ -33,7 +44,6 @@ public class PermissionManagerImpl implements PermissionManager {
         return PermissionType.NONE; // Default if no permission is found
     }
 
-    // Remove a user's permission for a specific sheet
     @Override
     public void removePermission(String sheetName, String userName) {
         if (sheetPermissions.containsKey(sheetName)) {
@@ -41,17 +51,49 @@ public class PermissionManagerImpl implements PermissionManager {
         }
     }
 
-    // Check if a user is the owner of a sheet
     @Override
     public boolean isOwner(String sheetName, String userName) {
         return getPermission(sheetName, userName) == PermissionType.OWNER;
     }
 
-    // List all users and their permissions for a specific sheet
     @Override
-    public Map<String, PermissionType> getAllPermissionsForSheet(String sheetName) {
-        return sheetPermissions.getOrDefault(sheetName, new HashMap<>());
+    public List<PermissionInfoDTO> getAllPermissionsForSheet(String sheetName) {
+        List<PermissionInfoDTO> permissions = new ArrayList<>();
+
+        String owner = owners.get(sheetName);
+        if (owner != null) {
+            permissions.add(PermissionInfoConverter.ConvertPermissionsInformationToDTO(owner, PermissionType.OWNER, null));
+        }
+
+        if (!permissionRequests.containsKey(sheetName)) {
+            return permissions;
+        }
+
+        Map<Integer, PermissionRequest> requestsForSheet = permissionRequests.get(sheetName);
+
+
+
+        for (Map.Entry<Integer, PermissionRequest> entry : requestsForSheet.entrySet()) {
+            PermissionRequest request = entry.getValue();
+
+            PermissionInfoDTO dto = PermissionInfoConverter.ConvertPermissionsInformationToDTO(
+                    request.getUserName(),
+                    request.getType(),
+                    request.getStatus()
+            );
+
+            permissions.add(dto);
+        }
+
+        return permissions;
     }
 
-    // Additional methods for managing permissions can be added here
+    @Override
+    public void createRequest(String userName, PermissionType permissionType, String sheetName) {
+        PermissionRequest request = new PermissionRequestImpl(permissionType , userName);
+        Map<Integer,PermissionRequest> requestWithID = new HashMap<>();
+        requestWithID.put(requestID++, request);
+        permissionRequests.putIfAbsent(sheetName, requestWithID);
+    }
+
 }

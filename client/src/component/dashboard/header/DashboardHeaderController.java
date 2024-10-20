@@ -1,7 +1,6 @@
 package component.dashboard.header;
 
 import component.main.MainController;
-import constant.Constants;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;

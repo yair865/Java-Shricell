@@ -1,5 +1,7 @@
 package dto.dtoPackage;
 
+import engine.permissionmanager.PermissionType;
+
 import java.util.Objects;
 
 public class SheetInfoDTO {
@@ -7,12 +9,14 @@ public class SheetInfoDTO {
     private String sheetName;
     private int numberOfRow;
     private int numberOfColumn;
+    private PermissionType permission;
 
-    public SheetInfoDTO(String userName, String sheetName, int numberOfRow, int numberOfColumn) {
+    public SheetInfoDTO(String userName, String sheetName, int numberOfRow, int numberOfColumn , PermissionType permission) {
         this.ownerName = userName;
         this.sheetName = sheetName;
         this.numberOfRow = numberOfRow;
         this.numberOfColumn = numberOfColumn;
+        this.permission = permission;
     }
 
     public String userName() {
@@ -54,5 +58,9 @@ public class SheetInfoDTO {
                 "sheetName=" + sheetName + ", " +
                 "numberOfRow=" + numberOfRow + ", " +
                 "numberOfColumn=" + numberOfColumn + ']';
+    }
+
+    public PermissionType getPermission() {
+        return permission;
     }
 }

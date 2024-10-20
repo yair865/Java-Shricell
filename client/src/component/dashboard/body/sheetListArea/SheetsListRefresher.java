@@ -49,7 +49,8 @@ public class SheetsListRefresher extends TimerTask {
                         .map(dto -> new SingleSheetData(
                                 dto.userName(),
                                 dto.sheetName(),
-                                dto.numberOfRow() + " x " + dto.numberOfColumn()))
+                                dto.numberOfRow() + " x " + dto.numberOfColumn(),
+                                dto.getPermission()))
                         .collect(Collectors.toList());
 
                 if (sheets != null) {

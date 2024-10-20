@@ -1,9 +1,10 @@
 package engine.engineimpl;
 
+import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SheetInfoDTO;
+import engine.permissionmanager.PermissionType;
 import engine.sheetmanager.SheetManager;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -11,5 +12,7 @@ public interface Engine {
     void addSheet(InputStream fileContent , String userName);
     SheetManager getSheet(String sheetName);
     void setCurrentSheet(SheetManager currentSheet);
-    List<SheetInfoDTO> getSheets();
+    List<SheetInfoDTO> getSheets(String user);
+    void requestPermission(String userName, PermissionType permissionType, String sheetName);
+    List<PermissionInfoDTO> getPermissions(String sheetName);
 }

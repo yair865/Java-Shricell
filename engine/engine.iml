@@ -7,8 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="dto" />
-    <orderEntry type="library" name="angus-activation" level="project" />
     <orderEntry type="library" name="jaxb" level="project" />
+    <orderEntry type="module" module-name="dto" />
   </component>
 </module>

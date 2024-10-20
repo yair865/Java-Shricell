@@ -1,6 +1,6 @@
 package dto.converter;
 
-import application.body.BasicCellData;
+import component.sheetview.body.BasicCellData;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;

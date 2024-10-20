@@ -22,7 +22,8 @@ public class Constants {
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
     public static final String UPLOAD_FILE_PAGE = FULL_SERVER_PATH + "/load";
     public static final String VIEW_SHEET_URL = FULL_SERVER_PATH + "/view";
-    public static final String CHANGE_DIMENSIONS_URL = FULL_SERVER_PATH + "/changeDimensions";
+    public static final String REQUEST_PERMISSION = FULL_SERVER_PATH + "/requestPermission";
 
     public final static String SHEETS_LIST = FULL_SERVER_PATH + "/sheetList";
+    public final static String PERMISSIONS_LIST = FULL_SERVER_PATH + "/permissionList";
 }

@@ -5,14 +5,18 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="permissionsListComponent" prefHeight="200.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.permissionListArea.PermissionListController">
+<VBox fx:id="permissionsListComponent" prefHeight="200.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.permissionListArea.PermissionListController">
    <children>
       <Label alignment="CENTER" prefHeight="17.0" prefWidth="607.0" text="Permissions Table" />
       <TableView fx:id="permissionTableView" prefHeight="200.0" prefWidth="200.0">
          <columns>
-            <TableColumn prefWidth="75.0" text="username" />
-            <TableColumn prefWidth="75.0" text="permisision" />
+            <TableColumn fx:id="userColumn" prefWidth="75.0" sortable="false" text="Username" />
+            <TableColumn fx:id="permissionColumn" prefWidth="75.0" sortable="false" text="Permisision" />
+            <TableColumn fx:id="statusColumn" prefWidth="75.0" sortable="false" text="Status" />
          </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
    </children>
 </VBox>

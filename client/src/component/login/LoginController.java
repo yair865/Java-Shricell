@@ -2,7 +2,6 @@ package component.login;
 
 import component.dashboard.DashboardController;
 import component.main.MainController;
-import constant.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

@@ -1,7 +1,6 @@
 package component.sheetview.app;
 
 import component.main.MainController;
-import component.sheetview.app.load.LoadingStage;
 import component.sheetview.body.BasicCellData;
 import component.sheetview.body.BodyController;
 import component.sheetview.header.HeaderController;
@@ -14,9 +13,6 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetmanager.SheetManager;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;

@@ -5,15 +5,15 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="sheetsListComponent" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.sheetListArea.SheetsListController">
+<VBox fx:id="sheetsListComponent" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.sheetListArea.SheetsListController">
    <children>
       <Label alignment="CENTER" prefHeight="31.0" prefWidth="600.0" text="Available Sheets" />
       <TableView fx:id="sheetsTableView" prefHeight="200.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="userNameColumn" prefWidth="125.0" text="Uploaded By" />
-            <TableColumn fx:id="sheetNameColumn" prefWidth="179.0" text="sheet name" />
-            <TableColumn fx:id="sizeColumn" prefWidth="155.0" text="size" />
-            <TableColumn prefWidth="155.0" text="My permission" />
+            <TableColumn fx:id="userNameColumn" prefWidth="125.0" sortable="false" text="Uploaded By" />
+            <TableColumn fx:id="sheetNameColumn" prefWidth="179.0" sortable="false" text="Sheet name" />
+            <TableColumn fx:id="sizeColumn" prefWidth="155.0" sortable="false" text="Size" />
+            <TableColumn fx:id="permissionColumn" prefWidth="155.0" sortable="false" text="My permission" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

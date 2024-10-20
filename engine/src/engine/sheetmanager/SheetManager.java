@@ -2,6 +2,7 @@ package engine.sheetmanager;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.permissionmanager.PermissionType;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.io.File;
@@ -60,4 +61,6 @@ public interface SheetManager {
     int getSheetNumberOfRows();
 
     int getSheetNumberOfColumns();
+
+    PermissionType getPermission();
 }

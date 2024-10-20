@@ -1,5 +1,6 @@
 package component.dashboard.body.sheetListArea;
 
+import component.dashboard.DashboardController;
 import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -25,6 +26,9 @@ public class SheetsListController implements Closeable {
     private final IntegerProperty totalSheets;
 
     @FXML
+    private DashboardController dashboardController;
+
+    @FXML
     private TableView<SingleSheetData> sheetsTableView;
 
     @FXML
@@ -35,6 +39,9 @@ public class SheetsListController implements Closeable {
 
     @FXML
     private TableColumn<SingleSheetData, String> sizeColumn;
+
+    @FXML
+    private TableColumn<SingleSheetData, String> permissionColumn;
 
     private StringProperty currentSheetName;
 
@@ -53,16 +60,24 @@ public class SheetsListController implements Closeable {
         sizeColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getSheetSize()));
 
+        permissionColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getPermission().toString()));
+
         currentSheetName = new SimpleStringProperty(null);
 
         sheetsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 currentSheetName.bind(newSelection.sheetNameProperty());
+                refreshPermissions(newSelection.sheetNameProperty().get());
             } else {
                 currentSheetName.unbind();
                 currentSheetName.set(null);
             }
         });
+    }
+
+    private void refreshPermissions(String sheetName) {
+        dashboardController.refreshPermissions(sheetName);
     }
 
     private void updateSheetsList(List<SingleSheetData> sheets) {
@@ -104,5 +119,9 @@ public class SheetsListController implements Closeable {
 
     public StringProperty currentSheetNameProperty() {
         return currentSheetName;
+    }
+
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
     }
 }
