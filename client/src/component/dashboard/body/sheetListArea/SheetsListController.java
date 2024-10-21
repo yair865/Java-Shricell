@@ -2,6 +2,7 @@ package component.dashboard.body.sheetListArea;
 
 import component.dashboard.DashboardController;
 import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
+import engine.permissionmanager.PermissionType;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -84,6 +85,7 @@ public class SheetsListController implements Closeable {
         ObservableList<SingleSheetData> currentItems = sheetsTableView.getItems();
         SingleSheetData selectedItem = sheetsTableView.getSelectionModel().getSelectedItem();
 
+        // Check for size difference, indicating new rows
         if (currentItems.size() != sheets.size()) {
             Platform.runLater(() -> {
                 currentItems.clear();
@@ -94,8 +96,30 @@ public class SheetsListController implements Closeable {
                     sheetsTableView.getSelectionModel().select(selectedItem);
                 }
             });
+        } else {
+            Platform.runLater(() -> {
+                for (SingleSheetData currentItem : currentItems) {
+                    SingleSheetData newItem = sheets.stream()
+                            .filter(item -> item.getSheetName().equals(currentItem.getSheetName()) &&
+                                    item.getUserName().equals(currentItem.getUserName()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (newItem != null) {
+                        String currentPermission = currentItem.getPermission().toString();
+                        PermissionType newPermission = newItem.getPermission();
+
+                        if (!currentPermission.equals(newPermission.toString())) {
+                            currentItem.setPermission(newPermission);
+                        }
+                    }
+                }
+
+                sheetsTableView.refresh();
+            });
         }
     }
+
 
     public void startListRefresher() {
         listRefresher = new SheetsListRefresher(this::updateSheetsList);

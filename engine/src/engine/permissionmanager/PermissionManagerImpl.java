@@ -4,6 +4,7 @@ import dto.converter.PermissionInfoConverter;
 import dto.dtoPackage.PermissionInfoDTO;
 import engine.permissionmanager.request.PermissionRequest;
 import engine.permissionmanager.request.PermissionRequestImpl;
+import engine.permissionmanager.request.RequestStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +16,8 @@ public class PermissionManagerImpl implements PermissionManager {
     // This map stores permissions for each sheet <sheetName, <userName, PermissionType>>
     private Map<String, Map<String, PermissionType>> sheetPermissions;
     private Map<String, Map<Integer, PermissionRequest>> permissionRequests; // Sheet Name -> (Request ID -> (User, PermissionType, Status))
-    private Map<String,String> owners; // Sheet Name -> UserName
-    private static int requestID = 1;
-
+    private Map<String, String> owners; // Sheet Name -> UserName
+    private static int requestID = 0;
 
     public PermissionManagerImpl() {
         this.sheetPermissions = new HashMap<>();
@@ -31,8 +31,38 @@ public class PermissionManagerImpl implements PermissionManager {
         Map<String, PermissionType> userPermissions = sheetPermissions.get(sheetName);
         userPermissions.put(userName, permission);
 
-        if(permission == PermissionType.OWNER) {
+        if (permission == PermissionType.OWNER) {
             owners.put(sheetName, userName);
+        }
+    }
+
+    @Override
+    public void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus) {
+
+        if (isOwner(sheetName, usernameFromSession)) {
+
+            if (!permissionRequests.containsKey(sheetName) || !permissionRequests.get(sheetName).containsKey(requestId)) {
+                throw new IllegalArgumentException("Request ID " + requestId + " not found for sheet " + sheetName);
+            }
+
+            PermissionRequest request = permissionRequests.get(sheetName).get(requestId);
+
+            if (request.getStatus() != RequestStatus.PENDING) {
+                throw new IllegalArgumentException("Request ID " + requestId + " is not in pending status.");
+            }
+
+            PermissionType currentPermission = getPermission(sheetName, request.getUserName());
+            if (currentPermission == PermissionType.OWNER) {
+                throw new IllegalArgumentException("Cannot change permission from OWNER for user " + request.getUserName());
+            }
+
+            assignPermission(sheetName, request.getUserName(), request.getType());
+            request.setStatus(requestStatus);
+
+            System.out.println("Permissions updated for user " + request.getUserName() + " on sheet " + sheetName + " to " + request.getType());
+
+        } else {
+            throw new IllegalArgumentException("User " + usernameFromSession + " is not an owner and not eligible for changing permissions.");
         }
     }
 
@@ -71,7 +101,6 @@ public class PermissionManagerImpl implements PermissionManager {
 
         Map<Integer, PermissionRequest> requestsForSheet = permissionRequests.get(sheetName);
 
-
         for (Map.Entry<Integer, PermissionRequest> entry : requestsForSheet.entrySet()) {
             PermissionRequest request = entry.getValue();
 
@@ -80,7 +109,6 @@ public class PermissionManagerImpl implements PermissionManager {
                     request.getType(),
                     request.getStatus(),
                     entry.getKey()
-
             );
 
             permissions.add(dto);
@@ -91,10 +119,11 @@ public class PermissionManagerImpl implements PermissionManager {
 
     @Override
     public void createRequest(String userName, PermissionType permissionType, String sheetName) {
-        PermissionRequest request = new PermissionRequestImpl(permissionType , userName);
-        Map<Integer,PermissionRequest> requestWithID = new HashMap<>();
+        if(isOwner(sheetName, userName)) {
+            throw new IllegalArgumentException("Cannot create request for user " + userName + " because he is already owner of the sheet " + sheetName);
+        }
+        PermissionRequest request = new PermissionRequestImpl(permissionType, userName);
+        Map<Integer, PermissionRequest> requestWithID = permissionRequests.computeIfAbsent(sheetName, k -> new HashMap<>());
         requestWithID.put(requestID++, request);
-        permissionRequests.putIfAbsent(sheetName, requestWithID);
     }
-
 }

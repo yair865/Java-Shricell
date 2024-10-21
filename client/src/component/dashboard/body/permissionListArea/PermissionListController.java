@@ -4,7 +4,11 @@ import component.dashboard.DashboardController;
 import component.dashboard.body.permissionListArea.permissiondata.SinglePermissionData;
 import dto.dtoPackage.PermissionInfoDTO;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,19 +41,32 @@ public class PermissionListController implements Closeable {
 
     private DashboardController dashboardController;
 
+    private IntegerProperty currentRequestId = new SimpleIntegerProperty();
+
     @FXML
     void initialize() {
         permissionsList = FXCollections.observableArrayList();
 
+        // Set up the table columns
         userColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
         permissionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPermission().toString()));
-
         statusColumn.setCellValueFactory(cellData -> {
             String status = String.valueOf(cellData.getValue().getStatus());
             return new SimpleStringProperty(status != "null" ? status : "");
         });
 
         permissionTableView.setItems(permissionsList);
+
+        permissionTableView.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends SinglePermissionData> observable, SinglePermissionData oldValue, SinglePermissionData newValue) -> {
+                    if (newValue != null) {
+
+                        currentRequestId.set(newValue.getRequestID());
+                    } else {
+                        currentRequestId.set(-1);
+                    }
+                }
+        );
     }
 
     public void updatePermissions(List<PermissionInfoDTO> permissionInfos) {
@@ -71,7 +88,7 @@ public class PermissionListController implements Closeable {
         }
 
         Platform.runLater(() -> {
-            permissionTableView.setItems(permissionsList); // Refresh the TableView items
+            permissionTableView.setItems(permissionsList);
         });
     }
 
@@ -82,5 +99,9 @@ public class PermissionListController implements Closeable {
 
     @Override
     public void close() throws IOException {
+    }
+
+    public IntegerProperty currentRequestIdProperty() {
+        return currentRequestId;
     }
 }

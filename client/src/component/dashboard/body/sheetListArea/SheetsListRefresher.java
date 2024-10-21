@@ -20,16 +20,15 @@ import static consts.Constants.SHEETS_LIST;
 public class SheetsListRefresher extends TimerTask {
 
     private final Consumer<List<SingleSheetData>> sheetsListConsumer;
-    private int requestNumber;
+
 
     public SheetsListRefresher(Consumer<List<SingleSheetData>> sheetListConsumer) {
         this.sheetsListConsumer = sheetListConsumer;
-        requestNumber = 0;
     }
 
     @Override
     public void run() {
-        final int finalRequestNumber = ++requestNumber;
+
         HttpClientUtil.runAsync(SHEETS_LIST, new Callback() {
 
             @Override

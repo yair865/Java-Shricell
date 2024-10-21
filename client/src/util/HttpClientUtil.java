@@ -25,7 +25,6 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
-    // Existing method for GET requests
     public static void runAsync(String finalUrl, Callback callback) {
         Request request = new Request.Builder()
                 .url(finalUrl)

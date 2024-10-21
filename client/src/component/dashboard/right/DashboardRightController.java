@@ -11,9 +11,12 @@ import dto.deserialize.EffectiveValueTypeAdapter;
 import dto.deserialize.SpreadsheetDTODeserializer;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.permissionmanager.request.RequestStatus;
 import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,27 +24,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import util.HttpClientUtil;
+import util.alert.AlertUtil;
 
 import java.io.IOException;
 import java.util.List;
 
-import static consts.Constants.PERMISSIONS_LIST;
-import static consts.Constants.VIEW_SHEET_URL;
-
+import static consts.Constants.*;
 
 public class DashboardRightController {
-
 
     private MainController mainController;
 
@@ -68,23 +66,58 @@ public class DashboardRightController {
 
     private StringProperty currentSheetName;
 
+    private IntegerProperty currentRequestId = new SimpleIntegerProperty();
+
     @FXML
     void permissionApproveListener(ActionEvent event) {
+        sendPermissionRequest(RequestStatus.APPROVED);
+    }
 
+    private void sendPermissionRequest(RequestStatus status) {
+        int requestId = currentRequestId.get();
+        String sheetName = currentSheetName.get();
+
+        if (sheetName == null || sheetName.isEmpty()) {
+            AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
+            return;
+        }
+
+        String url = PERMISSION_RESPONSE;
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("requestId", String.valueOf(requestId))
+                .add("RequestStatus", status.name())
+                .add("sheetName", sheetName)
+                .build();
+
+        HttpClientUtil.runAsyncPost(url, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Request Error", "Failed to send " + status.name().toLowerCase() + " request: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Platform.runLater(() -> AlertUtil.showSuccessAlert(status.name() + " Successful", "Permission " + status.name().toLowerCase() + " successfully!"));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert(status.name() + " Failed", "Failed to update permission: " + response.message()));
+                }
+            }
+        });
     }
 
     @FXML
     void permissionDenyButtonListener(ActionEvent event) {
-
+        sendPermissionRequest(RequestStatus.DENIED);
     }
-
 
     @FXML
     public void refreshPermissionTableButtonListener(ActionEvent event) {
         String selectedSheetName = currentSheetName.get();
 
         if (selectedSheetName == null || selectedSheetName.isEmpty()) {
-            showErrorAlert("Sheet Selection Error", "No sheet selected.");
+            AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
             return;
         }
 
@@ -93,7 +126,7 @@ public class DashboardRightController {
         HttpClientUtil.runAsync(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
             }
 
             @Override
@@ -103,7 +136,7 @@ public class DashboardRightController {
 
                     handlePermissionData(responseBody);
                 } else {
-                    Platform.runLater(() -> showErrorAlert("Data Error", "Failed to get permissions: " + response.message()));
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Data Error", "Failed to get permissions: " + response.message()));
                 }
             }
         });
@@ -120,7 +153,6 @@ public class DashboardRightController {
         });
 
     }
-
 
     @FXML
     void requestPermissionButtonListener(ActionEvent event) {
@@ -150,13 +182,12 @@ public class DashboardRightController {
         }
     }
 
-
     @FXML
     void viewSheetListener(ActionEvent event) {
         String selectedSheetName = currentSheetName.get();
 
         if (selectedSheetName == null || selectedSheetName.isEmpty()) {
-            showErrorAlert("Sheet Selection Error", "No sheet selected.");
+            AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
             return;
         }
 
@@ -165,7 +196,7 @@ public class DashboardRightController {
         HttpClientUtil.runAsync(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
             }
 
             @Override
@@ -183,18 +214,10 @@ public class DashboardRightController {
 
                     Platform.runLater(() -> handleSpreadsheetData(spreadsheetDTO));
                 } else {
-                    Platform.runLater(() -> showErrorAlert("Data Error", "Failed to get spreadsheet data: " + response.message()));
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Data Error", "Failed to get spreadsheet data: " + response.message()));
                 }
             }
         });
-    }
-
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void handleSpreadsheetData(SpreadsheetDTO spreadsheetDTO) {
@@ -213,6 +236,10 @@ public class DashboardRightController {
 
     public void setCurrentSheetNameProperty(StringProperty currentSheetName) {
         this.currentSheetName = currentSheetName;
+    }
+
+    public void setCurrentRequestIdProperty(IntegerProperty currentRequestId) {
+        this.currentRequestId = currentRequestId;
     }
 }
 

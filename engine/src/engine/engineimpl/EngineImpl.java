@@ -6,6 +6,7 @@ import dto.dtoPackage.SheetInfoDTO;
 import engine.permissionmanager.PermissionManager;
 import engine.permissionmanager.PermissionManagerImpl;
 import engine.permissionmanager.PermissionType;
+import engine.permissionmanager.request.RequestStatus;
 import engine.sheetmanager.SheetManager;
 import engine.sheetmanager.SheetManagerImpl;
 
@@ -95,5 +96,8 @@ public class EngineImpl implements Engine, Serializable {
        return permissionManager.getAllPermissionsForSheet(sheetName);
     }
 
-
+    @Override
+    public void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus) {
+        permissionManager.updatePermissions(usernameFromSession , sheetName ,requestId ,requestStatus);
+    }
 }

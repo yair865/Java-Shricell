@@ -7,6 +7,8 @@ import component.dashboard.header.DashboardHeaderController;
 import component.dashboard.right.DashboardRightController;
 import component.main.MainController;
 import dto.dtoPackage.PermissionInfoDTO;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -32,10 +34,9 @@ public class DashboardController implements Closeable {
     @FXML private HBox right;
     @FXML private Button logOutButton;
     private MainController mainController;
-    //private PermissionListController permissionListController;
-    //private SheetsListController sheetListController;
 
     private StringProperty currentSheetName = new SimpleStringProperty();
+    private IntegerProperty currentRequestId = new SimpleIntegerProperty();
 
     private final StringProperty currentUserName;
 
@@ -49,15 +50,18 @@ public class DashboardController implements Closeable {
         if(rightController != null && bodyController != null && headerController != null) {
             rightController.setDashboardController(this);
             bodyController.setDashboardController(this);
-            //headerController
+            //headerController.setDashboardController(this);
         }
 
-        //permissionListController = bodyController.getPermissionListController();
 
     }
 
     private void initializeSheetSelectionBinding() {
         currentSheetName.bind(bodyController.getSheetListController().currentSheetNameProperty());
+    }
+
+    private void initializeRequestSelectionBinding() {
+        currentRequestId.bind(bodyController.getPermissionListController().currentRequestIdProperty());
     }
 
     public void setMainController(MainController mainController) {
@@ -66,6 +70,7 @@ public class DashboardController implements Closeable {
         //bodyController.setMainController(this.mainController);
         rightController.setMainController(this.mainController);
         rightController.setCurrentSheetNameProperty(currentSheetName);
+        rightController.setCurrentRequestIdProperty(currentRequestId);
     }
 
     @FXML public void logOutListener(ActionEvent event) {
