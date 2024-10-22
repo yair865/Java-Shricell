@@ -7,10 +7,7 @@ import component.dashboard.header.DashboardHeaderController;
 import component.dashboard.right.DashboardRightController;
 import component.main.MainController;
 import dto.dtoPackage.PermissionInfoDTO;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -37,6 +34,8 @@ public class DashboardController implements Closeable {
 
     private StringProperty currentSheetName = new SimpleStringProperty();
     private IntegerProperty currentRequestId = new SimpleIntegerProperty();
+    private BooleanProperty isReader = new SimpleBooleanProperty();
+    private BooleanProperty isNone = new SimpleBooleanProperty();
 
     private final StringProperty currentUserName;
 
@@ -45,23 +44,10 @@ public class DashboardController implements Closeable {
     }
 
     @FXML public void initialize() {
-        initializeSheetSelectionBinding();
-
         if(rightController != null && bodyController != null && headerController != null) {
             rightController.setDashboardController(this);
             bodyController.setDashboardController(this);
-            //headerController.setDashboardController(this);
         }
-
-
-    }
-
-    private void initializeSheetSelectionBinding() {
-        currentSheetName.bind(bodyController.getSheetListController().currentSheetNameProperty());
-    }
-
-    private void initializeRequestSelectionBinding() {
-        currentRequestId.bind(bodyController.getPermissionListController().currentRequestIdProperty());
     }
 
     public void setMainController(MainController mainController) {
@@ -69,8 +55,6 @@ public class DashboardController implements Closeable {
         headerController.setMainController(this.mainController);
         //bodyController.setMainController(this.mainController);
         rightController.setMainController(this.mainController);
-        rightController.setCurrentSheetNameProperty(currentSheetName);
-        rightController.setCurrentRequestIdProperty(currentRequestId);
     }
 
     @FXML public void logOutListener(ActionEvent event) {
@@ -86,30 +70,20 @@ public class DashboardController implements Closeable {
         bodyController.close();
     }
 
-    public String getCurrentSheetName() {
-        return currentSheetName.get();
-    }
+    public StringProperty currentSheetNameProperty() {return currentSheetName;}
 
-    public StringProperty currentSheetNameProperty() {
-        return currentSheetName;
-    }
+    public BooleanProperty isReaderProperty() {return isReader;}
 
-    public void setCurrentSheetName(String currentSheetName) {
-        this.currentSheetName.set(currentSheetName);
-    }
+    public BooleanProperty isNoneProperty() {return isNone;}
 
-    public String CurrentUserNameProperty() {
-        return currentUserName.get();
-    }
+    public IntegerProperty currentRequestIdProperty() {return currentRequestId;}
+
 
     public void refreshPermissions(String sheetName) {
         rightController.refreshPermissionTableButtonListener(null);
     }
 
     public void updatePermissions(List<PermissionInfoDTO> permissionInfos) {
-//        if (permissionListController != null) {
-//            permissionListController.updatePermissions(permissionInfos);
-//        }
         bodyController.updatePermissions(permissionInfos);
     }
 }

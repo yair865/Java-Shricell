@@ -71,6 +71,19 @@ public class LeftController {
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
+        setBackgroundColorBTN.disableProperty().bind(shticellController.isReaderProperty());
+        setTextColorBTN.disableProperty().bind(shticellController.isReaderProperty());
+        setColumnWidthBTN.disableProperty().bind(shticellController.isReaderProperty());
+        setRowHeightBTN.disableProperty().bind(shticellController.isReaderProperty());
+        resetStyleBTN.disableProperty().bind(shticellController.isReaderProperty());
+        //filterButton.disableProperty().bind(shticellController.isReaderProperty());
+        //sortButton.disableProperty().bind(shticellController.isReaderProperty());
+        //leftAlignment.disableProperty().bind(shticellController.isReaderProperty());
+        //rightAlignment.disableProperty().bind(shticellController.isReaderProperty());
+        //centerAlignment.disableProperty().bind(shticellController.isReaderProperty());
+        addRangeButton.disableProperty().bind(shticellController.isReaderProperty());
+        deleteRangeButton.disableProperty().bind(shticellController.isReaderProperty());
+        rangesList.disableProperty().bind(shticellController.isReaderProperty());
     }
 
     @FXML

@@ -5,4 +5,5 @@ public enum PermissionType {
     READER,  // Can only view the sheet, but not make changes
     WRITER,  // Can make changes to the sheet
     NONE     // No permission, default for new users until granted a permission
+    ;
 }

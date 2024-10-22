@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import util.HttpClientUtil;
+import util.alert.AlertUtil;
 
 import java.io.IOException;
 
@@ -35,11 +36,10 @@ public class PermissionController {
     @FXML
     private Button requestButton;
 
-    private StringProperty currentSheetName = new SimpleStringProperty();
+    private String currentSheetName;
 
     @FXML
     void initialize() {
-        // Ensure that if one RadioButton is selected, the other gets deselected
         ReaderRB.setOnAction(this::ReaderRBListener);
         WriterRB.setOnAction(this::WriterRBListener);
     }
@@ -47,35 +47,31 @@ public class PermissionController {
     @FXML
     void ReaderRBListener(ActionEvent event) {
         if (ReaderRB.isSelected()) {
-            WriterRB.setSelected(false);  // Deselect WriterRB when ReaderRB is selected
+            WriterRB.setSelected(false);
         }
     }
 
     @FXML
     void WriterRBListener(ActionEvent event) {
         if (WriterRB.isSelected()) {
-            ReaderRB.setSelected(false);  // Deselect ReaderRB when WriterRB is selected
+            ReaderRB.setSelected(false);
         }
     }
 
     @FXML
     void cancelButtonListener(ActionEvent event) {
-        // Get the current stage (window) and close it
+
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 
-    public void bindSheetName(StringProperty dashboardSheetName) {
-        currentSheetName.bind(dashboardSheetName);
-    }
-
     @FXML
     void requestButtonListener(ActionEvent event) {
-        // Get the sheet name from the bound property
-        String sheetName = currentSheetName.get();
+
+        String sheetName = currentSheetName;
 
         if (sheetName == null || sheetName.isEmpty()) {
-            showErrorAlert("Permission Request Error", "No sheet selected.");
+            AlertUtil.showErrorAlert("Permission Request Error", "No sheet selected.");
             return;
         }
 
@@ -85,7 +81,7 @@ public class PermissionController {
         } else if (WriterRB.isSelected()) {
             permissionType = PermissionType.WRITER;
         } else {
-            showErrorAlert("Permission Request Error", "No permission type selected.");
+            AlertUtil.showErrorAlert("Permission Request Error", "No permission type selected.");
             return;
         }
 
@@ -98,7 +94,7 @@ public class PermissionController {
         HttpClientUtil.runAsyncPost(Constants.REQUEST_PERMISSION, requestBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> showErrorAlert("Connection Error", "Failed to send permission request: " + e.getMessage()));
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Connection Error", "Failed to send permission request: " + e.getMessage()));
             }
 
             @Override
@@ -106,27 +102,15 @@ public class PermissionController {
                 String responseBody = response.body().string();
 
                 if (response.code() != 200) {
-                    Platform.runLater(() -> showErrorAlert("Request Failed", responseBody));
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Request Failed", responseBody));
                 } else {
-                    Platform.runLater(() -> showSuccessAlert("Request Success", "Permission request successful!"));
+                    Platform.runLater(() -> AlertUtil.showSuccessAlert("Request Success", "Permission request successful!"));
                 }
             }
         });
     }
 
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showSuccessAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    public void setCurrentSheetName(String currentSheetName) {
+        this.currentSheetName = currentSheetName;
     }
 }

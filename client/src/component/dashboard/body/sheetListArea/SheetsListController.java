@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -44,7 +43,6 @@ public class SheetsListController implements Closeable {
     @FXML
     private TableColumn<SingleSheetData, String> permissionColumn;
 
-    private StringProperty currentSheetName;
 
     public SheetsListController() {
         totalSheets = new SimpleIntegerProperty();
@@ -64,19 +62,22 @@ public class SheetsListController implements Closeable {
         permissionColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getPermission().toString()));
 
-        currentSheetName = new SimpleStringProperty(null);
-
         sheetsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                currentSheetName.bind(newSelection.sheetNameProperty());
+                dashboardController.currentSheetNameProperty().bind(newSelection.sheetNameProperty());
+
+                dashboardController.isReaderProperty().set(newSelection.getPermission() == PermissionType.READER);
+
+                dashboardController.isNoneProperty().set(newSelection.getPermission() == PermissionType.NONE);
+
                 refreshPermissions(newSelection.sheetNameProperty().get());
             } else {
-                currentSheetName.unbind();
-                currentSheetName.set(null);
+                dashboardController.currentSheetNameProperty().unbind();
+                dashboardController.isReaderProperty().set(false);
+                dashboardController.isNoneProperty().set(true);
             }
         });
     }
-
     private void refreshPermissions(String sheetName) {
         dashboardController.refreshPermissions(sheetName);
     }
@@ -85,7 +86,6 @@ public class SheetsListController implements Closeable {
         ObservableList<SingleSheetData> currentItems = sheetsTableView.getItems();
         SingleSheetData selectedItem = sheetsTableView.getSelectionModel().getSelectedItem();
 
-        // Check for size difference, indicating new rows
         if (currentItems.size() != sheets.size()) {
             Platform.runLater(() -> {
                 currentItems.clear();
@@ -93,6 +93,7 @@ public class SheetsListController implements Closeable {
                 totalSheets.set(sheets.size());
 
                 if (selectedItem != null && sheets.contains(selectedItem)) {
+                    sheetsTableView.getSelectionModel().clearSelection();
                     sheetsTableView.getSelectionModel().select(selectedItem);
                 }
             });
@@ -110,15 +111,17 @@ public class SheetsListController implements Closeable {
                         PermissionType newPermission = newItem.getPermission();
 
                         if (!currentPermission.equals(newPermission.toString())) {
+                            sheetsTableView.getSelectionModel().clearSelection();
                             currentItem.setPermission(newPermission);
+                            sheetsTableView.getSelectionModel().select(selectedItem);
                         }
                     }
                 }
-
                 sheetsTableView.refresh();
             });
         }
     }
+
 
 
     public void startListRefresher() {
@@ -135,14 +138,6 @@ public class SheetsListController implements Closeable {
             listRefresher.cancel();
             timer.cancel();
         }
-    }
-
-    public String getCurrentSheetName() {
-        return currentSheetName.get();
-    }
-
-    public StringProperty currentSheetNameProperty() {
-        return currentSheetName;
     }
 
     public void setDashboardController(DashboardController dashboardController) {

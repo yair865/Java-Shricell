@@ -1,7 +1,6 @@
 package component.main;
 
 import component.dashboard.DashboardController;
-import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
 import component.login.LoginController;
 import component.sheetview.app.ShticellController;
 import dto.dtoPackage.SpreadsheetDTO;
@@ -12,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -88,15 +86,21 @@ public class MainController implements Closeable {
         }
     }
 
-    public void loadApplicationPage(SpreadsheetDTO spreadsheetDTO) {
+    public void loadApplicationPage(SpreadsheetDTO spreadsheetDTO, boolean isReader) {
         URL applicationPageUrl = getClass().getResource(APPLICATION_PAGE_FXML_RESOURCE_LOCATION);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(applicationPageUrl);
             applicationWindow = fxmlLoader.load();
+
+            // Get the controller and set mainController and spreadsheet data
             shticellController = fxmlLoader.getController();
             shticellController.setMainController(this);
             shticellController.updateUIWithSpreadsheetData(spreadsheetDTO);
+
+            shticellController.isReaderProperty().set(isReader);
+
+            // Set the application window
             setMainPanelTo(applicationWindow);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -121,8 +125,5 @@ public class MainController implements Closeable {
         currentUser.set(userName);
     }
 
-    public SingleSheetData getSelectedSheet() {
-        return null;
-    }
 }
 

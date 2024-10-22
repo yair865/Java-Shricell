@@ -15,9 +15,6 @@ import engine.permissionmanager.request.RequestStatus;
 import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -64,18 +61,14 @@ public class DashboardRightController {
     @FXML
     private Button viewSheetButton;
 
-    private StringProperty currentSheetName;
-
-    private IntegerProperty currentRequestId = new SimpleIntegerProperty();
-
     @FXML
     void permissionApproveListener(ActionEvent event) {
         sendPermissionRequest(RequestStatus.APPROVED);
     }
 
     private void sendPermissionRequest(RequestStatus status) {
-        int requestId = currentRequestId.get();
-        String sheetName = currentSheetName.get();
+        int requestId = dashboardController.currentRequestIdProperty().get();
+        String sheetName = dashboardController.currentSheetNameProperty().get();
 
         if (sheetName == null || sheetName.isEmpty()) {
             AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
@@ -98,6 +91,7 @@ public class DashboardRightController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
                     Platform.runLater(() -> AlertUtil.showSuccessAlert(status.name() + " Successful", "Permission " + status.name().toLowerCase() + " successfully!"));
                 } else {
@@ -114,7 +108,7 @@ public class DashboardRightController {
 
     @FXML
     public void refreshPermissionTableButtonListener(ActionEvent event) {
-        String selectedSheetName = currentSheetName.get();
+        String selectedSheetName = dashboardController.currentSheetNameProperty().get();
 
         if (selectedSheetName == null || selectedSheetName.isEmpty()) {
             AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
@@ -131,9 +125,8 @@ public class DashboardRightController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-
                     handlePermissionData(responseBody);
                 } else {
                     Platform.runLater(() -> AlertUtil.showErrorAlert("Data Error", "Failed to get permissions: " + response.message()));
@@ -151,7 +144,6 @@ public class DashboardRightController {
                 dashboardController.updatePermissions(permissions);
             }
         });
-
     }
 
     @FXML
@@ -160,11 +152,9 @@ public class DashboardRightController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("permission/permissionDialog.fxml"));
             Parent root = fxmlLoader.load();
 
-            // Get the PermissionController from the loader
             PermissionController permissionController = fxmlLoader.getController();
 
-            // Bind the current sheet name property
-            permissionController.bindSheetName(currentSheetName);
+            permissionController.setCurrentSheetName(dashboardController.currentSheetNameProperty().get());
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Permission Request");
@@ -184,10 +174,17 @@ public class DashboardRightController {
 
     @FXML
     void viewSheetListener(ActionEvent event) {
-        String selectedSheetName = currentSheetName.get();
+        String selectedSheetName = dashboardController.currentSheetNameProperty().get();
+        boolean isReader = dashboardController.isReaderProperty().get();
+        boolean isNone = dashboardController.isNoneProperty().get();
 
         if (selectedSheetName == null || selectedSheetName.isEmpty()) {
             AlertUtil.showErrorAlert("Sheet Selection Error", "No sheet selected.");
+            return;
+        }
+
+        if (isNone) {
+            AlertUtil.showErrorAlert("Permission Denied", "You do not have permission to view this sheet.");
             return;
         }
 
@@ -212,7 +209,7 @@ public class DashboardRightController {
 
                     SpreadsheetDTO spreadsheetDTO = gson.fromJson(responseBody, SpreadsheetDTO.class);
 
-                    Platform.runLater(() -> handleSpreadsheetData(spreadsheetDTO));
+                    Platform.runLater(() -> handleSpreadsheetData(spreadsheetDTO, isReader));
                 } else {
                     Platform.runLater(() -> AlertUtil.showErrorAlert("Data Error", "Failed to get spreadsheet data: " + response.message()));
                 }
@@ -220,9 +217,9 @@ public class DashboardRightController {
         });
     }
 
-    private void handleSpreadsheetData(SpreadsheetDTO spreadsheetDTO) {
+    private void handleSpreadsheetData(SpreadsheetDTO spreadsheetDTO , boolean isReader) {
         Platform.runLater(() -> {
-            mainController.loadApplicationPage(spreadsheetDTO);
+            mainController.loadApplicationPage(spreadsheetDTO , isReader);
         });
     }
 
@@ -232,14 +229,6 @@ public class DashboardRightController {
 
     public void setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
-    }
-
-    public void setCurrentSheetNameProperty(StringProperty currentSheetName) {
-        this.currentSheetName = currentSheetName;
-    }
-
-    public void setCurrentRequestIdProperty(IntegerProperty currentRequestId) {
-        this.currentRequestId = currentRequestId;
     }
 }
 

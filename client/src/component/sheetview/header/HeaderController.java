@@ -139,6 +139,7 @@ public class HeaderController {
 
     public void setShticellController(ShticellController shticellController) {
         this.shticellController = shticellController;
+        updateNewValueBTN.disableProperty().bind(shticellController.isReaderProperty());
     }
 
     public void updateHeader(String cellId, String originalValue, int lastModifiedVersion) {

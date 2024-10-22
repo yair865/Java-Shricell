@@ -13,6 +13,8 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetmanager.SheetManager;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -63,6 +65,8 @@ public class ShticellController {
 
     private MainController mainController;
 
+    private final BooleanProperty isReader = new SimpleBooleanProperty();
+
     public ShticellController() {
         this.dataManager = new DataManager(engine);
         this.applicationWindow = new BorderPane();
@@ -78,76 +82,6 @@ public class ShticellController {
             headerComponentController.setEngine(this.engine);
         }
     }
-
-    private Alert createProgressAlert(ProgressBar progressBar) {
-        Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
-        progressAlert.setTitle("Loading File");
-        progressAlert.setHeaderText("Please wait while the file is loading.");
-        progressAlert.close();
-        BorderPane progressPane = new BorderPane();
-        progressPane.setCenter(progressBar);
-        progressAlert.getDialogPane().setContent(progressPane);
-
-        progressAlert.setOnCloseRequest(event -> {
-        });
-
-        return progressAlert;
-    }
-
-/*    @FXML
-    public void loadFile(String filePath) {
-        LoadingStage loadingStage = new LoadingStage();
-        loadingStage.showLoadingStage();
-
-        Task<Void> loadTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                updateProgress(0, 100);
-
-                for (int i = 0; i <= 100; i++) {
-                    Thread.sleep(10);
-                    updateProgress(i, 100);
-                }
-
-                engine.loadSpreadsheet(filePath);
-                return null;
-            }
-        };
-
-        loadTask.progressProperty().addListener((obs, oldValue, newValue) -> {
-            loadingStage.updateProgress(newValue.doubleValue());
-        });
-
-        loadTask.setOnSucceeded(event -> {
-            handleLoadSuccess(filePath, loadingStage);
-        });
-
-        loadTask.setOnFailed(event -> {
-            handleLoadFailure(loadTask, loadingStage);
-        });
-
-        new Thread(loadTask).start();
-    }
-
-    private void handleLoadSuccess(String filePath, LoadingStage loadingStage) {
-        loadingStage.closeLoadingStage();
-
-        SpreadsheetDTO spreadSheet = engine.getSpreadsheetState();
-
-        updateUIWithSpreadsheetData(spreadSheet);
-
-        System.out.println("Successfully loaded: " + filePath);
-    }
-
-    private void handleLoadFailure(Task<Void> loadTask, LoadingStage loadingStage) {
-        loadingStage.closeLoadingStage();
-
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error Loading File");
-        alert.setHeaderText("An error occurred while loading the file.");
-        alert.setContentText("Error: " + loadTask.getException().getMessage() + "\nPlease try to load the file again.");
-        alert.showAndWait();
-    }*/
 
     public void updateUIWithSpreadsheetData(SpreadsheetDTO spreadSheet) {
         dataManager.getCellDataMap().clear();
@@ -332,5 +266,9 @@ public class ShticellController {
 
     public List<Coordinate> getRangeByName(String rangeName) {
         return engine.getRangeByName(rangeName);
+    }
+
+    public BooleanProperty isReaderProperty() {
+        return isReader;
     }
 }
