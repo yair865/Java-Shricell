@@ -25,6 +25,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.requestservice.ShitcellRequestServiceImpl;
+import util.requestservice.ShticellRequestService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class ShticellController {
 
     int numberOfColumns;
     int numberOfRows;
+
+    private ShticellRequestService requestService;
 
     private SheetManager engine;
 
@@ -68,6 +72,8 @@ public class ShticellController {
     private final BooleanProperty isReader = new SimpleBooleanProperty();
 
     public ShticellController() {
+        this.requestService = new ShitcellRequestServiceImpl();
+
         this.dataManager = new DataManager(engine);
         this.applicationWindow = new BorderPane();
         this.bodyController = new BodyController();
@@ -97,8 +103,9 @@ public class ShticellController {
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
-            engine.updateCell(cellId, newValue);
-            List<Coordinate> cellsThatHaveChanged = engine.getSpreadsheetState().cellsThatHaveChanged();
+            List<CellDTO> cellsThatHaveChanged = requestService.updateCell(cellId, newValue);
+             //engine.getSpreadsheetState().cellsThatHaveChanged();
+
             dataManager.updateCellDataMap(cellsThatHaveChanged);
             headerComponentController.setVersionsChoiceBox();
             headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
@@ -169,8 +176,9 @@ public class ShticellController {
 
     public List<Coordinate> getDependents(String cellId) {
         try {
-            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState(); // Risky operation
-            return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+            return requestService.getDependents(cellId);
+/*            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState(); // Risky operation
+            return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));*/
         } catch (Exception e) {
             showErrorAlert("Dependency Error", "An error occurred while retrieving dependents.", e.getMessage());
             return List.of();
@@ -179,8 +187,9 @@ public class ShticellController {
 
     public List<Coordinate> getReferences(String cellId) {
         try {
-            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
-            return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));
+            return requestService.getReferences(cellId);
+            /*SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
+            return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));*/
         } catch (Exception e) {
             showErrorAlert("Reference Error", "An error occurred while retrieving references.", e.getMessage());
             return List.of();

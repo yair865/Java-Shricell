@@ -34,6 +34,7 @@ public class ViewSheetServlet  extends HttpServlet {
                 return;
             }
 
+            engine.setCurrentSheet(engine.getSheet(sheetName));
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             String jsonResponse = gson.toJson(spreadsheetDTO);

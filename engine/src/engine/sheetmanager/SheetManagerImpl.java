@@ -18,6 +18,7 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.*;
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static dto.converter.CellConverter.convertCellToDTO;
 import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
@@ -289,7 +290,16 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     }
 
     @Override
-    public PermissionType getPermission() {
-        return null; //TODO
+    public List<CellDTO> getCellsThatHaveChanged() {
+        validateSheetIsLoaded();
+
+        List<Coordinate> coordinatesThatHaveChanged = versionManager.getCurrentVersion().getCellsThatHaveChanged();
+
+        return coordinatesThatHaveChanged.stream()
+                .map(coordinate -> {
+                    CellReadActions cell = versionManager.getCurrentVersion().getCell(coordinate);
+                    return convertCellToDTO(cell); // Convert the cell to DTO
+                })
+                .collect(Collectors.toList());
     }
 }

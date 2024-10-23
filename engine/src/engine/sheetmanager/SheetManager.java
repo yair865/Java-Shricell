@@ -62,5 +62,5 @@ public interface SheetManager {
 
     int getSheetNumberOfColumns();
 
-    PermissionType getPermission();
+    List<CellDTO> getCellsThatHaveChanged();
 }

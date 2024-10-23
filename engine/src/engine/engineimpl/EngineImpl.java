@@ -100,4 +100,9 @@ public class EngineImpl implements Engine, Serializable {
     public void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus) {
         permissionManager.updatePermissions(usernameFromSession , sheetName ,requestId ,requestStatus);
     }
+
+    @Override
+    public SheetManager getCurrentSheet() {
+        return currentSheet;
+    }
 }

@@ -17,4 +17,6 @@ public interface Engine {
     void requestPermission(String userName, PermissionType permissionType, String sheetName);
     List<PermissionInfoDTO> getPermissions(String sheetName);
     void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus);
+
+    SheetManager getCurrentSheet();
 }

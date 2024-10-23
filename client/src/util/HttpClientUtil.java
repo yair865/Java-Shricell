@@ -1,11 +1,9 @@
 package util;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 public class HttpClientUtil {
@@ -48,5 +46,38 @@ public class HttpClientUtil {
         System.out.println("Shutting down HTTP CLIENT");
         HTTP_CLIENT.dispatcher().executorService().shutdown();
         HTTP_CLIENT.connectionPool().evictAll();
+    }
+
+    public static Response runSyncPost(String url, RequestBody requestBody) {
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        Call call = HTTP_CLIENT.newCall(request);
+        final CountDownLatch latch = new CountDownLatch(1);
+        final Response[] responseHolder = new Response[1];
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                latch.countDown();
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                responseHolder[0] = response;
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        return responseHolder[0];
     }
 }

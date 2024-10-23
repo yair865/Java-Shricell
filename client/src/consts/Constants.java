@@ -25,6 +25,10 @@ public class Constants {
     public static final String REQUEST_PERMISSION = FULL_SERVER_PATH + "/requestPermission";
     public final static String PERMISSION_RESPONSE = FULL_SERVER_PATH + "/responsePermissionRequest";
 
+    public final static String UPDATE_CELL = FULL_SERVER_PATH + "/updateCell";
+    public final static String DEPENDENTS = FULL_SERVER_PATH + "/dependents";
+    public final static String REFERENCES = FULL_SERVER_PATH + "/references";
+
     public final static String SHEETS_LIST = FULL_SERVER_PATH + "/sheetList";
     public final static String PERMISSIONS_LIST = FULL_SERVER_PATH + "/permissionList";
 }

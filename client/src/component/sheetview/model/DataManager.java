@@ -27,11 +27,12 @@ public class DataManager implements CellDataProvider {
         return cellDataMap.get(coordinate);
     }
 
-    public void updateCellDataMap(List<Coordinate> changedCells) {
-        for (Coordinate coordinate : changedCells) {
+    public void updateCellDataMap(List<CellDTO> changedCells) {
+        for (CellDTO cellInfo : changedCells) {
+            Coordinate coordinate = cellInfo.coordinate(); // Get the coordinate from CellDTO
             BasicCellData cellData = cellDataMap.get(coordinate);
+
             if (cellData != null) {
-                CellDTO cellInfo = engine.getCellInfo(coordinate.toString());
                 cellData.setEffectiveValue(formatEffectiveValue(cellInfo.effectiveValue()));
                 cellData.setOriginalValue(cellInfo.originalValue());
                 cellData.setLastModifiedVersion(cellInfo.lastModifiedVersion());
