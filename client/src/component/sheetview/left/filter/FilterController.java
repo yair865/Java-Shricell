@@ -1,6 +1,7 @@
 package component.sheetview.left.filter;
 
 import component.sheetview.app.ShticellController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.alert.AlertUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,26 +92,28 @@ public class FilterController {
 
     @FXML
     void pickValuesListener(ActionEvent event) {
-        List<String> effectiveValues = shticellController.getEffectiveValuesForColumn(getSelectedColumn());
+        char selectedColumn = getSelectedColumn();
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ValuePickerWindow.fxml"));
-            Parent root = loader.load();
+        shticellController.getEffectiveValuesForColumn(selectedColumn, effectiveValues -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("ValuePickerWindow.fxml"));
+                Parent root = loader.load();
 
-            ValuePickerController valuePickerController = loader.getController();
-            valuePickerController.setCheckBoxValues(effectiveValues);
-            valuePickerController.setFilterController(this);
+                ValuePickerController valuePickerController = loader.getController();
+                valuePickerController.setCheckBoxValues(effectiveValues);
+                valuePickerController.setFilterController(this);
 
-            Stage valuePickerStage = new Stage();
-            valuePickerStage.setTitle("Select Values");
-            valuePickerStage.initModality(Modality.APPLICATION_MODAL);
-            valuePickerStage.setScene(new Scene(root, 400, 300));
+                Stage valuePickerStage = new Stage();
+                valuePickerStage.setTitle("Select Values");
+                valuePickerStage.initModality(Modality.APPLICATION_MODAL);
+                valuePickerStage.setScene(new Scene(root, 400, 300));
 
-            valuePickerStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "An error occurred while opening the Value Picker Window: " + e.getMessage());
-        }
+                valuePickerStage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+                AlertUtil.showErrorAlert("Error", "An error occurred while opening the Value Picker Window: " + e.getMessage());
+            }
+        });
     }
 
     private void showAlert(String header, String content) {

@@ -14,8 +14,7 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static consts.Constants.GSON_INSTANCE;
-import static consts.Constants.SHEETS_LIST;
+import static consts.Constants.*;
 
 public class SheetsListRefresher extends TimerTask {
 
@@ -42,7 +41,7 @@ public class SheetsListRefresher extends TimerTask {
 
                 System.out.println("Response JSON: " + jsonArrayOfSheets);
 
-                SheetInfoDTO[] sheetsDTO = GSON_INSTANCE.fromJson(jsonArrayOfSheets, SheetInfoDTO[].class);
+                SheetInfoDTO[] sheetsDTO = ADAPTED_GSON.fromJson(jsonArrayOfSheets, SheetInfoDTO[].class);
 
                 List<SingleSheetData> sheets = List.of(sheetsDTO).stream()
                         .map(dto -> new SingleSheetData(

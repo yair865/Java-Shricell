@@ -13,12 +13,12 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetmanager.SheetManager;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -30,6 +30,8 @@ import util.requestservice.ShticellRequestService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static component.sheetview.model.DataManager.formatEffectiveValue;
 
@@ -38,6 +40,8 @@ public class ShticellController {
 
     int numberOfColumns;
     int numberOfRows;
+    private int currentVersion = 1; // Version counter
+
 
     private ShticellRequestService requestService;
 
@@ -98,30 +102,28 @@ public class ShticellController {
                 spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
         applicationWindow.setCenter(bodyController.getBody());
         leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
-        headerComponentController.setVersionsChoiceBox();
+        headerComponentController.setVersionsChoiceBox(currentVersion); // Update UI with current version
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
-            List<CellDTO> cellsThatHaveChanged = requestService.updateCell(cellId, newValue);
-             //engine.getSpreadsheetState().cellsThatHaveChanged();
-
-            dataManager.updateCellDataMap(cellsThatHaveChanged);
-            headerComponentController.setVersionsChoiceBox();
-            headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
-
+            requestService.updateCell(cellId, newValue, cellsThatHaveChanged -> {
+                dataManager.updateCellDataMap(cellsThatHaveChanged);
+                currentVersion++; // Increment the version each time a cell is updated
+                headerComponentController.setVersionsChoiceBox(currentVersion); // Update UI with new version
+                headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
+            });
         } catch (Exception e) {
             showErrorAlert("Update Error", "An error occurred while updating the cell.", e.getMessage());
         }
     }
 
     public void showSpreadsheetVersion(int version) {
-        try {
-            SpreadsheetDTO spreadsheetDTO = engine.getSpreadSheetByVersion(version); // Risky operation
-            displayTempSheet("Spreadsheet Version " + version, spreadsheetDTO);
-        } catch (Exception e) {
-            showErrorAlert("Version Error", "An error occurred while retrieving the spreadsheet version.", e.getMessage());
-        }
+        requestService.getSpreadSheetByVersion(version,
+                spreadsheetDTO -> {
+                    displayTempSheet("Spreadsheet Version " + version, spreadsheetDTO);
+                }
+        );
     }
 
     public void displayTempSheet(String title, SpreadsheetDTO spreadsheetDTO) {
@@ -174,54 +176,38 @@ public class ShticellController {
         }
     }
 
-    public List<Coordinate> getDependents(String cellId) {
-        try {
-            return requestService.getDependents(cellId);
-/*            SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState(); // Risky operation
-            return spreadsheetDTO.dependenciesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));*/
-        } catch (Exception e) {
-            showErrorAlert("Dependency Error", "An error occurred while retrieving dependents.", e.getMessage());
-            return List.of();
-        }
+    public void getDependents(String cellId, Consumer<List<Coordinate>> callback) {
+        requestService.getDependents(cellId, dependents -> {
+            Platform.runLater(() -> callback.accept(dependents));
+        });
     }
 
-    public List<Coordinate> getReferences(String cellId) {
-        try {
-            return requestService.getReferences(cellId);
-            /*SpreadsheetDTO spreadsheetDTO = engine.getSpreadsheetState();
-            return spreadsheetDTO.referencesAdjacencyList().get(CoordinateFactory.createCoordinate(cellId));*/
-        } catch (Exception e) {
-            showErrorAlert("Reference Error", "An error occurred while retrieving references.", e.getMessage());
-            return List.of();
-        }
+    public void getReferences(String cellId, Consumer<List<Coordinate>> callback) {
+        requestService.getReferences(cellId, references -> {
+            Platform.runLater(() -> callback.accept(references));
+        });
     }
 
     public void sortSheet(String cellsRange, List<Character> selectedColumns) {
-        try {
-            SpreadsheetDTO sortedSheet = engine.sort(cellsRange, selectedColumns);
-            displayTempSheet("Sorted Sheet", sortedSheet);
-        } catch (Exception e) {
-            showErrorAlert("Sorting Error", "An error occurred while sorting the sheet.", e.getMessage());
-        }
+        requestService.sort(cellsRange, selectedColumns, sortedSheet -> {
+            Platform.runLater(() -> displayTempSheet("Sorted Sheet", sortedSheet));
+        });
     }
 
-    public List<String> getEffectiveValuesForColumn(char column) {
-        try {
-            return engine.getUniqueValuesFromColumn(column);
-        } catch (Exception e) {
-            showErrorAlert("Column Retrieval Error", "An error occurred while retrieving values from the column.", e.getMessage());
-            return List.of();
-        }
+    public void getEffectiveValuesForColumn(char column, Consumer<List<String>> callback) {
+        requestService.getEffectiveValuesForColumn(column, values -> {
+            Platform.runLater(() -> {
+                callback.accept(values);
+            });
+        });
     }
 
     public void applyFilter(Character selectedColumn, String filterArea, List<String> selectedValues) {
-        try {
-            SpreadsheetDTO filteredSheet = engine.filterSheet(selectedColumn, filterArea, selectedValues);
-            displayTempSheet("Filtered Sheet", filteredSheet);
-        } catch (Exception e) {
-            showErrorAlert("Filtering Error", "An error occurred while applying the filter.", e.getMessage());
-        }
+        requestService.filterSheet(selectedColumn, filterArea, selectedValues, filteredSheet -> {
+            Platform.runLater(() -> displayTempSheet("Filtered Sheet", filteredSheet));
+        });
     }
+
 
     private void showErrorAlert(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -237,10 +223,6 @@ public class ShticellController {
 
     public BodyController getBodyController() {
         return bodyController;
-    }
-
-    public LeftController getLeftController() {
-        return leftComponentController;
     }
 
     public int getNumberOfColumns() {

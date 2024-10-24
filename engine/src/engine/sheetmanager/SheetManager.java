@@ -37,6 +37,8 @@ public interface SheetManager {
 
     Integer getCurrentVersion();
 
+    SpreadsheetDTO getSpreadsheetByVersion(int version);
+
     void setSingleCellTextColor(String cellId, String textColor);
 
     void setSingleCellBackGroundColor(String cellId, String backGroundColor);

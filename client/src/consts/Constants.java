@@ -1,9 +1,22 @@
 package consts;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import dto.deserialize.CoordinateTypeAdapter;
+import dto.deserialize.EffectiveValueTypeAdapter;
+import dto.deserialize.SpreadsheetDTODeserializer;
+import dto.dtoPackage.SpreadsheetDTO;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 public class Constants {
     public final static Gson GSON_INSTANCE = new Gson();
+
+    public static final Gson ADAPTED_GSON = new GsonBuilder()
+            .registerTypeAdapter(SpreadsheetDTO.class, new SpreadsheetDTODeserializer())
+            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
+            .registerTypeAdapter(EffectiveValue.class, new EffectiveValueTypeAdapter())
+            .create();
 
     public final static String LINE_SEPARATOR = System.lineSeparator();
     public final static String UNKNOWN = "<Anonymous>";
@@ -28,6 +41,10 @@ public class Constants {
     public final static String UPDATE_CELL = FULL_SERVER_PATH + "/updateCell";
     public final static String DEPENDENTS = FULL_SERVER_PATH + "/dependents";
     public final static String REFERENCES = FULL_SERVER_PATH + "/references";
+    public final static String VERSION = FULL_SERVER_PATH + "/version";
+    public final static String SORT = FULL_SERVER_PATH + "/sort";
+    public final static String FILTER = FULL_SERVER_PATH + "/filter";
+    public final static String GET_UNIQUE_VALUES = FULL_SERVER_PATH + "/getUniqueValues";
 
     public final static String SHEETS_LIST = FULL_SERVER_PATH + "/sheetList";
     public final static String PERMISSIONS_LIST = FULL_SERVER_PATH + "/permissionList";

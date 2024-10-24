@@ -1,13 +1,8 @@
 package util.requestservice;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import dto.deserialize.CoordinateTypeAdapter;
-import dto.deserialize.EffectiveValueTypeAdapter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import javafx.application.Platform;
 import okhttp3.*;
@@ -17,16 +12,18 @@ import util.alert.AlertUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static consts.Constants.*;
 
 public class ShitcellRequestServiceImpl implements ShticellRequestService{
 
     @Override
-    public List<CellDTO> updateCell(String cellId, String newValue) {
-        String url = UPDATE_CELL; // Your servlet path
+    public void updateCell(String cellId, String newValue, Consumer<List<CellDTO>> onSuccess) {
+        String url = UPDATE_CELL;
 
         // Create the request body
         RequestBody requestBody = new FormBody.Builder()
@@ -34,50 +31,71 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .add("newValue", newValue)
                 .build();
 
-        // Create a Gson instance with the CoordinateTypeAdapter
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                .registerTypeAdapter(EffectiveValue.class, new EffectiveValueTypeAdapter())
-                .create();
-
-        Response response = null; // Declare the response variable outside the try block
+        Response response = null;
         try {
-            response = HttpClientUtil.runSyncPost(url, requestBody); // Execute the POST request
+            HttpClientUtil.runAsyncPost(url, requestBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    throw new RuntimeException("Request failed: " + e.getMessage(), e);
+                }
 
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                String jsonResponse = response.body().string();
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        String jsonResponse = response.body().string();
 
-                Type listType = new TypeToken<List<CellDTO>>() {
-                }.getType();
+                        Type listType = new TypeToken<List<CellDTO>>() {}.getType();
+                        List<CellDTO> cellsThatHaveChanged = ADAPTED_GSON.fromJson(jsonResponse, listType);
 
-                return gson.fromJson(jsonResponse, listType);
-            } else {
-                throw new RuntimeException("Update failed: " + response.message());
-            }
-        } catch (IOException e) {
+                        // Execute the onSuccess consumer in the JavaFX application thread
+                        Platform.runLater(() -> onSuccess.accept(cellsThatHaveChanged));
+                    } else {
+                        throw new RuntimeException("Update failed: " + response.message());
+                    }
+                }
+            });
+        } catch (Exception e) {
             throw new RuntimeException("Request failed: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public SpreadsheetDTO getSpreadsheetState() throws Exception {
-        return null;
+    public void getSpreadSheetByVersion(int version, Consumer<SpreadsheetDTO> onSuccess) {
+
+        String url = HttpUrl.get(VERSION).newBuilder()
+                .addQueryParameter("version", String.valueOf(version))
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(url, new Callback(){
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "An error occurred while retrieving the spreadsheet version: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    String jsonResponse = response.body().string();
+
+                    SpreadsheetDTO spreadsheetDTO = ADAPTED_GSON.fromJson(jsonResponse, SpreadsheetDTO.class);
+
+                    Platform.runLater(() -> onSuccess.accept(spreadsheetDTO));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "Failed to retrieve spreadsheet: " + response.message()));
+                }
+            }
+        });
     }
 
     @Override
-    public SpreadsheetDTO getSpreadsheetByVersion(int version) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<Coordinate> getDependents(String cellId) {
+    public void getDependents(String cellId, Consumer<List<Coordinate>> onSuccess) {
         String url = HttpUrl.get(DEPENDENTS).newBuilder()
                 .addQueryParameter("cellId", cellId)
                 .build()
                 .toString();
-
-        List<Coordinate> dependentsList = new ArrayList<>(); // Create a list to hold the dependents
 
         HttpClientUtil.runAsync(url, new Callback() {
             @Override
@@ -90,29 +108,24 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
 
-                    // Create a Gson instance with the CoordinateTypeAdapter
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                            .create();
+                    List<Coordinate> dependents = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<Coordinate>>() {}.getType());
 
-                    dependentsList.addAll(gson.fromJson(responseBody, new TypeToken<List<Coordinate>>(){}.getType()));
+                    if (dependents != null) {
+                        Platform.runLater(() -> onSuccess.accept(dependents));
+                    }
                 } else {
                     Platform.runLater(() -> AlertUtil.showErrorAlert("Dependency Error", "Failed to retrieve dependents: " + response.message()));
                 }
             }
         });
-
-        return dependentsList; // Return the empty list initially; actual data will be updated later
     }
 
     @Override
-    public List<Coordinate> getReferences(String cellId) {
+    public void getReferences(String cellId, Consumer<List<Coordinate>> onSuccess) {
         String url = HttpUrl.get(REFERENCES).newBuilder()
                 .addQueryParameter("cellId", cellId)
                 .build()
                 .toString();
-
-        List<Coordinate> referencesList = new ArrayList<>(); // Create a list to hold the references
 
         HttpClientUtil.runAsync(url, new Callback() {
             @Override
@@ -125,34 +138,120 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
 
-                    // Create a Gson instance with the CoordinateTypeAdapter
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                            .create();
+                    List<Coordinate> references = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<Coordinate>>() {}.getType());
 
-                    referencesList.addAll(gson.fromJson(responseBody, new TypeToken<List<Coordinate>>(){}.getType()));
+                    if (references != null) {
+                        Platform.runLater(() -> onSuccess.accept(references));
+                    }
                 } else {
                     Platform.runLater(() -> AlertUtil.showErrorAlert("Reference Error", "Failed to retrieve references: " + response.message()));
                 }
             }
         });
-
-        return referencesList; // Return the empty list initially; actual data will be updated later
     }
 
     @Override
-    public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) throws Exception {
-        return null;
+    public void sort(String cellsRange, List<Character> selectedColumns, Consumer<SpreadsheetDTO> sortedSheetConsumer) {
+        String columnsParam = selectedColumns.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+
+        String url = HttpUrl.get(SORT)
+                .newBuilder()
+                .addQueryParameter("cellsRange", cellsRange)
+                .addQueryParameter("selectedColumns", columnsParam)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtil.showErrorAlert("Sorting Error", "Failed to send request: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    SpreadsheetDTO sortedSheet = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
+                    Platform.runLater(() -> sortedSheetConsumer.accept(sortedSheet));
+                } else {
+                    Platform.runLater(() ->
+                            AlertUtil.showErrorAlert("Sorting Error", "Failed to retrieve sorted sheet: " + response.message())
+                    );
+                }
+            }
+        });
     }
 
-    @Override
-    public List<String> getUniqueValuesFromColumn(char column) throws Exception {
-        return List.of();
-    }
 
     @Override
-    public SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues) throws Exception {
-        return null;
+    public void getEffectiveValuesForColumn(char column, Consumer<List<String>> valuesConsumer) {
+        String url = HttpUrl.get(GET_UNIQUE_VALUES) // Assuming you have an EFFECTIVE_VALUES constant
+                .newBuilder()
+                .addQueryParameter("column", String.valueOf(column))
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtil.showErrorAlert("Column Retrieval Error", "Failed to send request: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    List<String> values = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<String>>() {}.getType());
+                    Platform.runLater(() -> valuesConsumer.accept(values));
+                } else {
+                    Platform.runLater(() ->
+                            AlertUtil.showErrorAlert("Column Retrieval Error", "Failed to retrieve values: " + response.message())
+                    );
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, Consumer<SpreadsheetDTO> filteredSheetConsumer) {
+        String valuesParam = String.join(",", selectedValues); // Assuming selectedValues is a List<String>
+
+        String url = HttpUrl.get(FILTER) // Assuming you have a FILTER constant
+                .newBuilder()
+                .addQueryParameter("selectedColumn", String.valueOf(selectedColumn))
+                .addQueryParameter("filterArea", filterArea)
+                .addQueryParameter("selectedValues", valuesParam)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtil.showErrorAlert("Filtering Error", "Failed to send request: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    SpreadsheetDTO filteredSheet = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
+                    Platform.runLater(() -> filteredSheetConsumer.accept(filteredSheet));
+                } else {
+                    Platform.runLater(() ->
+                            AlertUtil.showErrorAlert("Filtering Error", "Failed to retrieve filtered sheet: " + response.message())
+                    );
+                }
+            }
+        });
     }
 
     @Override

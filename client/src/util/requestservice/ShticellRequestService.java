@@ -5,24 +5,23 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface ShticellRequestService {
 
-    List<CellDTO> updateCell(String cellId, String newValue) throws Exception;
+    void updateCell(String cellId, String newValue, Consumer<List<CellDTO>> onSuccess);
 
-    SpreadsheetDTO getSpreadsheetState() throws Exception;
+    void getSpreadSheetByVersion(int version, Consumer<SpreadsheetDTO> onSuccess);
 
-    SpreadsheetDTO getSpreadsheetByVersion(int version) throws Exception;
+    void getDependents(String cellId, Consumer<List<Coordinate>> onSuccess);
 
-    List<Coordinate> getDependents(String cellId) throws Exception;
+    void getReferences(String cellId, Consumer<List<Coordinate>> onSuccess);
 
-    List<Coordinate> getReferences(String cellId) throws Exception;
+    void sort(String cellsRange, List<Character> selectedColumns, Consumer<SpreadsheetDTO> sortedSheetConsumer);
 
-    SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) throws Exception;
+    void getEffectiveValuesForColumn(char column, Consumer<List<String>> valuesConsumer);
 
-    List<String> getUniqueValuesFromColumn(char column) throws Exception;
-
-    SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues) throws Exception;
+    void filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, Consumer<SpreadsheetDTO> filteredSheetConsumer);
 
     void setSingleCellBackGroundColor(String cellId, String hexString);
 
@@ -33,4 +32,5 @@ public interface ShticellRequestService {
     void addRangeToSheet(String rangeName, String coordinates);
 
     List<Coordinate> getRangeByName(String rangeName);
+
 }

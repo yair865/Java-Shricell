@@ -113,9 +113,11 @@ public class BodyController {
                 }
             }
         }
+
         gridPane.setGridLinesVisible(false);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
+
+/*        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);*/
     }
 
     public ScrollPane getBody() {
@@ -254,29 +256,32 @@ public class BodyController {
 
     public void highlightDependencies(String cellId) {
         clearHighlightedCells();
-        List<Coordinate> dependentCells = shticellController.getDependents(cellId);
-        if (dependentCells != null) {
-            for (Coordinate depCellId : dependentCells) {
-                Node cellView = findCellViewById(depCellId.toString());
-                if (cellView != null) {
-                    cellView.getStyleClass().add("depends-on-cell");
-                    highlightedCells.add(depCellId.toString());
+
+        shticellController.getDependents(cellId, dependentCells -> {
+            if (dependentCells != null) {
+                for (Coordinate depCellId : dependentCells) {
+                    Node cellView = findCellViewById(depCellId.toString());
+                    if (cellView != null) {
+                        cellView.getStyleClass().add("depends-on-cell");
+                        highlightedCells.add(depCellId.toString());
+                    }
                 }
             }
-        }
+        });
     }
 
     public void highlightDependents(String cellId) {
-        List<Coordinate> references = shticellController.getReferences(cellId);
-        if (references != null) {
-            for (Coordinate influenceCellId : references) {
-                Node cellView = findCellViewById(influenceCellId.toString());
-                if (cellView != null) {
-                    cellView.getStyleClass().add("influence-on-cell");
-                    highlightedCells.add(influenceCellId.toString());
+        shticellController.getReferences(cellId, references -> {
+            if (references != null) {
+                for (Coordinate influenceCellId : references) {
+                    Node cellView = findCellViewById(influenceCellId.toString());
+                    if (cellView != null) {
+                        cellView.getStyleClass().add("influence-on-cell");
+                        highlightedCells.add(influenceCellId.toString());
+                    }
                 }
             }
-        }
+        });
     }
 
     public void clearHighlightedCells() {

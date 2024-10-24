@@ -201,13 +201,7 @@ public class DashboardRightController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
 
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(SpreadsheetDTO.class, new SpreadsheetDTODeserializer())
-                            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                            .registerTypeAdapter(EffectiveValue.class, new EffectiveValueTypeAdapter())
-                            .create();
-
-                    SpreadsheetDTO spreadsheetDTO = gson.fromJson(responseBody, SpreadsheetDTO.class);
+                    SpreadsheetDTO spreadsheetDTO = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
 
                     Platform.runLater(() -> handleSpreadsheetData(spreadsheetDTO, isReader));
                 } else {

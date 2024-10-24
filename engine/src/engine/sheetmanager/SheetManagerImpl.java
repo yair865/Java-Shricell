@@ -4,7 +4,6 @@ import dto.converter.SheetConverter;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.generated.STLSheet;
-import engine.permissionmanager.PermissionType;
 import engine.sheetimpl.SpreadsheetImpl;
 import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.api.CellReadActions;
@@ -209,6 +208,12 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     @Override
     public Integer getCurrentVersion() {
         return versionManager.getCurrentVersionNumber();
+    }
+
+    @Override
+    public SpreadsheetDTO getSpreadsheetByVersion(int version){
+        validateSheetIsLoaded();
+        return versionManager.getVersion(version);
     }
 
     @Override

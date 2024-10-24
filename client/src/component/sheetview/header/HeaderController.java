@@ -157,8 +157,8 @@ public class HeaderController {
         this.engine = engine;
     }
 
-    public void setVersionsChoiceBox() {
-        //selectVersionChoiceBox.getItems().add(engine.getCurrentVersion());
+    public void setVersionsChoiceBox(int version) {
+        selectVersionChoiceBox.getItems().add(version);
     }
 
     public char getSelectedCellColumn() {

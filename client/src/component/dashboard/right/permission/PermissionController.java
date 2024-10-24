@@ -104,8 +104,7 @@ public class PermissionController {
                 if (response.code() != 200) {
                     Platform.runLater(() -> AlertUtil.showErrorAlert("Request Failed", responseBody));
                 } else {
-                    Stage stage = (Stage) requestButton.getScene().getWindow();
-                    stage.close();
+                    Platform.runLater(() -> cancelButtonListener(null));
                 }
             }
         });
