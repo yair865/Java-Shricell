@@ -1,6 +1,7 @@
 package util.requestservice;
 
 import com.google.gson.reflect.TypeToken;
+import consts.Constants;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
@@ -11,8 +12,8 @@ import util.HttpClientUtil;
 import util.alert.AlertUtil;
 
 import java.io.IOException;
+import java.lang.invoke.ConstantCallSite;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback(){
+        HttpClientUtil.runAsyncGet(url, new Callback(){
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "An error occurred while retrieving the spreadsheet version: " + e.getMessage()));
@@ -97,7 +98,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtil.showErrorAlert("Dependency Error", "Failed to send request: " + e.getMessage()));
@@ -127,7 +128,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtil.showErrorAlert("Reference Error", "Failed to send request: " + e.getMessage()));
@@ -152,6 +153,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
 
     @Override
     public void sort(String cellsRange, List<Character> selectedColumns, Consumer<SpreadsheetDTO> sortedSheetConsumer) {
+
         String columnsParam = selectedColumns.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
@@ -163,7 +165,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
@@ -195,7 +197,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
@@ -218,7 +220,6 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
         });
     }
 
-
     @Override
     public void filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, Consumer<SpreadsheetDTO> filteredSheetConsumer) {
         String valuesParam = String.join(",", selectedValues); // Assuming selectedValues is a List<String>
@@ -231,7 +232,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
@@ -255,13 +256,65 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
     }
 
     @Override
-    public void setSingleCellBackGroundColor(String cellId, String hexString) {
+    public void setSingleCellBackGroundColor(String cellId, String hexString, Runnable callback) {
+        String url = HttpUrl.get(Constants.BACKGROUND_COLOR)
+                .newBuilder()
+                .addQueryParameter("cellId", cellId)
+                .addQueryParameter("color", hexString)
+                .build()
+                .toString();
 
+        HttpClientUtil.runAsyncPut(url, hexString,new Callback() {
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtil.showErrorAlert("Error", "Failed to update cell background color: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Platform.runLater(callback);
+                } else {
+                    Platform.runLater(() ->
+                            AlertUtil.showErrorAlert("Error", "Failed to update background color: " + response.message())
+                    );
+                }
+            }
+        });
     }
 
     @Override
-    public void setSingleCellTextColor(String cellId, String hexString) {
+    public void setSingleCellTextColor(String cellId, String hexString, Runnable callback) {
+        String url = HttpUrl.get(TEXT_COLOR)
+                .newBuilder()
+                .addQueryParameter("cellId", cellId)
+                .addQueryParameter("color", hexString)
+                .build()
+                .toString();
 
+        HttpClientUtil.runAsyncPut(url, hexString,new Callback() {
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtil.showErrorAlert("Error", "Failed to update cell text color: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Platform.runLater(callback);
+                } else {
+                    Platform.runLater(() ->
+                            AlertUtil.showErrorAlert("Error", "Failed to update background color: " + response.message())
+                    );
+                }
+            }
+        });
     }
 
     @Override
@@ -275,7 +328,33 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
     }
 
     @Override
-    public List<Coordinate> getRangeByName(String rangeName) {
-        return List.of();
+    public void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess) {
+        String url = HttpUrl.get(GET_RANGE).newBuilder()
+                .addQueryParameter("rangeName", rangeName)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsyncGet(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Range Error", "Failed to send request: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+
+                    List<Coordinate> references = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<Coordinate>>() {}.getType());
+
+                    if (references != null) {
+                        Platform.runLater(() -> onSuccess.accept(references));
+                    }
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Range Error", "Failed to retrieve range cells: " + response.message()));
+                }
+            }
+        });
     }
+
 }

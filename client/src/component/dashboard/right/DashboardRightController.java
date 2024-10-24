@@ -1,19 +1,13 @@
 package component.dashboard.right;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import component.dashboard.DashboardController;
 import component.dashboard.right.permission.PermissionController;
 import component.main.MainController;
-import dto.deserialize.CoordinateTypeAdapter;
-import dto.deserialize.EffectiveValueTypeAdapter;
-import dto.deserialize.SpreadsheetDTODeserializer;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.permissionmanager.request.RequestStatus;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -117,7 +111,7 @@ public class DashboardRightController {
 
         String url = PERMISSIONS_LIST + "?sheetName=" + selectedSheetName; // Construct the URL
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtil.showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));
@@ -190,7 +184,7 @@ public class DashboardRightController {
 
         String url = VIEW_SHEET_URL + "?sheetName=" + selectedSheetName;
 
-        HttpClientUtil.runAsync(url, new Callback() {
+        HttpClientUtil.runAsyncGet(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtil.showErrorAlert("Request Error", "Failed to send request: " + e.getMessage()));

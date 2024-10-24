@@ -28,7 +28,7 @@ public class GetUniqueValuesServlet extends HttpServlet {
             return;
         }
 
-        char column = columnParam.charAt(0); // Convert to char
+        char column = columnParam.charAt(0);
 
         try {
             SheetManager sheetManager = engine.getCurrentSheet();

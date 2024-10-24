@@ -304,16 +304,16 @@ public class BodyController {
     public void highlightSelectedRange(String rangeName) {
         clearHighlightedCells();
 
-        List<Coordinate> selectedRange = shticellController.getRangeByName(rangeName);
+         shticellController.getRangeByName(rangeName , rangeCells -> {
+             for (Coordinate coordinate : rangeCells) {
+                 Node cellView = findCellViewById(coordinate.toString());
 
-        for (Coordinate coordinate : selectedRange) {
-            Node cellView = findCellViewById(coordinate.toString());
-
-            if (cellView != null) {
-                cellView.getStyleClass().add("selected-range-cell");
-                highlightedCells.add(coordinate.toString());
-            }
-        }
+                 if (cellView != null) {
+                     cellView.getStyleClass().add("selected-range-cell");
+                     highlightedCells.add(coordinate.toString());
+                 }
+             }
+        });
     }
 
     public void setSkin(String name) {

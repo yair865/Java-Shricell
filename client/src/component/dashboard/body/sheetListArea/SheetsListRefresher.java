@@ -28,7 +28,7 @@ public class SheetsListRefresher extends TimerTask {
     @Override
     public void run() {
 
-        HttpClientUtil.runAsync(SHEETS_LIST, new Callback() {
+        HttpClientUtil.runAsyncGet(SHEETS_LIST, new Callback() {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {

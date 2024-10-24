@@ -1,6 +1,9 @@
 package util;
 
+import javafx.application.Platform;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+import util.alert.AlertUtil;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -23,7 +26,7 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
-    public static void runAsync(String finalUrl, Callback callback) {
+    public static void runAsyncGet(String finalUrl, Callback callback) {
         Request request = new Request.Builder()
                 .url(finalUrl)
                 .build();
@@ -79,5 +82,15 @@ public class HttpClientUtil {
         }
 
         return responseHolder[0];
+    }
+
+    public static void runAsyncPut(String url, String data, Callback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .put(RequestBody.create(data, MediaType.parse("application/json"))) // Assuming data is in JSON format
+                .build();
+
+        Call call = HTTP_CLIENT.newCall(request);
+        call.enqueue(callback);
     }
 }

@@ -23,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import util.requestservice.ShitcellRequestServiceImpl;
@@ -239,24 +240,37 @@ public class ShticellController {
         this.mainController = mainController;
     }
 
-    public void setSingleCellBackGroundColor(String cellId, String hexString) {
-        engine.setSingleCellBackGroundColor(cellId, hexString);
+    public void setSingleCellBackGroundColor(String hexString) {
+        String cellId = getHeaderController().getCellId();
+
+        Runnable task = () -> {
+            bodyController.updateCellBackgroundColor(cellId, hexString);};
+
+        requestService.setSingleCellBackGroundColor(cellId, hexString, task);
     }
 
-    public void setSingleCellTextColor(String cellId, String hexString) {
-        engine.setSingleCellTextColor(cellId, hexString);
+    public void setSingleCellTextColor( String hexString) {
+        String cellId = getHeaderController().getCellId();
+
+        Runnable task = () ->{
+            bodyController.updateCellTextColor(cellId, hexString);
+        };
+
+        requestService.setSingleCellTextColor(cellId, hexString , task);
     }
 
     public void removeRangeFromSheet(String selectedRange) {
-        engine.removeRangeFromSheet(selectedRange);
+        engine.removeRangeFromSheet(selectedRange); //TODO
     }
 
     public void addRangeToSheet(String rangeName, String coordinates) {
-        engine.addRangeToSheet(rangeName, coordinates);
+        engine.addRangeToSheet(rangeName, coordinates); //TODO
     }
 
-    public List<Coordinate> getRangeByName(String rangeName) {
-        return engine.getRangeByName(rangeName);
+    public void getRangeByName(String rangeName, Consumer<List<Coordinate>> callback) {
+        requestService.getRangeByName(rangeName, rangeCells -> {
+            Platform.runLater(() -> callback.accept(rangeCells));
+        });
     }
 
     public BooleanProperty isReaderProperty() {

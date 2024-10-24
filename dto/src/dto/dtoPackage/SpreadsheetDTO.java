@@ -10,8 +10,4 @@ public record SpreadsheetDTO(String name, int version, Map<Coordinate , CellDTO>
         , int rows , int columns , int rowHeightUnits , int columnWidthUnits , Map<Coordinate,
         List<Coordinate>> dependenciesAdjacencyList, Map<Coordinate, List<Coordinate>> referencesAdjacencyList,
                              List<Coordinate> cellsThatHaveChanged, Map<String, Range> ranges) {
-
-    public int numberOfModifiedCells() {
-        return cellsThatHaveChanged.size();
-    }
 }

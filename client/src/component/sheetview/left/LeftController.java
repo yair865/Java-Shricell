@@ -152,9 +152,7 @@ public class LeftController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Color selectedColor = colorPicker.getValue();
-            String cellId = this.shticellController.getHeaderController().getCellId();
-            this.shticellController.setSingleCellTextColor(cellId, toHexString(selectedColor));
-            this.shticellController.getBodyController().updateCellTextColor(cellId, toHexString(selectedColor));
+            this.shticellController.setSingleCellTextColor(toHexString(selectedColor));
         }
     }
 
@@ -169,9 +167,7 @@ public class LeftController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Color selectedColor = colorPicker.getValue();
-            String cellId = this.shticellController.getHeaderController().getCellId();
-            this.shticellController.setSingleCellBackGroundColor(cellId, toHexString(selectedColor));
-            this.shticellController.getBodyController().updateCellBackgroundColor(cellId, toHexString(selectedColor));
+            this.shticellController.setSingleCellBackGroundColor( toHexString(selectedColor));
         }
     }
 
@@ -210,10 +206,8 @@ public class LeftController {
             return;
         }
 
-        this.shticellController.setSingleCellTextColor(cellId, null);
-        this.shticellController.getBodyController().updateCellTextColor(cellId, null);
-        this.shticellController.setSingleCellBackGroundColor(cellId, null);
-        this.shticellController.getBodyController().updateCellBackgroundColor(cellId, null);
+        this.shticellController.setSingleCellTextColor(null);
+        this.shticellController.setSingleCellBackGroundColor(null);
     }
 
     @FXML

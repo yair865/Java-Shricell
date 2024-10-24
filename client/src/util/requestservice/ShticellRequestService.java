@@ -23,14 +23,14 @@ public interface ShticellRequestService {
 
     void filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, Consumer<SpreadsheetDTO> filteredSheetConsumer);
 
-    void setSingleCellBackGroundColor(String cellId, String hexString);
+    void setSingleCellBackGroundColor(String cellId, String hexString, Runnable task);
 
-    void setSingleCellTextColor(String cellId, String hexString);
+    void setSingleCellTextColor(String cellId, String hexString, Runnable task);
 
     void removeRangeFromSheet(String selectedRange);
 
     void addRangeToSheet(String rangeName, String coordinates);
 
-    List<Coordinate> getRangeByName(String rangeName);
+    void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess);
 
 }
