@@ -318,14 +318,59 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
     }
 
     @Override
-    public void removeRangeFromSheet(String selectedRange) {
+    public void removeRangeFromSheet(String selectedRange, Consumer<String> callback) {
+        String url = HttpUrl.get(REMOVE_RANGE)
+                .newBuilder()
+                .addQueryParameter("range", selectedRange)
+                .build()
+                .toString();
 
+        HttpClientUtil.runAsyncDelete(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to remove range: " , e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    Platform.runLater(() -> callback.accept(result));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to remove range: " ,response.message()));
+                }
+            }
+        });
     }
 
     @Override
-    public void addRangeToSheet(String rangeName, String coordinates) {
+    public void addRangeToSheet(String rangeName, String coordinates, Consumer<String> callback) {
+        String url = HttpUrl.get(ADD_RANGE)
+                .newBuilder()
+                .addQueryParameter("rangeName", rangeName)
+                .addQueryParameter("coordinates", coordinates)
+                .build()
+                .toString();
 
+        HttpClientUtil.runAsyncPut(url, coordinates, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to add range: ", e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    Platform.runLater(() -> callback.accept(result));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to add range: ", response.message()));
+                }
+            }
+        });
     }
+
+
 
     @Override
     public void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess) {
@@ -356,5 +401,4 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             }
         });
     }
-
 }

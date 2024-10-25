@@ -11,13 +11,13 @@ import java.util.function.Consumer;
 
 public class HttpClientUtil {
 
-    private final static SimpleCookieManager simpleCookieManager = new SimpleCookieManager();
-    private final static OkHttpClient HTTP_CLIENT =
-            new OkHttpClient.Builder()
-                    .cookieJar(simpleCookieManager)
-                    .followRedirects(false)
-                    .build();
+    private static final SimpleCookieManager simpleCookieManager = new SimpleCookieManager();
+    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
+            .cookieJar(simpleCookieManager)
+            .followRedirects(false)
+            .build();
 
+    // Public HTTP methods
     public static void setCookieManagerLoggingFacility(Consumer<String> logConsumer) {
         simpleCookieManager.setLogData(logConsumer);
     }
@@ -26,24 +26,23 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
-    public static void runAsyncGet(String finalUrl, Callback callback) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .build();
-
-        Call call = HTTP_CLIENT.newCall(request);
-        call.enqueue(callback);
+    public static void runAsyncGet(String url, Callback callback) {
+        runAsyncRequest(buildRequest(url, "GET", null), callback);
     }
 
     public static void runAsyncPost(String url, RequestBody requestBody, Callback callback) {
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-
-        Call call = HTTP_CLIENT.newCall(request);
-        call.enqueue(callback);
+        runAsyncRequest(buildRequest(url, "POST", requestBody), callback);
     }
+
+    public static void runAsyncPut(String url, String data, Callback callback) {
+        RequestBody requestBody = RequestBody.create(data, MediaType.parse("application/json"));
+        runAsyncRequest(buildRequest(url, "PUT", requestBody), callback);
+    }
+
+    public static void runAsyncDelete(String url, Callback callback) {
+        runAsyncRequest(buildRequest(url, "DELETE", null), callback);
+    }
+
 
     public static void shutdown() {
         System.out.println("Shutting down HTTP CLIENT");
@@ -51,46 +50,21 @@ public class HttpClientUtil {
         HTTP_CLIENT.connectionPool().evictAll();
     }
 
-    public static Response runSyncPost(String url, RequestBody requestBody) {
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
 
-        Call call = HTTP_CLIENT.newCall(request);
-        final CountDownLatch latch = new CountDownLatch(1);
-        final Response[] responseHolder = new Response[1];
-
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                latch.countDown();
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                responseHolder[0] = response;
-                latch.countDown();
-            }
-        });
-
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    private static Request buildRequest(String url, String method, RequestBody requestBody) {
+        Request.Builder builder = new Request.Builder().url(url);
+        switch (method) {
+            case "POST" -> builder.post(requestBody);
+            case "PUT" -> builder.put(requestBody);
+            case "DELETE" -> builder.delete();
+            default -> builder.get();
         }
-
-        return responseHolder[0];
+        return builder.build();
     }
 
-    public static void runAsyncPut(String url, String data, Callback callback) {
-        Request request = new Request.Builder()
-                .url(url)
-                .put(RequestBody.create(data, MediaType.parse("application/json"))) // Assuming data is in JSON format
-                .build();
-
+    private static void runAsyncRequest(Request request, Callback callback) {
         Call call = HTTP_CLIENT.newCall(request);
         call.enqueue(callback);
     }
+
 }

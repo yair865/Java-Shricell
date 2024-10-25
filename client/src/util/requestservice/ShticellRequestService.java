@@ -27,9 +27,9 @@ public interface ShticellRequestService {
 
     void setSingleCellTextColor(String cellId, String hexString, Runnable task);
 
-    void removeRangeFromSheet(String selectedRange);
+    void removeRangeFromSheet(String selectedRange, Consumer<String> callback);
 
-    void addRangeToSheet(String rangeName, String coordinates);
+    void addRangeToSheet(String rangeName, String coordinates , Consumer<String> callback);
 
     void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess);
 

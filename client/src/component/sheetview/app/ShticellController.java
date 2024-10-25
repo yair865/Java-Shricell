@@ -230,7 +230,7 @@ public class ShticellController {
         return numberOfColumns;
     }
 
-    public void changeTheme(String name){
+    public void changeTheme(String name) {
         leftComponentController.setSkin(name);
         headerComponentController.setSkin(name);
         bodyController.setSkin(name);
@@ -244,27 +244,33 @@ public class ShticellController {
         String cellId = getHeaderController().getCellId();
 
         Runnable task = () -> {
-            bodyController.updateCellBackgroundColor(cellId, hexString);};
+            bodyController.updateCellBackgroundColor(cellId, hexString);
+        };
 
         requestService.setSingleCellBackGroundColor(cellId, hexString, task);
     }
 
-    public void setSingleCellTextColor( String hexString) {
+    public void setSingleCellTextColor(String hexString) {
         String cellId = getHeaderController().getCellId();
 
-        Runnable task = () ->{
+        Runnable task = () -> {
             bodyController.updateCellTextColor(cellId, hexString);
         };
 
-        requestService.setSingleCellTextColor(cellId, hexString , task);
+        requestService.setSingleCellTextColor(cellId, hexString, task);
     }
 
-    public void removeRangeFromSheet(String selectedRange) {
-        engine.removeRangeFromSheet(selectedRange); //TODO
+    public void removeRangeFromSheet(String selectedRange, Consumer<String> callback) {
+
+        requestService.removeRangeFromSheet(selectedRange, onSuccess -> {
+            Platform.runLater(() -> callback.accept(onSuccess));
+        });
     }
 
-    public void addRangeToSheet(String rangeName, String coordinates) {
-        engine.addRangeToSheet(rangeName, coordinates); //TODO
+    public void addRangeToSheet(String rangeName, String coordinates, Consumer<String> callback) {
+        requestService.addRangeToSheet(rangeName, coordinates, onSuccess -> {
+            Platform.runLater(() -> callback.accept(onSuccess));
+        });
     }
 
     public void getRangeByName(String rangeName, Consumer<List<Coordinate>> callback) {

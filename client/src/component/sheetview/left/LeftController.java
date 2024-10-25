@@ -238,26 +238,26 @@ public class LeftController {
     void deleteRangeListener(ActionEvent event) {
         String selectedRange = rangesList.getSelectionModel().getSelectedItem();
         if (selectedRange != null) {
-            try {
-                shticellController.removeRangeFromSheet(selectedRange);
-                rangesList.getItems().remove(selectedRange);
-                shticellController.getBodyController().clearHighlightedCells();
-                clearSelection();
-            } catch (IllegalStateException e) {
-                new ErrorDisplay("Range In Use", "").showError(e.getMessage()); // remove that
-            }
+            shticellController.removeRangeFromSheet(selectedRange, onSuccess -> {
+                try {
+                    rangesList.getItems().remove(selectedRange);
+                    shticellController.getBodyController().clearHighlightedCells();
+                    clearSelection();
+                } catch (IllegalStateException e) {
+                    new ErrorDisplay("Range In Use", "").showError(e.getMessage()); // remove that
+                }
+            });
+
         } else {
             new ErrorDisplay("No Selection", "Please select a range to delete.").showError("");
         }
     }
 
     public void pushRangeToSheet(String rangeName, String coordinates) {
-        try {
-            shticellController.addRangeToSheet(rangeName, coordinates);
+        shticellController.addRangeToSheet(rangeName, coordinates, onSuccess -> {
+
             this.addRangeToList(rangeName);
-        } catch (Exception e) {
-            showRangeExistsAlert(rangeName);
-        }
+        });
     }
 
     public void rangesListSelectionChanged() {

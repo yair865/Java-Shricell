@@ -48,6 +48,8 @@ public class Constants {
     public final static String BACKGROUND_COLOR = FULL_SERVER_PATH + "/backgroundColor";
     public final static String TEXT_COLOR = FULL_SERVER_PATH + "/textColor";
     public final static String GET_RANGE = FULL_SERVER_PATH + "/getRange";
+    public final static String REMOVE_RANGE = FULL_SERVER_PATH + "/removeRange";
+    public final static String ADD_RANGE = FULL_SERVER_PATH + "/addRange";
 
     public final static String SHEETS_LIST = FULL_SERVER_PATH + "/sheetList";
     public final static String PERMISSIONS_LIST = FULL_SERVER_PATH + "/permissionList";
