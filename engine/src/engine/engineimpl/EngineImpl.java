@@ -3,10 +3,12 @@ package engine.engineimpl;
 import dto.converter.SheetInfoConverter;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SheetInfoDTO;
+import dto.dtoPackage.SpreadsheetDTO;
 import engine.permissionmanager.PermissionManager;
 import engine.permissionmanager.PermissionManagerImpl;
 import engine.permissionmanager.PermissionType;
 import engine.permissionmanager.request.RequestStatus;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 import engine.sheetmanager.SheetManagerImpl;
 
@@ -104,5 +106,12 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public SheetManager getCurrentSheet() {
         return currentSheet;
+    }
+
+    @Override
+    public synchronized SpreadsheetDTO getExpectedValue(String username, Coordinate coordinate, String value) {
+
+        permissionManager.validateReaderPermission(username , currentSheet.getSheetTitle());
+        return currentSheet.getExpectedValue(coordinate, value);
     }
 }

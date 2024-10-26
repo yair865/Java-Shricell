@@ -12,7 +12,6 @@ import util.HttpClientUtil;
 import util.alert.AlertUtil;
 
 import java.io.IOException;
-import java.lang.invoke.ConstantCallSite;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.Consumer;
@@ -401,4 +400,36 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             }
         });
     }
+
+    @Override
+    public void getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, Consumer<SpreadsheetDTO> updateView) {
+        String jsonObject = String.format("{\"row\":%d,\"column\":%d,\"value\":\"%s\"}",
+                cellToCalculate.row(),
+                cellToCalculate.column(),
+                newValueOfCell);
+
+        RequestBody requestBody = RequestBody.create(
+                jsonObject,
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        HttpClientUtil.runAsyncPost(Constants.GET_EXPECTED_VALUE_PATH, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Expected Value Error", "Request failed: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    SpreadsheetDTO sheetDTO = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
+                    Platform.runLater(() -> updateView.accept(sheetDTO));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Expected Value Error", "Failed to retrieve expected value: " + response.message()));
+                }
+            }
+        });
+    }
+
 }

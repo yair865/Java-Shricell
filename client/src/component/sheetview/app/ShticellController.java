@@ -3,6 +3,7 @@ package component.sheetview.app;
 import component.main.MainController;
 import component.sheetview.body.BasicCellData;
 import component.sheetview.body.BodyController;
+import component.sheetview.body.CellViewController;
 import component.sheetview.header.HeaderController;
 import component.sheetview.left.LeftController;
 import component.sheetview.left.sort.SortController;
@@ -12,6 +13,7 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.utils.CellType;
 import engine.sheetmanager.SheetManager;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -26,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.alert.AlertUtil;
 import util.requestservice.ShitcellRequestServiceImpl;
 import util.requestservice.ShticellRequestService;
 
@@ -167,10 +170,12 @@ public class ShticellController {
                                 cellDTO.originalValue(),
                                 coord.toString(),
                                 cellDTO.cellStyle().getTextColor(),
-                                cellDTO.cellStyle().getBackgroundColor()
+                                cellDTO.cellStyle().getBackgroundColor(),
+                                cellDTO.containsFunction(),
+                                cellDTO.cellType()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString(), null, null);
+                        return new BasicCellData("", "", coord.toString(), null, null , false , CellType.EMPTY);
                     }
                 });
             }
@@ -281,5 +286,28 @@ public class ShticellController {
 
     public BooleanProperty isReaderProperty() {
         return isReader;
+    }
+
+    public BasicCellData getCurrentCell() {
+        String cellId = headerComponentController.getCellId();
+        if (cellId == null || cellId.isEmpty()) {
+            AlertUtil.showErrorAlert("Error", "No cell found");
+            return null;
+        }
+        return dataManager.getCellData(CoordinateFactory.createCoordinate(cellId));
+    }
+
+    public void displayExpectedValue(Number newValue) {
+        Coordinate currentCellCoordinate = CoordinateFactory.createCoordinate(headerComponentController.getCellId());
+        requestService.getExpectedValue(currentCellCoordinate, String.valueOf(newValue.doubleValue()), (expectedSheet) ->
+                bodyController.refreshExpectedValues(expectedSheet));
+    }
+
+    public void restoreCurrentValues() {
+        bodyController.restoreCurrentValues();
+    }
+
+    public BasicCellData getCell(Coordinate key) {
+        return dataManager.getCellData(key);
     }
 }

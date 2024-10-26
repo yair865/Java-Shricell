@@ -12,7 +12,9 @@ public class CellConverter {
                 cell.getOriginalValue(),
                 cell.getEffectiveValue(),
                 cell.getLastModifiedVersionVersion(),
-                cell.getCellStyle()
+                cell.getCellStyle(),
+                cell.getContainsFunction(),
+                cell.getEffectiveValue().getCellType()
         );
     }
 }

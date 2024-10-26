@@ -65,4 +65,6 @@ public interface SheetManager {
     int getSheetNumberOfColumns();
 
     List<CellDTO> getCellsThatHaveChanged();
+
+    SpreadsheetDTO getExpectedValue(Coordinate coordinate, String value);
 }

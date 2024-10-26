@@ -2,6 +2,8 @@ package component.sheetview.body;
 
 import component.sheetview.app.ShticellController;
 import component.sheetview.model.CellDataProvider;
+import dto.dtoPackage.CellDTO;
+import dto.dtoPackage.SpreadsheetDTO;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +17,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class BodyController {
 
@@ -28,8 +27,12 @@ public class BodyController {
 
     private ScrollPane scrollPane;
 
-
     private Set<String> highlightedCells = new HashSet<>();
+
+    private int numOfRows;
+
+    private int numOfColumns;
+
 
     public BodyController() {
         this.gridPane = new GridPane();
@@ -39,6 +42,9 @@ public class BodyController {
     }
 
     public void createGridPane(int rows, int columns, int rowHeightUnits, int columnWidthUnits, CellDataProvider cellDataProvider) {
+        numOfRows = rows;
+        numOfColumns = columns;
+
         gridPane.getChildren().clear();
         gridPane.getRowConstraints().clear();
         gridPane.getColumnConstraints().clear();
@@ -329,5 +335,23 @@ public class BodyController {
                 break;
         }
     }
+
+    public void refreshExpectedValues(SpreadsheetDTO modifiedCells) {
+        for(Map.Entry<Coordinate, CellDTO> entry : modifiedCells.cells().entrySet()) {
+            BasicCellData cell = shticellController.getCell(entry.getKey());
+            cell.setExpectedValue(modifiedCells.cells().get(entry.getKey()).effectiveValue());
+        }
+    }
+
+    public void restoreCurrentValues() {
+        for(int row = 1; row <= numOfRows; row++) {
+            for(int col = 1; col <= numOfColumns; col++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
+                BasicCellData cellController = shticellController.getCell(coordinate);
+                cellController.restoreEffectiveValue();
+            }
+        }
+    }
+
 }
 

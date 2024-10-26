@@ -33,4 +33,5 @@ public interface ShticellRequestService {
 
     void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess);
 
+    void getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, Consumer<SpreadsheetDTO> updateView);
 }

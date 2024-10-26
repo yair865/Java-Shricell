@@ -15,4 +15,6 @@ public interface PermissionManager {
     boolean isOwner(String sheetName, String userName);
     List<PermissionInfoDTO> getAllPermissionsForSheet(String sheetName);
     void createRequest(String userName, PermissionType permissionType, String sheetName);
+
+    void validateReaderPermission(String username, String sheetTitle);
 }

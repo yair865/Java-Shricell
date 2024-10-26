@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox fx:id="leftComponent" alignment="TOP_CENTER" prefHeight="829.0" prefWidth="209.0" spacing="12.0" styleClass="Vbox" stylesheets="@skin/leftDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.left.LeftController">
+
+<VBox fx:id="leftComponent" alignment="TOP_CENTER" prefHeight="829.0" prefWidth="209.0" spacing="12.0" styleClass="Vbox" stylesheets="@skin/leftDefault.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.left.LeftController">
    <children>
       <Label alignment="TOP_CENTER" text="Visual Commands" underline="true">
          <font>
@@ -16,12 +21,13 @@
       <Button fx:id="setTextColorBTN" mnemonicParsing="false" onAction="#updateTextColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Text Color" />
       <Button fx:id="setBackgroundColorBTN" mnemonicParsing="false" onAction="#updateBackGroundColorListener" prefHeight="25.0" prefWidth="155.0" text="Set Cell Background Color" />
       <Button fx:id="resetStyleBTN" mnemonicParsing="false" onAction="#resetStyleListener" prefHeight="25.0" prefWidth="155.0" text="Reset Cell Styling" />
+      <Separator prefWidth="200.0" />
       <Label alignment="TOP_CENTER" text="Alignment" underline="true">
          <font>
             <Font name="Aharoni Bold" size="16.0" />
          </font>
       </Label>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="9.0">
+      <HBox alignment="TOP_CENTER" prefHeight="29.0" prefWidth="197.0" spacing="9.0">
          <children>
             <Button fx:id="leftAlignment" mnemonicParsing="false" onAction="#leftAlignmentListener" prefHeight="25.0" prefWidth="65.0" text="Left">
                <HBox.margin>
@@ -35,6 +41,8 @@
             <Insets bottom="5.0" left="5.0" right="5.0" />
          </VBox.margin>
       </HBox>
+      <Separator prefWidth="200.0" />
+      <Button fx:id="whatIfButton" mnemonicParsing="false" onAction="#whatIfButtonListener" text="WHAT-IF" />
       <Separator prefWidth="200.0" />
       <Label alignment="TOP_CENTER" text="Filter &amp; Sort" underline="true">
          <font>
@@ -59,7 +67,7 @@
             <Button fx:id="deleteRangeButton" mnemonicParsing="false" onAction="#deleteRangeListener" prefHeight="25.0" prefWidth="95.0" text="Delete Range" />
          </children>
       </HBox>
-      <ListView fx:id="rangesList" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="209.0" VBox.vgrow="ALWAYS">
+      <ListView fx:id="rangesList" maxHeight="1.7976931348623157E308" prefHeight="279.0" prefWidth="197.0" VBox.vgrow="ALWAYS">
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>

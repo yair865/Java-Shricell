@@ -1,10 +1,14 @@
 package component.sheetview.left;
 
 import component.sheetview.app.ShticellController;
+import component.sheetview.body.BasicCellData;
 import component.sheetview.error.ErrorDisplay;
 import component.sheetview.left.filter.FilterController;
 import component.sheetview.left.range.RangeController;
 import component.sheetview.left.sort.SortController;
+import component.sheetview.left.whatif.WhatIfDialogController;
+import dto.dtoPackage.CellDTO;
+import engine.sheetimpl.utils.CellType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.alert.AlertUtil;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -47,6 +52,9 @@ public class LeftController {
     private Button sortButton;
 
     @FXML
+    private Button whatIfButton;
+
+    @FXML
     private Button leftAlignment;
 
     @FXML
@@ -65,6 +73,8 @@ public class LeftController {
     private ListView<String> rangesList;
 
     private ShticellController shticellController;
+
+
 
     @FXML
     private VBox leftComponent;
@@ -260,21 +270,6 @@ public class LeftController {
         });
     }
 
-    public void rangesListSelectionChanged() {
-        String selectedRange = rangesList.getSelectionModel().getSelectedItem();
-        if (selectedRange != null) {
-            shticellController.getBodyController().highlightSelectedRange(selectedRange);
-        }
-    }
-
-    private void showRangeExistsAlert(String rangeName) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Range Exists");
-        alert.setHeaderText("Duplicate Range Name");
-        alert.setContentText("A range with the name '" + rangeName + "' already exists. Please choose a different name.");
-        alert.showAndWait();
-    }
-
     @FXML
     void sortListener(ActionEvent event) {
         try {
@@ -308,6 +303,34 @@ public class LeftController {
             filterStage.showAndWait();
         } catch (IOException e) {
             new ErrorDisplay("Unable to open Filter Window", "An error occurred while opening the Filter Window:").showError(e.getMessage());
+        }
+    }
+
+    @FXML
+    void whatIfButtonListener(ActionEvent event) {
+        BasicCellData currentCell = shticellController.getCurrentCell();
+        if(currentCell.getCellType() != CellType.NUMERIC || currentCell.getContainsFunction()) {
+            AlertUtil.showErrorAlert("Error", "Invalid cell selection: The selected cell must contain a pure (non-function) numeric value for the 'What If' feature.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("whatif/whatIfDialog.fxml"));
+            Parent root = loader.load();
+
+            WhatIfDialogController dialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("What-If");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(whatIfButton.getScene().getWindow());
+            dialogController.setMainController(shticellController);
+            dialogController.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
         }
     }
 

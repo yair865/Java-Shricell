@@ -2,8 +2,10 @@ package engine.engineimpl;
 
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SheetInfoDTO;
+import dto.dtoPackage.SpreadsheetDTO;
 import engine.permissionmanager.PermissionType;
 import engine.permissionmanager.request.RequestStatus;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 
 import java.io.InputStream;
@@ -18,4 +20,5 @@ public interface Engine {
     List<PermissionInfoDTO> getPermissions(String sheetName);
     void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus);
     SheetManager getCurrentSheet();
+    SpreadsheetDTO getExpectedValue(String username, Coordinate coordinate, String value);
 }

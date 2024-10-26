@@ -2,6 +2,7 @@ package component.sheetview.body;
 
 import component.sheetview.app.ShticellController;
 import component.sheetview.header.HeaderController;
+import engine.sheetimpl.utils.CellType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -18,7 +19,7 @@ public class CellViewController extends BasicCellData {
     public Label effectiveValueLabel;
 
     public CellViewController() {
-        super("", "Cell Original Value", "Cell ID", null, null);
+        super("", "Cell Original Value", "Cell ID", null, null ,false , CellType.EMPTY);
     }
 
     public void setShticellController(ShticellController shticellController) {

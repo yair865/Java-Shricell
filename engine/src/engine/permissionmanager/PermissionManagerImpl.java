@@ -126,4 +126,20 @@ public class PermissionManagerImpl implements PermissionManager {
         Map<Integer, PermissionRequest> requestWithID = permissionRequests.computeIfAbsent(sheetName, k -> new HashMap<>());
         requestWithID.put(requestID++, request);
     }
+
+    @Override
+    public void validateReaderPermission(String username, String sheetName) {
+        validateSheet(sheetName);
+        PermissionType permission = sheetPermissions.get(sheetName).get(username);
+
+        if(permission == PermissionType.NONE) {
+            throw new IllegalArgumentException("User [" + username + "] does not have permission for sheet [" + sheetName + "].");
+        }
+    }
+
+    private void validateSheet(String sheetName) {
+        if (!sheetPermissions.containsKey(sheetName)) {
+            throw new IllegalArgumentException("Sheet " + sheetName + " does not exist");
+        }
+    }
 }

@@ -29,6 +29,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     public static final int MAX_COLUMNS = 20;
     public static final int LOAD_VERSION = 1;
 
+    private Spreadsheet whatIfCopy;
     private VersionManager versionManager;
     private String ownerName;
 
@@ -306,5 +307,16 @@ public class SheetManagerImpl implements SheetManager, Serializable{
                     return convertCellToDTO(cell); // Convert the cell to DTO
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SpreadsheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell) {
+        validateSheetIsLoaded();
+        if (whatIfCopy == null || whatIfCopy.getVersion() != versionManager.getCurrentVersionNumber()) {
+            whatIfCopy = versionManager.getCurrentVersion().copySheet();
+        }
+        whatIfCopy.setCell(cellToCalculate, newValueOfCell);
+
+        return SheetConverter.convertSheetToDTO(whatIfCopy);
     }
 }

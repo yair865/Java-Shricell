@@ -36,6 +36,11 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public boolean getContainsFunction() {
+        return false;
+    }
+
+    @Override
     public void setCellOriginalValue(String value) {
         throw new UnsupportedOperationException();
     }

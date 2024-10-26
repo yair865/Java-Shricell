@@ -1,9 +1,13 @@
 package utils;
 
+import com.google.gson.JsonObject;
 import engine.engineimpl.Engine;
 import engine.engineimpl.EngineImpl;
 import engine.usermanager.UserManager;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 public class ServletUtils {
 
@@ -32,5 +36,15 @@ public class ServletUtils {
             }
         }
         return (Engine) servletContext.getAttribute(ENGINE_ATTRIBUTE_NAME);
+    }
+
+    public static void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        JsonObject errorResponse = new JsonObject();
+        errorResponse.addProperty("error", errorMessage);
+
+        response.getWriter().write(errorResponse.toString());
     }
 }

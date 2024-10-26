@@ -3,6 +3,7 @@ package component.sheetview.model;
 import component.sheetview.body.BasicCellData;
 import dto.converter.CellDataProviderConverter;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.utils.CellType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class TemporaryCellDataProvider implements CellDataProvider {
     @Override
     public BasicCellData getCellData(Coordinate coordinate) {
         return temporaryCellDataMap.getOrDefault(coordinate, new BasicCellData("", "",
-                coordinate.toString(),null , null));
+                coordinate.toString(),null , null , false , CellType.EMPTY));
     }
 
     public Map<Coordinate, BasicCellData> getTemporaryCellDataMap() {

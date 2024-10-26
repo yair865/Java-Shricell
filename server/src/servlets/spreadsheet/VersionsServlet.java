@@ -46,7 +46,7 @@ public class VersionsServlet extends HttpServlet {
     }
 
     private SpreadsheetDTO getSpreadsheetByVersion(Engine engine, int version) {
-        // Retrieve the spreadsheet by version from the engine
+
         return engine.getCurrentSheet().getSpreadsheetByVersion(version);
     }
 }

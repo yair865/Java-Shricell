@@ -9,4 +9,6 @@ public interface CellReadActions {
     int getLastModifiedVersionVersion();
     Coordinate getCoordinate();
     CellStyle getCellStyle();
+
+    boolean getContainsFunction();
 }

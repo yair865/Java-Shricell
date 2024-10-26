@@ -1,10 +1,14 @@
 package component.sheetview.body;
 
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetimpl.utils.CellType;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.paint.Color;
+
+import static component.sheetview.model.DataManager.formatEffectiveValue;
 
 public class BasicCellData {
     protected  StringProperty effectiveValue;
@@ -13,14 +17,21 @@ public class BasicCellData {
     protected  IntegerProperty lastModifiedVersion;
     protected  StringProperty textColor;
     protected  StringProperty backgroundColor;
+    protected boolean containsFunction;
+    protected CellType cellType;
 
-    public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor) {
+    private String effectiveValueToRestore;
+    private boolean whatIfFlag = false;
+
+    public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor , boolean containsFunction , CellType cellType) {
         this.effectiveValue = new SimpleStringProperty(effectiveValue);
         this.originalValue = new SimpleStringProperty(originalValue);
         this.cellId = new SimpleStringProperty(cellId);
         this.lastModifiedVersion = new SimpleIntegerProperty(1);
         this.textColor = new SimpleStringProperty(textColor);
         this.backgroundColor = new SimpleStringProperty(backgroundColor);
+        this.containsFunction = containsFunction;
+        this.cellType = cellType;
     }
 
     public StringProperty effectiveValueProperty() {
@@ -78,5 +89,29 @@ public class BasicCellData {
                 (int) (color.getBlue() * 255));
 
         return new SimpleStringProperty(hexColor);
+    }
+
+    public CellType getCellType() {
+        return cellType;
+    }
+
+    public boolean getContainsFunction() {
+        return containsFunction;
+    }
+
+    public void setExpectedValue(EffectiveValue value) {
+        if(!whatIfFlag) {
+            effectiveValueToRestore = getEffectiveValue();
+            whatIfFlag = true;
+        }
+
+        setEffectiveValue(formatEffectiveValue(value));
+    }
+
+    public void restoreEffectiveValue() {
+        if (whatIfFlag) {
+            whatIfFlag = false;
+            setEffectiveValue(effectiveValueToRestore);
+        }
     }
 }
