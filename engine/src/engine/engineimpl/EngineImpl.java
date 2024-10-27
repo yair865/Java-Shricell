@@ -9,7 +9,6 @@ import engine.permissionmanager.PermissionManager;
 import engine.permissionmanager.PermissionManagerImpl;
 import engine.permissionmanager.PermissionType;
 import engine.permissionmanager.request.RequestStatus;
-import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 import engine.sheetmanager.SheetManagerImpl;
@@ -201,10 +200,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public synchronized int getLatestVersionNumber(String sheetName, String userName) {
+    public synchronized boolean HasNewVersion(String sheetName, String userName, int versionFromClient) {
         permissionManager.validateReaderPermission(userName,sheetName);
 
         SheetManager sheetManager = sheets.get(sheetName);
-        return sheetManager.getCurrentVersion();
+        return sheetManager.getCurrentVersion() > versionFromClient ;
     }
 }

@@ -22,18 +22,17 @@ public class HasNewVersionServlet extends HttpServlet {
         String currentVersionParam = request.getParameter("version");
         int currentVersion = currentVersionParam != null ? Integer.parseInt(currentVersionParam) : -1;
 
-        if (currentVersion != -1) {
-            int latestVersion = engine.getLatestVersionNumber(sheetName, userName);
-
-            boolean hasNewVersion = currentVersion < latestVersion;
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            response.getWriter().write("{\"hasNewVersion\": " + hasNewVersion + "}");
+        if (currentVersion == -1) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or invalid version");
+            return;
         }
-        else{
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid version");
-        }
+
+        boolean hasNewVersion = engine.HasNewVersion(sheetName, userName ,currentVersion);
+
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"hasNewVersion\": " + hasNewVersion + "}");
     }
+
 }

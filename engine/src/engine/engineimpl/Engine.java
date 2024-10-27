@@ -6,7 +6,6 @@ import dto.dtoPackage.SheetInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.permissionmanager.PermissionType;
 import engine.permissionmanager.request.RequestStatus;
-import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 
@@ -46,5 +45,6 @@ public interface Engine {
 
     SpreadsheetDTO getLatestVersion(String sheetName, String userName);
 
-    int getLatestVersionNumber(String sheetName, String userName);
+    boolean HasNewVersion(String sheetName, String userName, int currentVersion);
+
 }

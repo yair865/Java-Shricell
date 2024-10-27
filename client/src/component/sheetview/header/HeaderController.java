@@ -150,8 +150,9 @@ public class HeaderController implements Closeable {
     private void latestVersionButtonListener(ActionEvent event) {
         shticellController.getLatestVersion(response ->{
             Platform.runLater(() -> {
-                latestVersionButton.setVisible(false);
                 shticellController.updateUIWithSpreadsheetData(response);
+                latestVersionButton.setVisible(false);
+                shouldUpdateProperty().set(true);
             });
         });
     }
@@ -264,9 +265,6 @@ public class HeaderController implements Closeable {
         }
     }
 
-    public boolean isShouldUpdate() {
-        return shouldUpdate.get();
-    }
 
     public BooleanProperty shouldUpdateProperty() {
         return shouldUpdate;

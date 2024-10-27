@@ -1,5 +1,6 @@
 package component.sheetview.header;
 
+import com.google.gson.JsonObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import okhttp3.Call;
@@ -29,16 +30,13 @@ public class VersionRefresher extends TimerTask {
 
     @Override
     public void run() {
-
         if (shouldUpdate.get()) {
-
             String url = HttpUrl.get(HAS_NEW_VERSION).newBuilder()
-                    .addQueryParameter("version",currentVersion.toString())
+                    .addQueryParameter("version", String.valueOf(currentVersion.get()))
                     .build()
                     .toString();
 
             HttpClientUtil.runAsyncGet(url, new Callback() {
-
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     System.out.println(e.getMessage());
@@ -47,10 +45,10 @@ public class VersionRefresher extends TimerTask {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     String json = response.body().string();
-
                     System.out.println("Response JSON: " + json);
 
-                    boolean hasNewVersion = ADAPTED_GSON.fromJson(json, boolean.class);
+                    JsonObject jsonObject = ADAPTED_GSON.fromJson(json, JsonObject.class);
+                    boolean hasNewVersion = jsonObject.get("hasNewVersion").getAsBoolean();
 
                     if (hasNewVersion) {
                         updateUserForNewVersion.run();
@@ -58,8 +56,6 @@ public class VersionRefresher extends TimerTask {
                 }
             });
         }
-        else{
-            return;
-        }
     }
 }
+
