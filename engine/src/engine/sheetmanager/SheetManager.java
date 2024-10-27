@@ -2,10 +2,8 @@ package engine.sheetmanager;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.permissionmanager.PermissionType;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -23,7 +21,7 @@ public interface SheetManager {
 
     CellDTO getCellInfo(String cellId);
 
-    void updateCell(String cellId, String newValue);
+    List<CellDTO> updateCell(String cellId, String newValue);
 
     void exitProgram();
 

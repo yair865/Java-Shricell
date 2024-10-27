@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 
@@ -17,21 +18,22 @@ public class BackGroundColorServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
+
         Gson gson = new Gson();
 
         String cellId = request.getParameter("cellId");
         String color = request.getParameter("color");
 
-        // Validate parameters
+
         if (cellId == null || color == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
             return;
         }
 
-        // Update the background color of the cell
         try {
-            SheetManager sheetManager = engine.getCurrentSheet();
-            sheetManager.setSingleCellBackGroundColor(cellId, color);
+            engine.setSingleCellBackGroundColor(cellId, color,sheetName,userName);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(gson.toJson("Background color updated successfully"));
         } catch (Exception e) {

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +22,8 @@ public class UpdateCellServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
         Gson gson = new Gson();
 
         String cellId = request.getParameter("cellId");
@@ -32,10 +35,7 @@ public class UpdateCellServlet extends HttpServlet {
         }
 
         try {
-            SheetManager sheetManager = engine.getCurrentSheet();
-            sheetManager.updateCell(cellId, newValue);
-
-            List<CellDTO> cellsThatHaveChanged = sheetManager.getCellsThatHaveChanged();
+            List<CellDTO> cellsThatHaveChanged = engine.updateCell(cellId, newValue, userName, sheetName);
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

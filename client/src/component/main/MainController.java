@@ -93,15 +93,12 @@ public class MainController implements Closeable {
             fxmlLoader.setLocation(applicationPageUrl);
             applicationWindow = fxmlLoader.load();
 
-            // Get the controller and set mainController and spreadsheet data
             shticellController = fxmlLoader.getController();
             shticellController.setMainController(this);
-            shticellController.updateUIWithSpreadsheetData(spreadsheetDTO);
-
             shticellController.isReaderProperty().set(isReader);
-
-            // Set the application window
+            shticellController.updateUIWithSpreadsheetData(spreadsheetDTO);
             setMainPanelTo(applicationWindow);
+            shticellController.setActive();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,10 +107,12 @@ public class MainController implements Closeable {
     public void setPrimaryStage(Stage primaryStage) {
         this.stage = primaryStage;
     }
+
     @Override
     public void close() throws IOException {
-        if(dashboardController != null) {
+        if(dashboardController != null && shticellController != null) {
             dashboardController.close();
+            shticellController.close();
         }
     }
 

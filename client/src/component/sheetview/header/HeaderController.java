@@ -2,23 +2,30 @@ package component.sheetview.header;
 
 import component.sheetview.app.ShticellController;
 import engine.sheetmanager.SheetManager;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.File;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class HeaderController {
+import static consts.Constants.REFRESH_RATE;
+
+public class HeaderController implements Closeable {
 
     private ShticellController shticellController;
     private SheetManager engine;
+    private BooleanProperty shouldUpdate = new SimpleBooleanProperty(true);
 
     @FXML
     private TextField newValueTextField;
@@ -43,6 +50,12 @@ public class HeaderController {
 
     @FXML
     private GridPane headerComponent;
+
+    @FXML
+    private Button latestVersionButton;
+
+    private Timer timer;
+    private TimerTask versionRefresher;
 
     private static final String DEFAULT_NEW_VALUE_PROMPT = "Enter new value";
 
@@ -122,7 +135,7 @@ public class HeaderController {
     }
 
     @FXML
-    void updateValueButtonListener(ActionEvent event) {
+    private void updateValueButtonListener(ActionEvent event) {
         String newValue = newValueTextField.getText();
         String cellId = cellIdLabel.getText();
 
@@ -131,6 +144,16 @@ public class HeaderController {
             newValueTextField.clear();
             resetHeaderLabels();
         }
+    }
+
+    @FXML
+    private void latestVersionButtonListener(ActionEvent event) {
+        shticellController.getLatestVersion(response ->{
+            Platform.runLater(() -> {
+                latestVersionButton.setVisible(false);
+                shticellController.updateUIWithSpreadsheetData(response);
+            });
+        });
     }
 
     private void resetHeaderLabels() {
@@ -162,6 +185,20 @@ public class HeaderController {
         for (int i = 1; i <= version; i++) {
             selectVersionChoiceBox.getItems().add(i);
         }
+    }
+
+    public void setActive() {
+        startVersionRefresher();
+    }
+    public void startVersionRefresher() {
+        versionRefresher = new VersionRefresher(this::newVersionFound, shouldUpdateProperty(), shticellController.currentVersionProperty());
+        timer = new Timer();
+        timer.schedule(versionRefresher, REFRESH_RATE, REFRESH_RATE);
+    }
+
+    private void newVersionFound() {
+        latestVersionButton.setVisible(true);
+        shouldUpdateProperty().set(false);
     }
 
     public char getSelectedCellColumn() {
@@ -196,6 +233,14 @@ public class HeaderController {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        if (versionRefresher != null && timer != null) {
+            versionRefresher.cancel();
+            timer.cancel();
+        }
+    }
+
     public static class SkinItem {
         private final String name;
         private final Image image;
@@ -217,5 +262,17 @@ public class HeaderController {
         public String toString() {
             return name;
         }
+    }
+
+    public boolean isShouldUpdate() {
+        return shouldUpdate.get();
+    }
+
+    public BooleanProperty shouldUpdateProperty() {
+        return shouldUpdate;
+    }
+
+    public void setShouldUpdate(boolean shouldUpdate) {
+        this.shouldUpdate.set(shouldUpdate);
     }
 }

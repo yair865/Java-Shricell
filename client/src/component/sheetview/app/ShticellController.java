@@ -17,7 +17,9 @@ import engine.sheetimpl.utils.CellType;
 import engine.sheetmanager.SheetManager;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -32,6 +34,8 @@ import util.alert.AlertUtil;
 import util.requestservice.ShitcellRequestServiceImpl;
 import util.requestservice.ShticellRequestService;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,12 +44,12 @@ import java.util.stream.Collectors;
 import static component.sheetview.model.DataManager.formatEffectiveValue;
 
 
-public class ShticellController {
+public class ShticellController implements Closeable {
 
     int numberOfColumns;
     int numberOfRows;
-    private int currentVersion = 1; // Version counter
 
+    private IntegerProperty currentVersion = new SimpleIntegerProperty(1);
 
     private ShticellRequestService requestService;
 
@@ -106,15 +110,15 @@ public class ShticellController {
                 spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
         applicationWindow.setCenter(bodyController.getBody());
         leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
-        headerComponentController.setVersionsChoiceBox(spreadSheet.version()); // Update UI with current version
+        headerComponentController.setVersionsChoiceBox(spreadSheet.version());
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
             requestService.updateCell(cellId, newValue, cellsThatHaveChanged -> {
                 dataManager.updateCellDataMap(cellsThatHaveChanged);
-                currentVersion++; // Increment the version each time a cell is updated
-                headerComponentController.setVersionsChoiceBox(currentVersion); // Update UI with new version
+                currentVersion.set(currentVersion.get() + 1);
+                headerComponentController.setVersionsChoiceBox(currentVersion.get());
                 headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
             });
         } catch (Exception e) {
@@ -309,5 +313,35 @@ public class ShticellController {
 
     public BasicCellData getCell(Coordinate key) {
         return dataManager.getCellData(key);
+    }
+
+
+    public void getLatestVersion(Consumer<SpreadsheetDTO> callback) {
+        requestService.getLatestVersion( latestVersion -> {
+            Platform.runLater(() -> {
+                callback.accept(latestVersion);
+            });
+        });
+    }
+
+    public int getCurrentVersion() {
+        return currentVersion.get();
+    }
+
+    public IntegerProperty currentVersionProperty() {
+        return currentVersion;
+    }
+
+    public void setCurrentVersion(int currentVersion) {
+        this.currentVersion.set(currentVersion);
+    }
+
+    public void setActive() {
+        headerComponentController.setActive();
+    }
+
+    @Override
+    public void close() throws IOException {
+        headerComponentController.close();
     }
 }

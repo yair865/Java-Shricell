@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,7 +20,10 @@ public class VersionsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
         Gson gson = new Gson();
+
         String versionParam = request.getParameter("version");
         if (versionParam == null || versionParam.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -28,7 +32,7 @@ public class VersionsServlet extends HttpServlet {
 
         try {
             int version = Integer.parseInt(versionParam);
-            SpreadsheetDTO spreadsheetDTO = getSpreadsheetByVersion(engine, version);
+            SpreadsheetDTO spreadsheetDTO = getSpreadsheetByVersion(engine, version , sheetName , userName);
             if (spreadsheetDTO != null) {
                 response.setContentType("application/json");
                 PrintWriter out = response.getWriter();
@@ -45,8 +49,8 @@ public class VersionsServlet extends HttpServlet {
         }
     }
 
-    private SpreadsheetDTO getSpreadsheetByVersion(Engine engine, int version) {
+    private SpreadsheetDTO getSpreadsheetByVersion(Engine engine, int version , String sheetName ,String userName) {
 
-        return engine.getCurrentSheet().getSpreadsheetByVersion(version);
+        return engine.getSpreadsheetByVersion(version ,userName , sheetName);
     }
 }

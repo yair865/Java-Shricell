@@ -145,7 +145,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     }
 
     @Override
-    public void updateCell(String cellId, String newValue) {
+    public List<CellDTO> updateCell(String cellId, String newValue) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
         Spreadsheet currentSpreadsheet = versionManager.getCurrentVersion().copySheet();
@@ -161,6 +161,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
             versionManager.removeVersion(versionManager.getCurrentVersionNumber());
             throw e;
         }
+        return this.getCellsThatHaveChanged();
     }
 
     private void validateSheetIsLoaded() {

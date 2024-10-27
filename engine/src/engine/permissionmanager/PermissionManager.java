@@ -17,4 +17,6 @@ public interface PermissionManager {
     void createRequest(String userName, PermissionType permissionType, String sheetName);
 
     void validateReaderPermission(String username, String sheetTitle);
+
+    void validateWriterPermission(String userName, String sheetName);
 }

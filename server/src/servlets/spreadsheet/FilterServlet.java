@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +22,8 @@ public class FilterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
         Gson gson = new Gson();
 
         String selectedColumnParam = request.getParameter("selectedColumn");
@@ -36,8 +39,8 @@ public class FilterServlet extends HttpServlet {
         List<String> selectedValues = Arrays.asList(selectedValuesParam.split(","));
 
         try {
-            SheetManager sheetManager = engine.getCurrentSheet();
-            SpreadsheetDTO filteredSheet = sheetManager.filterSheet(selectedColumn, filterArea, selectedValues);
+
+            SpreadsheetDTO filteredSheet = engine.filterSheet(selectedColumn, filterArea, selectedValues , sheetName, userName);
 
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();

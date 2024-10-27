@@ -7,7 +7,6 @@ import component.sheetview.left.filter.FilterController;
 import component.sheetview.left.range.RangeController;
 import component.sheetview.left.sort.SortController;
 import component.sheetview.left.whatif.WhatIfDialogController;
-import dto.dtoPackage.CellDTO;
 import engine.sheetimpl.utils.CellType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,9 +22,7 @@ import javafx.stage.Stage;
 import util.alert.AlertUtil;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class LeftController {
@@ -73,8 +70,6 @@ public class LeftController {
     private ListView<String> rangesList;
 
     private ShticellController shticellController;
-
-
 
     @FXML
     private VBox leftComponent;

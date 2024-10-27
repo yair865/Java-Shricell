@@ -1,46 +1,42 @@
-package servlets.dashboard;
+package servlets.spreadsheet;
 
 import com.google.gson.Gson;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
+import engine.sheetimpl.api.Spreadsheet;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 
-@WebServlet(name = "View Sheet" , urlPatterns = "/view")
-public class ViewSheetServlet extends HttpServlet {
+@WebServlet(name = "Get Latest Version Servlet" , urlPatterns = "/latestVersion")
+public class GetLatestVersionServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+    protected void doGet(HttpServletRequest request , HttpServletResponse response) throws IOException{
         Engine engine = ServletUtils.getEngine(getServletContext());
         Gson gson = new Gson();
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
 
-        String sheetName = request.getParameter("sheetName");
+        try {
+            SpreadsheetDTO spreadsheet = engine.getLatestVersion(sheetName, userName);
 
-        if (sheetName == null || sheetName.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Sheet name is required");
-            return;
-        }
-
-        try{
-            SpreadsheetDTO spreadsheetDTO = engine.getSheet(sheetName).getSpreadsheetState();
-
-            if (spreadsheetDTO == null) {
+            if (spreadsheet == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Spreadsheet not found");
                 return;
             }
 
-            request.getSession(true).setAttribute("sheetName", sheetName);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            String jsonResponse = gson.toJson(spreadsheetDTO);
+            String jsonResponse = gson.toJson(spreadsheet);
+
             response.getWriter().write(jsonResponse);
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while processing the request");
         }

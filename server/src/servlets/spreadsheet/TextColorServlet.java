@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 
@@ -16,6 +17,8 @@ public class TextColorServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
         Gson gson = new Gson();
 
         String cellId = request.getParameter("cellId");
@@ -27,7 +30,7 @@ public class TextColorServlet extends HttpServlet {
         }
 
         try {
-            engine.getCurrentSheet().setSingleCellTextColor(cellId, color);
+            engine.setSingleCellTextColor(cellId, color , userName, sheetName);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(gson.toJson("Text color updated successfully"));
         } catch (Exception e) {

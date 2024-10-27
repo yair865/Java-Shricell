@@ -26,6 +26,7 @@ public class GetExpectedValueServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         String username = SessionUtils.getUsername(req);
+        String sheetName = SessionUtils.getSheetName(req);
 
         Engine engine = ServletUtils.getEngine(getServletContext());
         Gson gson = new Gson();
@@ -37,7 +38,7 @@ public class GetExpectedValueServlet extends HttpServlet {
             String value = jsonRequest.get("value").getAsString();
 
             Coordinate coordinate = CoordinateFactory.createCoordinate(row, column);
-            SpreadsheetDTO sheetDTO = engine.getExpectedValue(username,coordinate, value);
+            SpreadsheetDTO sheetDTO = engine.getExpectedValue(username,coordinate, value,sheetName);
 
             String jsonSheet = gson.toJson(sheetDTO);
             out.println(jsonSheet);

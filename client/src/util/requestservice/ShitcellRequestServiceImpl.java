@@ -432,4 +432,31 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
         });
     }
 
+    @Override
+    public void getLatestVersion(Consumer<SpreadsheetDTO> versionConsumer) {
+        String url = HttpUrl.get(GET_LATEST_VERSION).newBuilder()
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsyncGet(url, new Callback(){
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "An error occurred while retrieving the spreadsheet version: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    String jsonResponse = response.body().string();
+
+                    SpreadsheetDTO spreadsheetDTO = ADAPTED_GSON.fromJson(jsonResponse, SpreadsheetDTO.class);
+
+                    Platform.runLater(() -> versionConsumer.accept(spreadsheetDTO));
+                } else {
+                    Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "Failed to retrieve spreadsheet: " + response.message()));
+                }
+            }
+        });
+    }
 }

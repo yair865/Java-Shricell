@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 
@@ -17,6 +18,9 @@ public class RemoveRangeServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
+
         Gson gson = new Gson();
 
         String selectedRange = request.getParameter("range");
@@ -27,8 +31,7 @@ public class RemoveRangeServlet extends HttpServlet {
         }
 
         try {
-            SheetManager sheetManager = engine.getCurrentSheet();
-            sheetManager.removeRangeFromSheet(selectedRange);
+            engine.removeRangeFromSheet(selectedRange , userName , sheetName);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(gson.toJson("Range removed successfully"));
         } catch (Exception e) {

@@ -29,7 +29,6 @@ public class DashboardController implements Closeable {
     @FXML private GridPane body;
     @FXML private DashboardRightController rightController;
     @FXML private HBox right;
-    @FXML private Button logOutButton;
     private MainController mainController;
 
     private StringProperty currentSheetName = new SimpleStringProperty();
@@ -55,10 +54,6 @@ public class DashboardController implements Closeable {
         headerController.setMainController(this.mainController);
         //bodyController.setMainController(this.mainController);
         rightController.setMainController(this.mainController);
-    }
-
-    @FXML public void logOutListener(ActionEvent event) {
-        mainController.switchToLogin();
     }
 
     public void setActive(){

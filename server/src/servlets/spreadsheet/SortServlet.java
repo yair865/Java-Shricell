@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,6 +23,8 @@ public class SortServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
+        String sheetName = SessionUtils.getSheetName(request);
+        String userName = SessionUtils.getUsername(request);
         Gson gson = new Gson();
 
         String cellsRange = request.getParameter("cellsRange");
@@ -42,8 +45,7 @@ public class SortServlet extends HttpServlet {
         }
 
         try {
-            SheetManager sheetManager = engine.getCurrentSheet();
-            SpreadsheetDTO sortedSheet = sheetManager.sort(cellsRange, selectedColumns);
+            SpreadsheetDTO sortedSheet = engine.sort(cellsRange, selectedColumns, userName, sheetName);
 
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();

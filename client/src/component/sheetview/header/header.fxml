@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="199.0" minWidth="1050.0" prefHeight="214.0" prefWidth="1130.0" stylesheets="@skin/headerDefault.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.header.HeaderController">
+<GridPane fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="199.0" minWidth="1050.0" prefHeight="214.0" prefWidth="1130.0" stylesheets="@skin/headerDefault.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.header.HeaderController">
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
    </columnConstraints>
@@ -28,7 +28,7 @@
             <Insets />
          </GridPane.margin>
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" prefWidth="10000.0" styleClass="header-label" text="Shticell" underline="true" />
+            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" prefHeight="44.0" prefWidth="588.0" styleClass="header-label" text="Shticell" underline="true" />
             <VBox alignment="CENTER" minWidth="150.0" spacing="10.0">
                <children>
                   <Label text="Change skin" underline="true" />
@@ -37,30 +37,32 @@
             </VBox>
          </children>
       </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="95.0" prefWidth="1030.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+      <HBox alignment="CENTER_LEFT" prefHeight="151.0" prefWidth="1108.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
          <children>
             <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" text="Selected Cell Id" textAlignment="CENTER" />
             <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
             <TextField fx:id="newValueTextField" prefHeight="25.0" prefWidth="181.0" promptText="Enter new value" HBox.hgrow="ALWAYS" />
             <Button fx:id="updateNewValueBTN" mnemonicParsing="false" onAction="#updateValueButtonListener" prefHeight="25.0" prefWidth="124.0" text="Update value" />
             <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
-            <StackPane prefHeight="25.0" prefWidth="152.0">
+            <VBox spacing="20.0">
                <children>
-                  <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="151.0">
-                     <StackPane.margin>
-                        <Insets />
-                     </StackPane.margin>
-                  </ChoiceBox>
-                  <Label text="Select Version">
-                     <StackPane.margin>
-                        <Insets />
-                     </StackPane.margin>
-                  </Label>
+                  <StackPane prefWidth="150.0">
+                     <children>
+                        <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="150.0">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </ChoiceBox>
+                        <Label text="Select Version">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="25.0" prefWidth="150.0" text="Latest Version" visible="false" />
                </children>
-               <padding>
-                  <Insets right="10.0" />
-               </padding>
-            </StackPane>
+            </VBox>
          </children>
       </HBox>
    </children>

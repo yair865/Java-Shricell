@@ -137,6 +137,15 @@ public class PermissionManagerImpl implements PermissionManager {
         }
     }
 
+    @Override
+    public void validateWriterPermission(String userName, String sheetName) {
+        validateSheet(sheetName);
+        PermissionType permission = sheetPermissions.get(sheetName).get(userName);
+        if(permission == PermissionType.NONE || permission == PermissionType.READER ) {
+            throw new IllegalArgumentException("User [" + userName + "] does not have write permission for sheet [" + sheetName + "].");
+        }
+    }
+
     private void validateSheet(String sheetName) {
         if (!sheetPermissions.containsKey(sheetName)) {
             throw new IllegalArgumentException("Sheet " + sheetName + " does not exist");
