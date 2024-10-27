@@ -158,7 +158,10 @@ public class HeaderController {
     }
 
     public void setVersionsChoiceBox(int version) {
-        selectVersionChoiceBox.getItems().add(version);
+        selectVersionChoiceBox.getItems().clear(); 
+        for (int i = 1; i <= version; i++) {
+            selectVersionChoiceBox.getItems().add(i);
+        }
     }
 
     public char getSelectedCellColumn() {

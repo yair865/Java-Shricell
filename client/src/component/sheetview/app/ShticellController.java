@@ -106,7 +106,7 @@ public class ShticellController {
                 spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
         applicationWindow.setCenter(bodyController.getBody());
         leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
-        headerComponentController.setVersionsChoiceBox(currentVersion); // Update UI with current version
+        headerComponentController.setVersionsChoiceBox(spreadSheet.version()); // Update UI with current version
     }
 
     public void updateNewEffectiveValue(String cellId, String newValue) {

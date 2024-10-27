@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +26,7 @@ public class UpdateCellServlet extends HttpServlet {
         String cellId = request.getParameter("cellId");
         String newValue = request.getParameter("newValue");
 
-        if (cellId == null || newValue == null || cellId.isEmpty() || newValue.isEmpty()) {
+        if (cellId == null || cellId.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or invalid parameters.");
             return;
         }
