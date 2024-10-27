@@ -45,6 +45,6 @@ public interface Engine {
 
     SpreadsheetDTO getLatestVersion(String sheetName, String userName);
 
-    boolean HasNewVersion(String sheetName, String userName, int currentVersion);
+    int getLatestVersionNumber(String sheetName, String userName);
 
 }

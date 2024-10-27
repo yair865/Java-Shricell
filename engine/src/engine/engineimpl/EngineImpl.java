@@ -200,10 +200,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public synchronized boolean HasNewVersion(String sheetName, String userName, int versionFromClient) {
+    public synchronized int getLatestVersionNumber(String sheetName, String userName) {
         permissionManager.validateReaderPermission(userName,sheetName);
 
         SheetManager sheetManager = sheets.get(sheetName);
-        return sheetManager.getCurrentVersion() > versionFromClient ;
+        return sheetManager.getCurrentVersion();
     }
 }

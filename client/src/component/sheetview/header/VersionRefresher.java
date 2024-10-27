@@ -1,6 +1,5 @@
 package component.sheetview.header;
 
-import com.google.gson.JsonObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import okhttp3.Call;
@@ -13,7 +12,6 @@ import util.HttpClientUtil;
 import java.io.IOException;
 import java.util.TimerTask;
 
-import static consts.Constants.ADAPTED_GSON;
 import static consts.Constants.HAS_NEW_VERSION;
 
 public class VersionRefresher extends TimerTask {
@@ -45,12 +43,12 @@ public class VersionRefresher extends TimerTask {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     String json = response.body().string();
-                    System.out.println("Response JSON: " + json);
+                    System.out.println("Response: " + json);
 
-                    JsonObject jsonObject = ADAPTED_GSON.fromJson(json, JsonObject.class);
-                    boolean hasNewVersion = jsonObject.get("hasNewVersion").getAsBoolean();
+                    int latestVersion = Integer.parseInt(json);
 
-                    if (hasNewVersion) {
+                    if (latestVersion > currentVersion.get()) {
+                        currentVersion.set(latestVersion);
                         updateUserForNewVersion.run();
                     }
                 }
@@ -58,4 +56,3 @@ public class VersionRefresher extends TimerTask {
         }
     }
 }
-
