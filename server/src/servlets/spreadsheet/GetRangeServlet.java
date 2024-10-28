@@ -30,7 +30,6 @@ public class GetRangeServlet extends HttpServlet {
             return;
         }
 
-
         List<Coordinate> rangeCells = engine.getRangeByName(range , sheetName , userName);
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();

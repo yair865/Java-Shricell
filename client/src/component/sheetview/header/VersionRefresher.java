@@ -48,7 +48,6 @@ public class VersionRefresher extends TimerTask {
                     int latestVersion = Integer.parseInt(json);
 
                     if (latestVersion > currentVersion.get()) {
-                        currentVersion.set(latestVersion);
                         updateUserForNewVersion.run();
                     }
                 }

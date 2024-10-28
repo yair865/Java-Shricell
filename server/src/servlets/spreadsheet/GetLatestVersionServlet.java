@@ -38,7 +38,7 @@ public class GetLatestVersionServlet extends HttpServlet {
             response.getWriter().write(jsonResponse);
         }catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while processing the request");
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

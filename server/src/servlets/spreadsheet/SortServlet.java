@@ -52,7 +52,7 @@ public class SortServlet extends HttpServlet {
             out.print(gson.toJson(sortedSheet));
             out.flush();
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error sorting the sheet: " + e.getMessage());
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

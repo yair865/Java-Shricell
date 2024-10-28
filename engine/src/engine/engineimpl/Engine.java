@@ -21,9 +21,9 @@ public interface Engine {
     void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus);
 
     SpreadsheetDTO getExpectedValue(String username, Coordinate coordinate, String value, String sheetName);
-    void addRangeToSheet(String rangeName, String coordinates, String sheetName , String userName);
+    void addRangeToSheet(String rangeName, String coordinates, String sheetName , String userName, int clientVersion);
 
-    void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName);
+    void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName, int clientVersion);
 
     SpreadsheetDTO getSpreadsheetState(String cellId, String sheetName, String userName);
 
@@ -33,13 +33,13 @@ public interface Engine {
 
     List<String> getUniqueValuesFromColumn(char column, String userName, String sheetName);
 
-    void removeRangeFromSheet(String selectedRange, String userName, String sheetName);
+    void removeRangeFromSheet(String selectedRange, String userName, String sheetName, int clientVersion);
 
     SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns, String userName, String sheetName);
 
-    void setSingleCellTextColor(String cellId, String color, String userName, String sheetName);
+    void setSingleCellTextColor(String cellId, String color, String userName, String sheetName, int clientVersion);
 
-    List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName);
+    List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName, int clientVersion);
 
     SpreadsheetDTO getSpreadsheetByVersion(int version, String userName, String sheetName);
 

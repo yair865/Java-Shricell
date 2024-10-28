@@ -5,6 +5,7 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SheetInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
+import engine.exception.OutdatedVersionException;
 import engine.permissionmanager.PermissionManager;
 import engine.permissionmanager.PermissionManagerImpl;
 import engine.permissionmanager.PermissionType;
@@ -108,16 +109,18 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void addRangeToSheet(String rangeName, String coordinates, String sheetName ,String username) {
+    public void addRangeToSheet(String rangeName, String coordinates, String sheetName ,String username, int clientVersion) {
         permissionManager.validateWriterPermission(username , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
         sheetManager.addRangeToSheet(rangeName, coordinates);
     }
 
     @Override
-    public void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName) {
+    public void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName,int clientVersion) {
         permissionManager.validateWriterPermission(userName , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
         sheetManager.setSingleCellBackGroundColor(cellId, color);
     }
 
@@ -154,9 +157,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void removeRangeFromSheet(String selectedRange, String userName, String sheetName) {
+    public void removeRangeFromSheet(String selectedRange, String userName, String sheetName, int clientVersion) {
         permissionManager.validateWriterPermission(userName , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
         sheetManager.removeRangeFromSheet(selectedRange);
     }
 
@@ -169,17 +173,18 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void setSingleCellTextColor(String cellId, String color, String userName, String sheetName) {
+    public void setSingleCellTextColor(String cellId, String color, String userName, String sheetName,int clientVersion) {
         permissionManager.validateWriterPermission(userName , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
         sheetManager.setSingleCellTextColor(cellId, color);
     }
 
     @Override
-    public List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName) {
+    public List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName, int clientVersion) {
         permissionManager.validateWriterPermission(userName , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
-
+        validateUpdatedSheet(sheetManager,clientVersion);
         return sheetManager.updateCell(cellId, newValue);
     }
 
@@ -205,5 +210,13 @@ public class EngineImpl implements Engine, Serializable {
 
         SheetManager sheetManager = sheets.get(sheetName);
         return sheetManager.getCurrentVersion();
+    }
+
+    public void validateUpdatedSheet(SheetManager sheetManager, int clientVersion) throws OutdatedVersionException {
+        int latestVersion = sheetManager.getCurrentVersion();
+
+        if (clientVersion < latestVersion) {
+            throw new OutdatedVersionException("Client version is outdated. Please refresh to the latest version.");
+        }
     }
 }

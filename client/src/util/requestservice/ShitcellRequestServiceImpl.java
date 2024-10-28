@@ -1,5 +1,7 @@
 package util.requestservice;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import consts.Constants;
 import dto.dtoPackage.CellDTO;
@@ -22,42 +24,36 @@ import static consts.Constants.*;
 public class ShitcellRequestServiceImpl implements ShticellRequestService{
 
     @Override
-    public void updateCell(String cellId, String newValue, Consumer<List<CellDTO>> onSuccess) {
+    public void updateCell(String cellId, String newValue, int clientVersion, Consumer<List<CellDTO>> onSuccess) {
         String url = UPDATE_CELL;
 
-        // Create the request body
         RequestBody requestBody = new FormBody.Builder()
                 .add("cellId", cellId)
                 .add("newValue", newValue)
+                .add("clientVersion", String.valueOf(clientVersion))
                 .build();
 
-        Response response = null;
-        try {
-            HttpClientUtil.runAsyncPost(url, requestBody, new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    throw new RuntimeException("Request failed: " + e.getMessage(), e);
+        HttpClientUtil.runAsyncPost(url, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                throw new RuntimeException("Request failed: " + e.getMessage(), e);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    String jsonResponse = response.body().string();
+
+                    Type listType = new TypeToken<List<CellDTO>>() {}.getType();
+                    List<CellDTO> cellsThatHaveChanged = ADAPTED_GSON.fromJson(jsonResponse, listType);
+
+                    Platform.runLater(() -> onSuccess.accept(cellsThatHaveChanged));
+                } else {
+                    handleErrorResponse(response, "Failed to update the cell.");
                 }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                        String jsonResponse = response.body().string();
-
-                        Type listType = new TypeToken<List<CellDTO>>() {}.getType();
-                        List<CellDTO> cellsThatHaveChanged = ADAPTED_GSON.fromJson(jsonResponse, listType);
-
-                        // Execute the onSuccess consumer in the JavaFX application thread
-                        Platform.runLater(() -> onSuccess.accept(cellsThatHaveChanged));
-                    } else {
-                        throw new RuntimeException("Update failed: " + response.message());
-                    }
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException("Request failed: " + e.getMessage(), e);
-        }
+            }
+        });
     }
 
     @Override
@@ -84,7 +80,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
 
                     Platform.runLater(() -> onSuccess.accept(spreadsheetDTO));
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "Failed to retrieve spreadsheet: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve spreadsheet.");
                 }
             }
         });
@@ -107,14 +103,13 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-
                     List<Coordinate> dependents = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<Coordinate>>() {}.getType());
 
                     if (dependents != null) {
                         Platform.runLater(() -> onSuccess.accept(dependents));
                     }
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Dependency Error", "Failed to retrieve dependents: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve dependencies");
                 }
             }
         });
@@ -137,14 +132,13 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-
                     List<Coordinate> references = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<Coordinate>>() {}.getType());
 
                     if (references != null) {
                         Platform.runLater(() -> onSuccess.accept(references));
                     }
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Reference Error", "Failed to retrieve references: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve references");
                 }
             }
         });
@@ -179,9 +173,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                     SpreadsheetDTO sortedSheet = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
                     Platform.runLater(() -> sortedSheetConsumer.accept(sortedSheet));
                 } else {
-                    Platform.runLater(() ->
-                            AlertUtil.showErrorAlert("Sorting Error", "Failed to retrieve sorted sheet: " + response.message())
-                    );
+                    handleErrorResponse(response, "Failed to sort sheet");
                 }
             }
         });
@@ -211,9 +203,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                     List<String> values = ADAPTED_GSON.fromJson(responseBody, new TypeToken<List<String>>() {}.getType());
                     Platform.runLater(() -> valuesConsumer.accept(values));
                 } else {
-                    Platform.runLater(() ->
-                            AlertUtil.showErrorAlert("Column Retrieval Error", "Failed to retrieve values: " + response.message())
-                    );
+                    handleErrorResponse(response, "Failed to retrieve effective value");;
                 }
             }
         });
@@ -246,20 +236,19 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                     SpreadsheetDTO filteredSheet = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
                     Platform.runLater(() -> filteredSheetConsumer.accept(filteredSheet));
                 } else {
-                    Platform.runLater(() ->
-                            AlertUtil.showErrorAlert("Filtering Error", "Failed to retrieve filtered sheet: " + response.message())
-                    );
+                    handleErrorResponse(response, "Failed to filter sheet.");
                 }
             }
         });
     }
 
     @Override
-    public void setSingleCellBackGroundColor(String cellId, String hexString, Runnable callback) {
+    public void setSingleCellBackGroundColor(String cellId, String hexString,int clientVersion ,Runnable callback) {
         String url = HttpUrl.get(Constants.BACKGROUND_COLOR)
                 .newBuilder()
                 .addQueryParameter("cellId", cellId)
                 .addQueryParameter("color", hexString)
+                .addQueryParameter("clientVersion", String.valueOf(clientVersion))
                 .build()
                 .toString();
 
@@ -275,22 +264,22 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    String errorJson = response.body().string();
                     Platform.runLater(callback);
                 } else {
-                    Platform.runLater(() ->
-                            AlertUtil.showErrorAlert("Error", "Failed to update background color: " + response.message())
-                    );
+                    handleErrorResponse(response, "Failed to set cell background color");
                 }
             }
         });
     }
 
     @Override
-    public void setSingleCellTextColor(String cellId, String hexString, Runnable callback) {
+    public void setSingleCellTextColor(String cellId, String hexString, int clientVersion, Runnable callback) {
         String url = HttpUrl.get(TEXT_COLOR)
                 .newBuilder()
                 .addQueryParameter("cellId", cellId)
                 .addQueryParameter("color", hexString)
+                .addQueryParameter("clientVersion", String.valueOf(clientVersion))
                 .build()
                 .toString();
 
@@ -308,19 +297,18 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 if (response.isSuccessful()) {
                     Platform.runLater(callback);
                 } else {
-                    Platform.runLater(() ->
-                            AlertUtil.showErrorAlert("Error", "Failed to update background color: " + response.message())
-                    );
+                    handleErrorResponse(response, "Failed to set cell text color");
                 }
             }
         });
     }
 
     @Override
-    public void removeRangeFromSheet(String selectedRange, Consumer<String> callback) {
+    public void removeRangeFromSheet(String selectedRange,int clientVersion, Consumer<String> callback) {
         String url = HttpUrl.get(REMOVE_RANGE)
                 .newBuilder()
                 .addQueryParameter("range", selectedRange)
+                .addQueryParameter("clientVersion", String.valueOf(clientVersion))
                 .build()
                 .toString();
 
@@ -336,18 +324,19 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                     String result = response.body().string();
                     Platform.runLater(() -> callback.accept(result));
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to remove range: " ,response.message()));
+                    handleErrorResponse(response, "Failed to remove range");
                 }
             }
         });
     }
 
     @Override
-    public void addRangeToSheet(String rangeName, String coordinates, Consumer<String> callback) {
+    public void addRangeToSheet(String rangeName, String coordinates, int clientVersion, Consumer<String> callback) {
         String url = HttpUrl.get(ADD_RANGE)
                 .newBuilder()
                 .addQueryParameter("rangeName", rangeName)
                 .addQueryParameter("coordinates", coordinates)
+                .addQueryParameter("clientVersion", String.valueOf(clientVersion))
                 .build()
                 .toString();
 
@@ -360,16 +349,14 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String result = response.body().string();
-                    Platform.runLater(() -> callback.accept(result));
+                    String json = response.body().string();
+                    Platform.runLater(() -> callback.accept(json));
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Failed to add range: ", response.message()));
+                    handleErrorResponse(response, "Failed to add range");
                 }
             }
         });
     }
-
-
 
     @Override
     public void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess) {
@@ -395,7 +382,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                         Platform.runLater(() -> onSuccess.accept(references));
                     }
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Range Error", "Failed to retrieve range cells: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve range");
                 }
             }
         });
@@ -426,7 +413,7 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                     SpreadsheetDTO sheetDTO = ADAPTED_GSON.fromJson(responseBody, SpreadsheetDTO.class);
                     Platform.runLater(() -> updateView.accept(sheetDTO));
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Expected Value Error", "Failed to retrieve expected value: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve expected value ");
                 }
             }
         });
@@ -449,14 +436,31 @@ public class ShitcellRequestServiceImpl implements ShticellRequestService{
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     String jsonResponse = response.body().string();
-
                     SpreadsheetDTO spreadsheetDTO = ADAPTED_GSON.fromJson(jsonResponse, SpreadsheetDTO.class);
 
                     Platform.runLater(() -> versionConsumer.accept(spreadsheetDTO));
                 } else {
-                    Platform.runLater(() -> AlertUtil.showErrorAlert("Version Error", "Failed to retrieve spreadsheet: " + response.message()));
+                    handleErrorResponse(response, "Failed to retrieve updated sheet");
                 }
             }
         });
     }
+
+    private void handleErrorResponse(Response response, String defaultErrorMessage) throws IOException {
+        String errorJson = response.body().string();
+        System.out.println("Error JSON Response: " + errorJson);
+
+        try {
+            JsonObject errorObject = JsonParser.parseString(errorJson).getAsJsonObject();
+            String errorMessage = errorObject.get("error").getAsString();
+            Platform.runLater(() ->
+                    AlertUtil.showErrorAlert("Error Updating Sheet", defaultErrorMessage + ": " + errorMessage)
+            );
+        } catch (Exception e) {
+            Platform.runLater(() ->
+                    AlertUtil.showErrorAlert("Error Updating Sheet", "An unexpected error occurred.")
+            );
+        }
+    }
+
 }

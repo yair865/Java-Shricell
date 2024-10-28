@@ -47,7 +47,7 @@ public class FilterServlet extends HttpServlet {
             out.print(gson.toJson(filteredSheet));
             out.flush();
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error filtering the sheet: " + e.getMessage());
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

@@ -105,9 +105,9 @@ public class ShticellController implements Closeable {
         dataManager.getCellDataMap().clear();
         numberOfColumns = spreadSheet.columns();
         numberOfRows = spreadSheet.rows();
+        currentVersion.set(spreadSheet.version());
         convertDTOToCellData(dataManager.getCellDataMap(), spreadSheet);
-        bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(),
-                spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
+        bodyController.createGridPane(spreadSheet.rows(), spreadSheet.columns(), spreadSheet.rowHeightUnits(), spreadSheet.columnWidthUnits(), dataManager);
         applicationWindow.setCenter(bodyController.getBody());
         leftComponentController.updateRangeList(spreadSheet.ranges().keySet());
         headerComponentController.setVersionsChoiceBox(spreadSheet.version());
@@ -115,7 +115,7 @@ public class ShticellController implements Closeable {
 
     public void updateNewEffectiveValue(String cellId, String newValue) {
         try {
-            requestService.updateCell(cellId, newValue, cellsThatHaveChanged -> {
+            requestService.updateCell(cellId, newValue, currentVersion.get(), cellsThatHaveChanged -> {
                 dataManager.updateCellDataMap(cellsThatHaveChanged);
                 currentVersion.set(currentVersion.get() + 1);
                 headerComponentController.setVersionsChoiceBox(currentVersion.get());
@@ -256,7 +256,7 @@ public class ShticellController implements Closeable {
             bodyController.updateCellBackgroundColor(cellId, hexString);
         };
 
-        requestService.setSingleCellBackGroundColor(cellId, hexString, task);
+        requestService.setSingleCellBackGroundColor(cellId, hexString,currentVersion.get() ,task);
     }
 
     public void setSingleCellTextColor(String hexString) {
@@ -266,18 +266,18 @@ public class ShticellController implements Closeable {
             bodyController.updateCellTextColor(cellId, hexString);
         };
 
-        requestService.setSingleCellTextColor(cellId, hexString, task);
+        requestService.setSingleCellTextColor(cellId, hexString,currentVersion.get() ,task);
     }
 
     public void removeRangeFromSheet(String selectedRange, Consumer<String> callback) {
 
-        requestService.removeRangeFromSheet(selectedRange, onSuccess -> {
+        requestService.removeRangeFromSheet(selectedRange,currentVersion.get() ,onSuccess -> {
             Platform.runLater(() -> callback.accept(onSuccess));
         });
     }
 
     public void addRangeToSheet(String rangeName, String coordinates, Consumer<String> callback) {
-        requestService.addRangeToSheet(rangeName, coordinates, onSuccess -> {
+        requestService.addRangeToSheet(rangeName, coordinates,currentVersion.get() ,onSuccess -> {
             Platform.runLater(() -> callback.accept(onSuccess));
         });
     }

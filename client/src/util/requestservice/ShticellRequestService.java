@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public interface ShticellRequestService {
 
-    void updateCell(String cellId, String newValue, Consumer<List<CellDTO>> onSuccess);
+    void updateCell(String cellId, String newValue,int clientVersion ,Consumer<List<CellDTO>> onSuccess);
 
     void getSpreadSheetByVersion(int version, Consumer<SpreadsheetDTO> onSuccess);
 
@@ -23,13 +23,13 @@ public interface ShticellRequestService {
 
     void filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, Consumer<SpreadsheetDTO> filteredSheetConsumer);
 
-    void setSingleCellBackGroundColor(String cellId, String hexString, Runnable task);
+    void setSingleCellBackGroundColor(String cellId, String hexString,int clientVersion ,Runnable task);
 
-    void setSingleCellTextColor(String cellId, String hexString, Runnable task);
+    void setSingleCellTextColor(String cellId, String hexString, int clientVersion,Runnable task);
 
-    void removeRangeFromSheet(String selectedRange, Consumer<String> callback);
+    void removeRangeFromSheet(String selectedRange,int clientVersion ,Consumer<String> callback);
 
-    void addRangeToSheet(String rangeName, String coordinates , Consumer<String> callback);
+    void addRangeToSheet(String rangeName, String coordinates ,int clientVersion ,Consumer<String> callback);
 
     void getRangeByName(String rangeName , Consumer<List<Coordinate>> onSuccess);
 

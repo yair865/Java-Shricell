@@ -40,7 +40,7 @@ public class GetUniqueValuesServlet extends HttpServlet {
             out.print(gson.toJson(uniqueValues));
             out.flush();
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving values from column: " + e.getMessage());
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

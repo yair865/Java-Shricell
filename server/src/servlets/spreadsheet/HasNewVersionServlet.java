@@ -27,10 +27,8 @@ public class HasNewVersionServlet extends HttpServlet {
             return;
         }
 
-        // Get the latest version
         int latestVersion = engine.getLatestVersionNumber(sheetName, userName);
 
-        // Return the latest version number directly
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(String.valueOf(latestVersion)); // Send only the latest version
