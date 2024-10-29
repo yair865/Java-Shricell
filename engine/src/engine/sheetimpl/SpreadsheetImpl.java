@@ -7,13 +7,13 @@ import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
 import engine.sheetimpl.cellimpl.api.Cell;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import engine.sheetimpl.filter.FilterManager;
 import engine.sheetimpl.filter.FilterManagerImpl;
-import engine.sheetimpl.range.Range;
-import engine.sheetimpl.range.RangeImpl;
+import dto.dtoPackage.range.Range;
+import dto.dtoPackage.range.RangeImpl;
 import engine.sheetimpl.sort.SortManager;
 import engine.sheetimpl.sort.SortManagerImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static dto.dtoPackage.coordinate.CoordinateFactory.createCoordinate;
 import static java.lang.Character.toUpperCase;
 
 public class SpreadsheetImpl implements Spreadsheet, Serializable {

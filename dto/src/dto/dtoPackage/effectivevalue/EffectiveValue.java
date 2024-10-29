@@ -1,6 +1,6 @@
-package engine.sheetimpl.cellimpl.api;
+package dto.dtoPackage.effectivevalue;
 
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 
 public interface EffectiveValue {
     CellType getCellType();

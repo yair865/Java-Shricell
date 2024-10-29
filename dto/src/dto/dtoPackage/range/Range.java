@@ -1,11 +1,10 @@
-package engine.sheetimpl.range;
+package dto.dtoPackage.range;
 
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 
 import java.util.List;
 
 public interface Range {
-    void initRange();
 
     List<Coordinate> getCoordinates();
 

@@ -6,8 +6,8 @@ import dto.deserialize.CoordinateTypeAdapter;
 import dto.deserialize.EffectiveValueTypeAdapter;
 import dto.deserialize.SpreadsheetDTODeserializer;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.Coordinate;
 
 public class Constants {
     public final static Gson GSON_INSTANCE = new Gson();

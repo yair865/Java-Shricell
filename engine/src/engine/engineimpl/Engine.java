@@ -4,9 +4,9 @@ import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SheetInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.permissionmanager.PermissionType;
-import engine.permissionmanager.request.RequestStatus;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 
 import java.io.InputStream;

@@ -4,10 +4,10 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateImpl;
-import engine.sheetimpl.range.Range;
-import engine.sheetimpl.range.RangeImpl;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateImpl;
+import dto.dtoPackage.range.Range;
+import dto.dtoPackage.range.RangeImpl;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

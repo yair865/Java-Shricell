@@ -1,12 +1,10 @@
 package servlets.spreadsheet;
 
-import com.google.gson.Gson;
 import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetmanager.SheetManager;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

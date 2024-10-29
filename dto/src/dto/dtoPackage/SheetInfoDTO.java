@@ -1,7 +1,5 @@
 package dto.dtoPackage;
 
-import engine.permissionmanager.PermissionType;
-
 import java.util.Objects;
 
 public class SheetInfoDTO {

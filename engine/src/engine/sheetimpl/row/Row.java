@@ -1,7 +1,7 @@
 package engine.sheetimpl.row;
 
 import engine.sheetimpl.cellimpl.api.Cell;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package engine.permissionmanager.request;
+package dto.dtoPackage;
 
 public enum RequestStatus {
    PENDING,

@@ -2,11 +2,10 @@ package component.sheetview.model;
 
 import component.sheetview.body.BasicCellData;
 import dto.dtoPackage.CellDTO;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.utils.CellType;
-import engine.sheetmanager.SheetManager;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
+import dto.dtoPackage.CellType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +15,9 @@ import java.util.Map;
 public class DataManager implements CellDataProvider {
 
     private Map<Coordinate, BasicCellData> cellDataMap;
-    private SheetManager engine;
 
-    public DataManager(SheetManager engine) {
-        this.engine = engine;
+    public DataManager() {
+
         this.cellDataMap = new HashMap<>();
     }
     @Override

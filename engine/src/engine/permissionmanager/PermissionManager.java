@@ -1,7 +1,8 @@
 package engine.permissionmanager;
 
 import dto.dtoPackage.PermissionInfoDTO;
-import engine.permissionmanager.request.RequestStatus;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
 
 import java.util.List;
 

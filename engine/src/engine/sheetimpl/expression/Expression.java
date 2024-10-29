@@ -1,8 +1,8 @@
 package engine.sheetimpl.expression;
 
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
 import engine.sheetimpl.api.SheetReadActions;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 
 public interface Expression
 {

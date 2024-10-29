@@ -1,7 +1,6 @@
-package engine.sheetimpl.cellimpl;
+package dto.dtoPackage.effectivevalue;
 
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 
 import java.io.Serializable;
 import java.util.Objects;

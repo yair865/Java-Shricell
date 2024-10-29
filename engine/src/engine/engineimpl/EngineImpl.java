@@ -8,15 +8,14 @@ import dto.dtoPackage.SpreadsheetDTO;
 import engine.exception.OutdatedVersionException;
 import engine.permissionmanager.PermissionManager;
 import engine.permissionmanager.PermissionManagerImpl;
-import engine.permissionmanager.PermissionType;
-import engine.permissionmanager.request.RequestStatus;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
 import engine.sheetmanager.SheetManagerImpl;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,14 +44,12 @@ public class EngineImpl implements Engine, Serializable {
         permissionManager.assignPermission(sheetName, userName, PermissionType.OWNER);
     }
 
-    //validate if the sheet already in the sheets Map.
     private void validateSheetAlreadyExists(String sheetName) {
         if (sheets.containsKey(sheetName)) {
             throw new IllegalArgumentException("Sheet with name '" + sheetName + "' already exists.");
         }
     }
 
-    //validate sheet name is a valid sheet.
     private void ValidateSheetName(String sheetName) {
         if (!sheets.containsKey(sheetName)) {
             throw new IllegalArgumentException("Sheet with name '" + sheetName + "' doesnt exists.");

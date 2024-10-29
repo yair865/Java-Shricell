@@ -1,4 +1,4 @@
-package engine.sheetimpl.cellimpl.coordinate;
+package dto.dtoPackage.coordinate;
 
 public interface Coordinate {
     int row();

@@ -7,7 +7,7 @@ import component.dashboard.right.permission.PermissionController;
 import component.main.MainController;
 import dto.dtoPackage.PermissionInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.permissionmanager.request.RequestStatus;
+import dto.dtoPackage.RequestStatus;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

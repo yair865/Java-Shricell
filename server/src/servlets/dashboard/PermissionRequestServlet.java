@@ -1,7 +1,7 @@
 package servlets.dashboard;
 
 import engine.engineimpl.Engine;
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

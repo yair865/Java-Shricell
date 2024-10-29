@@ -1,6 +1,6 @@
 package engine.sheetimpl.api;
 
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.generated.STLSheet;
 
 import java.util.List;

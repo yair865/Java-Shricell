@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import consts.Constants;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;

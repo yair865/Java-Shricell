@@ -1,7 +1,7 @@
 package component.dashboard.body.permissionListArea.permissiondata;
 
-import engine.permissionmanager.PermissionType;
-import engine.permissionmanager.request.RequestStatus;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
 
 public class SinglePermissionData {
     private final String username;

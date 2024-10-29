@@ -1,7 +1,7 @@
-package engine.sheetimpl.range;
+package dto.dtoPackage.range;
 
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,8 +18,7 @@ public class RangeImpl implements Range , Serializable {
         this.initRange();
     }
 
-    @Override
-    public void initRange() {
+    private void initRange() {
         cellsInRange = new ArrayList<>();
 
         int startRow = start.row();

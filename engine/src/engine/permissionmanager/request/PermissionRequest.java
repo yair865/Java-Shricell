@@ -1,6 +1,7 @@
 package engine.permissionmanager.request;
 
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
 
 public interface PermissionRequest {
     PermissionType getType();

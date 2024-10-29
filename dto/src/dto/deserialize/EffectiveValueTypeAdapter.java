@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import engine.sheetimpl.cellimpl.EffectiveValueImpl;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.effectivevalue.EffectiveValueImpl;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.CellType;
 
 import java.io.IOException;
 

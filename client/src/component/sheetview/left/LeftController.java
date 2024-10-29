@@ -7,7 +7,7 @@ import component.sheetview.left.filter.FilterController;
 import component.sheetview.left.range.RangeController;
 import component.sheetview.left.sort.SortController;
 import component.sheetview.left.whatif.WhatIfDialogController;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

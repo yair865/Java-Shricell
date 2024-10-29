@@ -10,10 +10,9 @@ import component.sheetview.model.DataManager;
 import component.sheetview.model.TemporaryCellDataProvider;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.utils.CellType;
-import engine.sheetmanager.SheetManager;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
+import dto.dtoPackage.CellType;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -33,7 +32,6 @@ import util.requestservice.ShitcellRequestServiceImpl;
 import util.requestservice.ShticellRequestService;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -49,8 +47,6 @@ public class ShticellController implements Closeable {
     private IntegerProperty currentVersion = new SimpleIntegerProperty(1);
 
     private ShticellRequestService requestService;
-
-    private SheetManager engine;
 
     private DataManager dataManager;
 
@@ -83,7 +79,7 @@ public class ShticellController implements Closeable {
     public ShticellController() {
         this.requestService = new ShitcellRequestServiceImpl();
 
-        this.dataManager = new DataManager(engine);
+        this.dataManager = new DataManager();
         this.applicationWindow = new BorderPane();
         this.bodyController = new BodyController();
     }
@@ -94,7 +90,6 @@ public class ShticellController implements Closeable {
             headerComponentController.setShticellController(this);
             bodyController.setShticellController(this);
             leftComponentController.setShticellController(this);
-            headerComponentController.setEngine(this.engine);
         }
     }
 

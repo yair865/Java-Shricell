@@ -1,6 +1,6 @@
 package engine.sheetimpl.expression.type;
 
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
 import engine.sheetimpl.expression.Expression;
 import engine.sheetimpl.api.SheetReadActions;
 

@@ -4,8 +4,8 @@ import component.sheetview.app.ShticellController;
 import component.sheetview.model.CellDataProvider;
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -105,7 +105,7 @@ public class BodyController {
                     cellViewController.textColor.bind(cellData.textColor);
                     cellViewController.backgroundColor.bind(cellData.backgroundColor);
                     cellViewController.modifiedBy.bind(cellData.modifiedBy);
-                    
+
                     cellView.setPrefSize(columnWidthUnits, rowHeightUnits);
                     cellView.setMaxSize(columnWidthUnits, rowHeightUnits);
                     cellView.getStyleClass().add("cell");

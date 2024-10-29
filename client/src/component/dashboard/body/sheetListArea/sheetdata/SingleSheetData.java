@@ -1,6 +1,6 @@
 package component.dashboard.body.sheetListArea.sheetdata;
 
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

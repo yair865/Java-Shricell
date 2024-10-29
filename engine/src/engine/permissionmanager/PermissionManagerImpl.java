@@ -2,9 +2,10 @@ package engine.permissionmanager;
 
 import dto.converter.PermissionInfoConverter;
 import dto.dtoPackage.PermissionInfoDTO;
+import dto.dtoPackage.PermissionType;
 import engine.permissionmanager.request.PermissionRequest;
 import engine.permissionmanager.request.PermissionRequestImpl;
-import engine.permissionmanager.request.RequestStatus;
+import dto.dtoPackage.RequestStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;

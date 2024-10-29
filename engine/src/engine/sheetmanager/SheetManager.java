@@ -2,7 +2,7 @@ package engine.sheetmanager;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 
 import java.io.IOException;
 import java.io.InputStream;

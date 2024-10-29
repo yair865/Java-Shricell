@@ -7,9 +7,9 @@ import engine.generated.STLSheet;
 import engine.sheetimpl.SpreadsheetImpl;
 import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.api.CellReadActions;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.versionmanager.*;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static dto.converter.CellConverter.convertCellToDTO;
-import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static dto.dtoPackage.coordinate.CoordinateFactory.createCoordinate;
 
 
 public class SheetManagerImpl implements SheetManager, Serializable{

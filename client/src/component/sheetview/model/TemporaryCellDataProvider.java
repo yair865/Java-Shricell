@@ -2,8 +2,8 @@ package component.sheetview.model;
 
 import component.sheetview.body.BasicCellData;
 import dto.converter.CellDataProviderConverter;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.CellType;
 
 import java.util.HashMap;
 import java.util.Map;

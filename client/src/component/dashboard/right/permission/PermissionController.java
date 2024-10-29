@@ -1,13 +1,10 @@
 package component.dashboard.right.permission;
 
 import consts.Constants;
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;

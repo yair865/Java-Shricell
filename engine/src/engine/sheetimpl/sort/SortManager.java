@@ -1,6 +1,6 @@
 package engine.sheetimpl.sort;
 
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.sheetimpl.api.Spreadsheet;
 
 import java.util.List;

@@ -25,7 +25,6 @@ import static consts.Constants.REFRESH_RATE;
 public class HeaderController implements Closeable {
 
     private ShticellController shticellController;
-    private SheetManager engine;
     private BooleanProperty shouldUpdate = new SimpleBooleanProperty(true);
 
     @FXML
@@ -192,10 +191,6 @@ public class HeaderController implements Closeable {
 
     public TextField getNewValueTextField() {
         return this.newValueTextField;
-    }
-
-    public void setEngine(SheetManager engine) {
-        this.engine = engine;
     }
 
     public void setVersionsChoiceBox(int version) {

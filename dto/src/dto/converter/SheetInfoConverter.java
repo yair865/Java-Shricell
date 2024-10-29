@@ -1,6 +1,6 @@
 package dto.converter;
 import dto.dtoPackage.SheetInfoDTO;
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
 import engine.sheetmanager.SheetManager;
 
 public class SheetInfoConverter {

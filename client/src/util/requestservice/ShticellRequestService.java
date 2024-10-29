@@ -2,7 +2,7 @@ package util.requestservice;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 
 import java.util.List;
 import java.util.function.Consumer;

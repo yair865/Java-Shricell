@@ -1,7 +1,8 @@
 package engine.sheetimpl.cellimpl.api;
 
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.CellStyle;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
 
 public interface CellReadActions {
     String getOriginalValue();

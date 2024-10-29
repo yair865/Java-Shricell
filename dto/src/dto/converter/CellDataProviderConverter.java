@@ -4,10 +4,10 @@ import component.sheetview.body.BasicCellData;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.CoordinateFactory;
+import dto.dtoPackage.CellType;
 
 import java.util.Map;
 

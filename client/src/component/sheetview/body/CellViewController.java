@@ -2,7 +2,7 @@ package component.sheetview.body;
 
 import component.sheetview.app.ShticellController;
 import component.sheetview.header.HeaderController;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;

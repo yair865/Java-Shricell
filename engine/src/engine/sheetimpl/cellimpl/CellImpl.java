@@ -1,9 +1,10 @@
 package engine.sheetimpl.cellimpl;
 
 import engine.sheetimpl.cellimpl.api.Cell;
-import engine.sheetimpl.cellimpl.coordinate.Coordinate;
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.CellType;
+import dto.dtoPackage.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
 

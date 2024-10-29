@@ -2,7 +2,7 @@ package component.dashboard.body.sheetListArea;
 
 import component.dashboard.DashboardController;
 import component.dashboard.body.sheetListArea.sheetdata.SingleSheetData;
-import engine.permissionmanager.PermissionType;
+import dto.dtoPackage.PermissionType;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

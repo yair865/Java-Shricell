@@ -1,7 +1,7 @@
 package component.sheetview.body;
 
-import engine.sheetimpl.cellimpl.api.EffectiveValue;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.CellType;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

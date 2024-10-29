@@ -1,4 +1,4 @@
-package engine.permissionmanager;
+package dto.dtoPackage;
 
 public enum PermissionType {
     OWNER,   // The owner of the sheet, with full control over permissions
