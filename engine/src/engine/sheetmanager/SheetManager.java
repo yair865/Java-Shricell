@@ -21,7 +21,7 @@ public interface SheetManager {
 
     CellDTO getCellInfo(String cellId);
 
-    List<CellDTO> updateCell(String cellId, String newValue);
+    List<CellDTO> updateCell(String cellId, String newValue , String userName);
 
     void exitProgram();
 

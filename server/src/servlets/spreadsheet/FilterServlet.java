@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import engine.sheetmanager.SheetManager;
@@ -24,7 +25,7 @@ public class FilterServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
+
 
         String selectedColumnParam = request.getParameter("selectedColumn");
         String filterArea = request.getParameter("filterArea");
@@ -44,7 +45,7 @@ public class FilterServlet extends HttpServlet {
 
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
-            out.print(gson.toJson(filteredSheet));
+            out.print(Constants.GSON_INSTANCE.toJson(filteredSheet));
             out.flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(response, e.getMessage());

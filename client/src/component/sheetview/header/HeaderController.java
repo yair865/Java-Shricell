@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
 import java.io.Closeable;
@@ -43,6 +44,9 @@ public class HeaderController implements Closeable {
     private Label cellVersionLabel;
 
     @FXML
+    private Label modifiedByLabel;
+
+    @FXML
     private ChoiceBox<Integer> selectVersionChoiceBox;
 
     @FXML
@@ -53,6 +57,12 @@ public class HeaderController implements Closeable {
 
     @FXML
     private Button latestVersionButton;
+
+    @FXML
+    private Button backToDashBoardButton;
+
+    @FXML
+    private StackPane selectVersionSP;
 
     private Timer timer;
     private TimerTask versionRefresher;
@@ -157,6 +167,11 @@ public class HeaderController implements Closeable {
         });
     }
 
+    @FXML
+    private void backToDashboardListener(ActionEvent event) {
+        shticellController.backToDashboard();
+    }
+
     private void resetHeaderLabels() {
         newValueTextField.setPromptText(DEFAULT_NEW_VALUE_PROMPT);
     }
@@ -167,10 +182,12 @@ public class HeaderController implements Closeable {
         newValueTextField.disableProperty().bind(shticellController.isReaderProperty());
     }
 
-    public void updateHeader(String cellId, String originalValue, int lastModifiedVersion) {
+    public void updateHeader(String cellId, String originalValue, int lastModifiedVersion, String modifiedBy) {
         this.cellIdLabel.setText(cellId);
         this.cellOriginalValueLabel.setText(originalValue);
         this.cellVersionLabel.setText(String.valueOf(lastModifiedVersion));
+        this.modifiedByLabel.setText(modifiedBy);
+        setVersionsChoiceBox(lastModifiedVersion);
     }
 
     public TextField getNewValueTextField() {
@@ -235,7 +252,7 @@ public class HeaderController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close()  {
         if (versionRefresher != null && timer != null) {
             versionRefresher.cancel();
             timer.cancel();

@@ -207,6 +207,7 @@ public class DashboardRightController {
 
     private void handleSpreadsheetData(SpreadsheetDTO spreadsheetDTO , boolean isReader) {
         Platform.runLater(() -> {
+            dashboardController.close();
             mainController.loadApplicationPage(spreadsheetDTO , isReader);
         });
     }

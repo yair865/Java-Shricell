@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import engine.sheetmanager.SheetManager;
@@ -25,7 +26,6 @@ public class SortServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
 
         String cellsRange = request.getParameter("cellsRange");
         String selectedColumnsParam = request.getParameter("selectedColumns");
@@ -49,7 +49,7 @@ public class SortServlet extends HttpServlet {
 
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
-            out.print(gson.toJson(sortedSheet));
+            out.print(Constants.GSON_INSTANCE.toJson(sortedSheet));
             out.flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(response, e.getMessage());

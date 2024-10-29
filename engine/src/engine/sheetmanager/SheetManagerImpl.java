@@ -65,7 +65,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         Spreadsheet spreadsheet = new SpreadsheetImpl();
 
         try {
-            spreadsheet.init(loadedSheetFromXML);
+            spreadsheet.init(loadedSheetFromXML, ownerName);
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new IllegalArgumentException("In file: " + loadedSheetFromXML.getName() + " - " + e.getMessage(), e);
         } catch (Exception e) {
@@ -145,7 +145,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
     }
 
     @Override
-    public List<CellDTO> updateCell(String cellId, String newValue) {
+    public List<CellDTO> updateCell(String cellId, String newValue,String userName) {
         validateSheetIsLoaded();
         Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
         Spreadsheet currentSpreadsheet = versionManager.getCurrentVersion().copySheet();
@@ -154,7 +154,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
             int nextVersion = versionManager.getCurrentVersionNumber() + 1;
             currentSpreadsheet.setSheetVersion(nextVersion);
             versionManager.addVersion(nextVersion, currentSpreadsheet);
-            versionManager.getCurrentVersion().setCell(coordinate, newValue); // consider set before addVersion
+            versionManager.getCurrentVersion().setCell(coordinate, newValue,userName); // consider set before addVersion
         } catch (InvalidParameterException e) { // roll-back only.
             versionManager.removeVersion(versionManager.getCurrentVersionNumber());
         } catch (Exception e) {
@@ -305,7 +305,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         return coordinatesThatHaveChanged.stream()
                 .map(coordinate -> {
                     CellReadActions cell = versionManager.getCurrentVersion().getCell(coordinate);
-                    return convertCellToDTO(cell); // Convert the cell to DTO
+                    return convertCellToDTO(cell);
                 })
                 .collect(Collectors.toList());
     }
@@ -316,7 +316,7 @@ public class SheetManagerImpl implements SheetManager, Serializable{
         if (whatIfCopy == null || whatIfCopy.getVersion() != versionManager.getCurrentVersionNumber()) {
             whatIfCopy = versionManager.getCurrentVersion().copySheet();
         }
-        whatIfCopy.setCell(cellToCalculate, newValueOfCell);
+        whatIfCopy.setCell(cellToCalculate, newValueOfCell,"");
 
         return SheetConverter.convertSheetToDTO(whatIfCopy);
     }

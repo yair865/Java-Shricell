@@ -36,6 +36,11 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public String getReviserName() {
+        return "";
+    }
+
+    @Override
     public boolean getContainsFunction() {
         return false;
     }
@@ -54,6 +59,9 @@ public enum EmptyCell implements Cell, Serializable {
     public void setLastModifiedVersion(int sheetVersion) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void setReviserName(String reviserName) {throw new UnsupportedOperationException();}
 
     @Override
     public void setTextColor(String textColor) {

@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.exception.OutdatedVersionException;
 import engine.sheetmanager.SheetManager;
@@ -25,8 +26,6 @@ public class BackGroundColorServlet extends HttpServlet {
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
 
-        Gson gson = new Gson();
-
         String cellId = request.getParameter("cellId");
         String color = request.getParameter("color");
 
@@ -46,7 +45,7 @@ public class BackGroundColorServlet extends HttpServlet {
         try {
             engine.setSingleCellBackGroundColor(cellId, color, sheetName, userName, clientVersion);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson("Background color updated successfully"));
+            response.getWriter().write(Constants.GSON_INSTANCE.toJson("Background color updated successfully"));
         } catch (OutdatedVersionException e){
             sendErrorResponse(response,e.getMessage());
         } catch (Exception e) {

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
@@ -28,7 +29,7 @@ public class EngineImpl implements Engine, Serializable {
     private PermissionManager permissionManager;
 
     public EngineImpl() {
-        this.sheets = new HashMap<>();
+        this.sheets = new ConcurrentHashMap<>();
         this.permissionManager = new PermissionManagerImpl();
     }
 
@@ -185,7 +186,7 @@ public class EngineImpl implements Engine, Serializable {
         permissionManager.validateWriterPermission(userName , sheetName);
         SheetManager sheetManager = sheets.get(sheetName);
         validateUpdatedSheet(sheetManager,clientVersion);
-        return sheetManager.updateCell(cellId, newValue);
+        return sheetManager.updateCell(cellId, newValue , userName);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.exception.OutdatedVersionException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,7 +24,7 @@ public class TextColorServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
+
 
         String cellId = request.getParameter("cellId");
         String color = request.getParameter("color");
@@ -43,7 +44,7 @@ public class TextColorServlet extends HttpServlet {
         try {
             engine.setSingleCellTextColor(cellId, color, userName, sheetName, clientVersion);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson("Text color updated successfully"));
+            response.getWriter().write(Constants.GSON_INSTANCE.toJson("Text color updated successfully"));
         }catch (OutdatedVersionException e){
             sendErrorResponse(response,e.getMessage());
         } catch (Exception e) {

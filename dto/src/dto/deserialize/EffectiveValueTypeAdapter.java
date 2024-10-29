@@ -1,14 +1,12 @@
 package dto.deserialize;
 
 import com.google.gson.Gson;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import engine.sheetimpl.cellimpl.EffectiveValueImpl;
 import engine.sheetimpl.cellimpl.api.EffectiveValue;
 import engine.sheetimpl.utils.CellType;
-
 
 import java.io.IOException;
 
@@ -19,8 +17,13 @@ public class EffectiveValueTypeAdapter extends TypeAdapter<EffectiveValue> {
         out.name("cellType").value(effectiveValue.getCellType().toString());
         out.name("value");
 
-        Gson gson = new Gson();
-        gson.toJson(effectiveValue.getValue(), effectiveValue.getValue().getClass(), out);
+        Object value = effectiveValue.getValue();
+        if (value instanceof Double && ((Double) value).isNaN()) {
+            out.value("NaN");
+        } else {
+            Gson gson = new Gson();
+            gson.toJson(value, value.getClass(), out);
+        }
 
         out.endObject();
     }
@@ -50,10 +53,18 @@ public class EffectiveValueTypeAdapter extends TypeAdapter<EffectiveValue> {
     }
 
     private Object deserializeValue(JsonReader in, CellType cellType) throws IOException {
-        return switch (cellType) {
-            case NUMERIC -> in.nextDouble();
-            case BOOLEAN -> in.nextBoolean();
-            default -> in.nextString();
-        };
+        switch (cellType) {
+            case NUMERIC:
+                String numericValue = in.nextString();
+                if ("NaN".equals(numericValue)) {
+                    return Double.NaN;
+                } else {
+                    return Double.parseDouble(numericValue);
+                }
+            case BOOLEAN:
+                return in.nextBoolean();
+            default:
+                return in.nextString();
+        }
     }
 }

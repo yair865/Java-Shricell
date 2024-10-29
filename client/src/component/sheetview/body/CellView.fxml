@@ -2,8 +2,9 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.StackPane?>
-<StackPane fx:id="cellView" onMouseClicked="#cellClickListener" prefWidth="30.0" stylesheets="@bodyStyle.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.body.CellViewController">
+
+<StackPane fx:id="cellView" minHeight="0.0" minWidth="0.0" onMouseClicked="#cellClickListener" prefWidth="30.0" stylesheets="@bodyStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.body.CellViewController">
    <children>
-      <Label fx:id="effectiveValueLabel" alignment="CENTER" contentDisplay="CENTER" text="Label" textAlignment="RIGHT" />
+      <Label fx:id="effectiveValueLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="0.0" minWidth="0.0" text="Label" textAlignment="RIGHT" />
    </children>
 </StackPane>

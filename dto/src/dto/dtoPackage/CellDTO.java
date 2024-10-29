@@ -6,5 +6,6 @@ import engine.sheetimpl.cellimpl.CellStyle;
 import engine.sheetimpl.utils.CellType;
 
 public record CellDTO(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue,
-                      int lastModifiedVersion , CellStyle cellStyle , boolean containsFunction , CellType cellType) {}
+                      int lastModifiedVersion , CellStyle cellStyle , boolean containsFunction ,
+                      CellType cellType, String modifiedBy) {}
 

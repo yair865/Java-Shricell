@@ -17,19 +17,21 @@ public class BasicCellData {
     protected  IntegerProperty lastModifiedVersion;
     protected  StringProperty textColor;
     protected  StringProperty backgroundColor;
+    protected  StringProperty modifiedBy;
     protected boolean containsFunction;
     protected CellType cellType;
 
     private String effectiveValueToRestore;
     private boolean whatIfFlag = false;
 
-    public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor , boolean containsFunction , CellType cellType) {
+    public BasicCellData(String effectiveValue, String originalValue, String cellId,String textColor, String backgroundColor , boolean containsFunction , CellType cellType , String modifiedBy) {
         this.effectiveValue = new SimpleStringProperty(effectiveValue);
         this.originalValue = new SimpleStringProperty(originalValue);
         this.cellId = new SimpleStringProperty(cellId);
         this.lastModifiedVersion = new SimpleIntegerProperty(1);
         this.textColor = new SimpleStringProperty(textColor);
         this.backgroundColor = new SimpleStringProperty(backgroundColor);
+        this.modifiedBy = new SimpleStringProperty(modifiedBy);
         this.containsFunction = containsFunction;
         this.cellType = cellType;
     }
@@ -65,6 +67,8 @@ public class BasicCellData {
     public void setOriginalValue(String value) {
         originalValue.set(value);
     }
+
+    public void setModifiedBy(String value) {modifiedBy.set(value);}
 
     public int getLastModifiedVersion() {
         return lastModifiedVersion.get();
@@ -113,5 +117,9 @@ public class BasicCellData {
             whatIfFlag = false;
             setEffectiveValue(effectiveValueToRestore);
         }
+    }
+
+    public String getReviserName() {
+        return modifiedBy.get();
     }
 }

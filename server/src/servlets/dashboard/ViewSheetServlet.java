@@ -1,6 +1,7 @@
 package servlets.dashboard;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,7 +19,6 @@ public class ViewSheetServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        Gson gson = new Gson();
 
         String sheetName = request.getParameter("sheetName");
 
@@ -38,7 +38,7 @@ public class ViewSheetServlet extends HttpServlet {
             request.getSession(true).setAttribute("sheetName", sheetName);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            String jsonResponse = gson.toJson(spreadsheetDTO);
+            String jsonResponse = Constants.GSON_INSTANCE.toJson(spreadsheetDTO);
             response.getWriter().write(jsonResponse);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.exception.OutdatedVersionException;
 import engine.sheetmanager.SheetManager;
@@ -25,7 +26,6 @@ public class RemoveRangeServlet extends HttpServlet {
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
 
-        Gson gson = new Gson();
 
         String selectedRange = request.getParameter("range");
 
@@ -44,7 +44,7 @@ public class RemoveRangeServlet extends HttpServlet {
         try {
             engine.removeRangeFromSheet(selectedRange, userName, sheetName, clientVersion);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson("Range removed successfully"));
+            response.getWriter().write(Constants.GSON_INSTANCE.toJson("Range removed successfully"));
         }catch (OutdatedVersionException e){
             sendErrorResponse(response,e.getMessage());
         } catch (Exception e) {

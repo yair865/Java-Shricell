@@ -1,6 +1,7 @@
 package servlets.dashboard;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.PermissionInfoDTO;
 import engine.engineimpl.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,7 +24,7 @@ public class PermissionListServlet extends HttpServlet {
         String sheetName = request.getParameter("sheetName");
 
         try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
+
             Engine engine = ServletUtils.getEngine(request.getServletContext());
 
             List<PermissionInfoDTO> permissions;
@@ -35,7 +36,7 @@ public class PermissionListServlet extends HttpServlet {
                 return;
             }
 
-            String json = gson.toJson(permissions);
+            String json = Constants.GSON_INSTANCE.toJson(permissions);
             out.println(json);
             out.flush();
         } catch (Exception e) {

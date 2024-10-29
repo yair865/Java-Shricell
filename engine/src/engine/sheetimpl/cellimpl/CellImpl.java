@@ -14,6 +14,7 @@ public class CellImpl implements Cell , Serializable {
     private int lastModifiedVersion;
     private final Coordinate coordinate;
     private CellStyle cellStyle;
+    private String reviserName;
 
     public CellImpl(Coordinate coordinate) {
         this.originalValue = "";
@@ -21,6 +22,7 @@ public class CellImpl implements Cell , Serializable {
         this.lastModifiedVersion = 1;
         this.coordinate = coordinate;
         this.cellStyle = new CellStyle();
+        this.reviserName = "";
     }
 
     @Override
@@ -60,6 +62,12 @@ public class CellImpl implements Cell , Serializable {
     public CellStyle getCellStyle() {
         return cellStyle;
     }
+
+    @Override
+    public String getReviserName() {return reviserName;}
+
+    @Override
+    public void setReviserName(String reviserName) {this.reviserName = reviserName;}
 
     @Override
     public boolean getContainsFunction() {

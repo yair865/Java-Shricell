@@ -61,7 +61,7 @@ public class DashboardController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         bodyController.close();
     }
 

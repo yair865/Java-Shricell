@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.sheetmanager.SheetManager;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,7 +23,7 @@ public class GetUniqueValuesServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
+
 
         String columnParam = request.getParameter("column");
 
@@ -37,7 +38,7 @@ public class GetUniqueValuesServlet extends HttpServlet {
             List<String> uniqueValues = engine.getUniqueValuesFromColumn(column , userName , sheetName);
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
-            out.print(gson.toJson(uniqueValues));
+            out.print(Constants.GSON_INSTANCE.toJson(uniqueValues));
             out.flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(response, e.getMessage());

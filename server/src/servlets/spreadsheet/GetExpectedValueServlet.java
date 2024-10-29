@@ -2,6 +2,7 @@ package servlets.spreadsheet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
@@ -29,10 +30,10 @@ public class GetExpectedValueServlet extends HttpServlet {
         String sheetName = SessionUtils.getSheetName(req);
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        Gson gson = new Gson();
+
 
         try {
-            JsonObject jsonRequest = gson.fromJson(req.getReader(), JsonObject.class);
+            JsonObject jsonRequest = Constants.GSON_INSTANCE.fromJson(req.getReader(), JsonObject.class);
             int row = jsonRequest.get("row").getAsInt();
             int column = jsonRequest.get("column").getAsInt();
             String value = jsonRequest.get("value").getAsString();
@@ -40,7 +41,7 @@ public class GetExpectedValueServlet extends HttpServlet {
             Coordinate coordinate = CoordinateFactory.createCoordinate(row, column);
             SpreadsheetDTO sheetDTO = engine.getExpectedValue(username,coordinate, value,sheetName);
 
-            String jsonSheet = gson.toJson(sheetDTO);
+            String jsonSheet = Constants.GSON_INSTANCE.toJson(sheetDTO);
             out.println(jsonSheet);
             out.flush();
         } catch (Exception e) {

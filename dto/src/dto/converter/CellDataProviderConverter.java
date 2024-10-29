@@ -31,10 +31,11 @@ public class CellDataProviderConverter {
                                 cellDTO.cellStyle().getTextColor(),
                                 cellDTO.cellStyle().getBackgroundColor(),
                                 cellDTO.containsFunction(),
-                                cellDTO.cellType()
+                                cellDTO.cellType(),
+                                cellDTO.modifiedBy()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString(),null,null , false , CellType.EMPTY);
+                        return new BasicCellData("", "", coord.toString(),null,null , false , CellType.EMPTY,"");
                     }
                 });
             }

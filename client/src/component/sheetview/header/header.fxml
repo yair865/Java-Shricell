@@ -23,44 +23,50 @@
       <RowConstraints maxHeight="33.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <HBox alignment="CENTER" prefHeight="84.0" prefWidth="1098.0" spacing="10.0">
+      <HBox alignment="TOP_CENTER" prefHeight="84.0" prefWidth="1098.0" spacing="10.0" GridPane.columnSpan="2147483647">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" prefHeight="44.0" prefWidth="588.0" styleClass="header-label" text="Shticell" underline="true" />
-            <VBox alignment="CENTER" minWidth="150.0" spacing="10.0">
+            <Button fx:id="backToDashBoardButton" alignment="CENTER" mnemonicParsing="false" onAction="#backToDashboardListener" prefHeight="25.0" prefWidth="130.0" text="Back To Dashboard" HBox.hgrow="NEVER">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <VBox alignment="CENTER" minWidth="138.0" prefHeight="56.0" prefWidth="138.0" spacing="10.0">
                <children>
                   <Label text="Change skin" underline="true" />
                   <ComboBox fx:id="skinComboBox" />
                </children>
             </VBox>
+            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" prefHeight="56.0" prefWidth="819.0" styleClass="header-label" text="Shticell" underline="true" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="151.0" prefWidth="1108.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
          <children>
-            <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" text="Selected Cell Id" textAlignment="CENTER" />
-            <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-            <TextField fx:id="newValueTextField" prefHeight="25.0" prefWidth="181.0" promptText="Enter new value" HBox.hgrow="ALWAYS" />
-            <Button fx:id="updateNewValueBTN" mnemonicParsing="false" onAction="#updateValueButtonListener" prefHeight="25.0" prefWidth="124.0" text="Update value" />
-            <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="169.0" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
-            <VBox spacing="20.0">
+            <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="85.0" prefHeight="25.0" prefWidth="85.0" text="Selected Cell Id" textAlignment="CENTER" />
+            <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="134.0" prefHeight="25.0" prefWidth="134.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="newValueTextField" prefHeight="25.0" prefWidth="250.0" promptText="Enter new value" HBox.hgrow="ALWAYS" />
+            <Button fx:id="updateNewValueBTN" mnemonicParsing="false" onAction="#updateValueButtonListener" prefHeight="25.0" prefWidth="125.0" text="Update value" />
+            <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="108.0" prefHeight="25.0" prefWidth="114.0" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
+            <Label fx:id="modifiedByLabel" alignment="CENTER" prefHeight="17.0" prefWidth="139.0" text="Modified by" />
+            <VBox alignment="TOP_CENTER" prefWidth="120.0" spacing="20.0">
                <children>
-                  <StackPane prefWidth="150.0">
+                  <StackPane fx:id="selectVersionSP" prefWidth="150.0">
                      <children>
-                        <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="150.0">
+                        <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="120.0">
                            <StackPane.margin>
                               <Insets />
                            </StackPane.margin>
                         </ChoiceBox>
-                        <Label text="Select Version">
+                        <Label mouseTransparent="true" text="Select Version">
                            <StackPane.margin>
                               <Insets />
                            </StackPane.margin>
                         </Label>
                      </children>
                   </StackPane>
-                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="25.0" prefWidth="150.0" text="Latest Version" visible="false" />
+                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="25.0" prefWidth="120.0" text="Latest Version" visible="false" />
                </children>
             </VBox>
          </children>

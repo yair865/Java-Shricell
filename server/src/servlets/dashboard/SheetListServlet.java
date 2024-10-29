@@ -1,6 +1,7 @@
 package servlets.dashboard;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SheetInfoDTO;
 import engine.engineimpl.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,10 +23,10 @@ public class SheetListServlet extends HttpServlet {
         String usernameFromSession = SessionUtils.getUsername(request);
         response.setContentType("application/json");
         try(PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
+
             Engine engine = ServletUtils.getEngine(request.getServletContext());
             List<SheetInfoDTO> sheets = engine.getSheets(usernameFromSession);
-            String json = gson.toJson(sheets);
+            String json = Constants.GSON_INSTANCE.toJson(sheets);
             out.println(json);
             out.flush();
         }

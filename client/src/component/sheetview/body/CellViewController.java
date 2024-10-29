@@ -19,7 +19,7 @@ public class CellViewController extends BasicCellData {
     public Label effectiveValueLabel;
 
     public CellViewController() {
-        super("", "Cell Original Value", "Cell ID", null, null ,false , CellType.EMPTY);
+        super("", "Cell Original Value", "Cell ID", null, null ,false , CellType.EMPTY,"Modified By");
     }
 
     public void setShticellController(ShticellController shticellController) {
@@ -41,7 +41,8 @@ public class CellViewController extends BasicCellData {
                     headerController.updateHeader(
                             cellId.get(),
                             originalValue.get(),
-                            lastModifiedVersion.get()
+                            lastModifiedVersion.get(),
+                            modifiedBy.get()
                     );
                     headerController.getNewValueTextField().requestFocus();
 
@@ -70,6 +71,8 @@ public class CellViewController extends BasicCellData {
     public void setEffectiveValue(String effectiveValue) {
         this.effectiveValue.set(effectiveValue);
     }
+
+    public void setModifiedBy(String modifiedBy) {this.modifiedBy.set(modifiedBy);}
 
     public void updateCellStyle() {
         if (backgroundColor.getValue() != null) {

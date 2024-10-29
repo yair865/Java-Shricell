@@ -104,8 +104,8 @@ public class BodyController {
                     cellViewController.lastModifiedVersion.bind(cellData.lastModifiedVersion);
                     cellViewController.textColor.bind(cellData.textColor);
                     cellViewController.backgroundColor.bind(cellData.backgroundColor);
-
-                    cellView.setMinSize(columnWidthUnits, rowHeightUnits);
+                    cellViewController.modifiedBy.bind(cellData.modifiedBy);
+                    
                     cellView.setPrefSize(columnWidthUnits, rowHeightUnits);
                     cellView.setMaxSize(columnWidthUnits, rowHeightUnits);
                     cellView.getStyleClass().add("cell");

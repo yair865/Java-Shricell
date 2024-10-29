@@ -20,7 +20,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
-public class PermissionListController implements Closeable {
+public class PermissionListController {
 
     @FXML
     private TableView<SinglePermissionData> permissionTableView;
@@ -95,10 +95,6 @@ public class PermissionListController implements Closeable {
 
     public void setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
-    }
-
-    @Override
-    public void close() throws IOException {
     }
 
     public IntegerProperty currentRequestIdProperty() {

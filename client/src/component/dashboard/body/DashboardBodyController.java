@@ -34,9 +34,8 @@ public class DashboardBodyController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         sheetsListComponentController.close();
-        permissionListComponentController.close();
     }
 
     public PermissionListController getPermissionListController() {

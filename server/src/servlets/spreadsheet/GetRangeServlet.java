@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetmanager.SheetManager;
@@ -33,7 +34,7 @@ public class GetRangeServlet extends HttpServlet {
         List<Coordinate> rangeCells = engine.getRangeByName(range , sheetName , userName);
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
-        out.print(new Gson().toJson(rangeCells));
+        out.print(Constants.GSON_INSTANCE.toJson(rangeCells));
         out.flush();
     }
 }

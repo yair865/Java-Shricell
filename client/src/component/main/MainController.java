@@ -62,13 +62,6 @@ public class MainController implements Closeable {
         }
     }
 
-    public void switchToLogin () {
-        Platform.runLater(() -> {
-            //dashboardController.setInActive();
-            setMainPanelTo(loginWindow);
-        });
-    }
-
     public void loadDashboardPage() {
         URL dashboardPageUrl = getClass().getResource(DASHBOARD_PAGE_FXML_RESOURCE_LOCATION);
         try {
@@ -92,7 +85,6 @@ public class MainController implements Closeable {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(applicationPageUrl);
             applicationWindow = fxmlLoader.load();
-
             shticellController = fxmlLoader.getController();
             shticellController.setMainController(this);
             shticellController.isReaderProperty().set(isReader);
@@ -123,6 +115,5 @@ public class MainController implements Closeable {
     public void updateUserName (String userName){
         currentUser.set(userName);
     }
-
 }
 

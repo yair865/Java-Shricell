@@ -14,7 +14,8 @@ public class CellConverter {
                 cell.getLastModifiedVersionVersion(),
                 cell.getCellStyle(),
                 cell.getContainsFunction(),
-                cell.getEffectiveValue().getCellType()
+                cell.getEffectiveValue().getCellType(),
+                cell.getReviserName()
         );
     }
 }

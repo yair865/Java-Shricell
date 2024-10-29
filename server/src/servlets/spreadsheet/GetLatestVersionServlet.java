@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import engine.sheetimpl.api.Spreadsheet;
@@ -19,7 +20,7 @@ public class GetLatestVersionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request , HttpServletResponse response) throws IOException{
         Engine engine = ServletUtils.getEngine(getServletContext());
-        Gson gson = new Gson();
+
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
 
@@ -33,7 +34,7 @@ public class GetLatestVersionServlet extends HttpServlet {
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            String jsonResponse = gson.toJson(spreadsheet);
+            String jsonResponse = Constants.GSON_INSTANCE.toJson(spreadsheet);
 
             response.getWriter().write(jsonResponse);
         }catch (Exception e) {

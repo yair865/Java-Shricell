@@ -3,7 +3,6 @@ package component.sheetview.app;
 import component.main.MainController;
 import component.sheetview.body.BasicCellData;
 import component.sheetview.body.BodyController;
-import component.sheetview.body.CellViewController;
 import component.sheetview.header.HeaderController;
 import component.sheetview.left.LeftController;
 import component.sheetview.left.sort.SortController;
@@ -27,7 +26,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import util.alert.AlertUtil;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static component.sheetview.model.DataManager.formatEffectiveValue;
 
@@ -117,9 +114,12 @@ public class ShticellController implements Closeable {
         try {
             requestService.updateCell(cellId, newValue, currentVersion.get(), cellsThatHaveChanged -> {
                 dataManager.updateCellDataMap(cellsThatHaveChanged);
-                currentVersion.set(currentVersion.get() + 1);
                 headerComponentController.setVersionsChoiceBox(currentVersion.get());
-                headerComponentController.setCellOriginalValueLabel(dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue());
+                String originalValue = dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getOriginalValue();
+                String modifiedBy = dataManager.getCellData(CoordinateFactory.createCoordinate(cellId)).getReviserName();
+                currentVersion.set(currentVersion.get() + 1);
+                headerComponentController.updateHeader(cellId, originalValue, currentVersion.get(), modifiedBy);
+
             });
         } catch (Exception e) {
             showErrorAlert("Update Error", "An error occurred while updating the cell.", e.getMessage());
@@ -176,10 +176,11 @@ public class ShticellController implements Closeable {
                                 cellDTO.cellStyle().getTextColor(),
                                 cellDTO.cellStyle().getBackgroundColor(),
                                 cellDTO.containsFunction(),
-                                cellDTO.cellType()
+                                cellDTO.cellType(),
+                                cellDTO.modifiedBy()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString(), null, null , false , CellType.EMPTY);
+                        return new BasicCellData("", "", coord.toString(), null, null , false , CellType.EMPTY,"");
                     }
                 });
             }
@@ -315,7 +316,6 @@ public class ShticellController implements Closeable {
         return dataManager.getCellData(key);
     }
 
-
     public void getLatestVersion(Consumer<SpreadsheetDTO> callback) {
         requestService.getLatestVersion( latestVersion -> {
             Platform.runLater(() -> {
@@ -324,24 +324,21 @@ public class ShticellController implements Closeable {
         });
     }
 
-    public int getCurrentVersion() {
-        return currentVersion.get();
-    }
-
     public IntegerProperty currentVersionProperty() {
         return currentVersion;
-    }
-
-    public void setCurrentVersion(int currentVersion) {
-        this.currentVersion.set(currentVersion);
     }
 
     public void setActive() {
         headerComponentController.setActive();
     }
 
+    public void backToDashboard() {
+        close();
+        mainController.loadDashboardPage();
+    }
+
     @Override
-    public void close() throws IOException {
+    public void close()  {
         headerComponentController.close();
     }
 }

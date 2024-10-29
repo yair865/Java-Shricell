@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import engine.engineimpl.Engine;
 import engine.exception.OutdatedVersionException;
 import engine.sheetmanager.SheetManager;
@@ -24,7 +25,6 @@ public class AddRangeServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userNameFromSession = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
 
         String rangeName = request.getParameter("rangeName");
         String coordinates = request.getParameter("coordinates");
@@ -44,7 +44,7 @@ public class AddRangeServlet extends HttpServlet {
         try {
             engine.addRangeToSheet(rangeName, coordinates, sheetName, userNameFromSession,clientVersion);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson("Range added successfully"));
+            response.getWriter().write(Constants.GSON_INSTANCE.toJson("Range added successfully"));
         }catch (OutdatedVersionException e) {
             sendErrorResponse(response,e.getMessage());
         } catch (Exception e) {

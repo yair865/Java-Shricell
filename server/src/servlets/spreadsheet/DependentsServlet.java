@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import engine.sheetimpl.cellimpl.coordinate.Coordinate;
@@ -35,7 +36,7 @@ public class DependentsServlet extends HttpServlet {
         List<Coordinate> dependents = getDependentsFromEngine(cellId , engine , sheetName , userName);
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        out.print(new Gson().toJson(dependents));
+        out.print(Constants.GSON_INSTANCE.toJson(dependents));
         out.flush();
     }
 

@@ -36,6 +36,7 @@ public class DataManager implements CellDataProvider {
                 cellData.setEffectiveValue(formatEffectiveValue(cellInfo.effectiveValue()));
                 cellData.setOriginalValue(cellInfo.originalValue());
                 cellData.setLastModifiedVersion(cellInfo.lastModifiedVersion());
+                cellData.setModifiedBy(cellInfo.modifiedBy());
             }
         }
     }

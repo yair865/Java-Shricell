@@ -79,7 +79,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
-    public void init(STLSheet loadedSheetFromXML) {
+    public void init(STLSheet loadedSheetFromXML, String modifiedBy) {
         this.setTitle(loadedSheetFromXML.getName());
         this.setRows(loadedSheetFromXML.getSTLLayout().getRows());
         this.setColumns(loadedSheetFromXML.getSTLLayout().getColumns());
@@ -91,6 +91,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             Coordinate coordinate = createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
             Cell cell = createNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
+            cell.setReviserName(modifiedBy);
             activeCells.put(coordinate, cell);
         }
 
@@ -303,13 +304,14 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
     //  Setters:
     @Override
-    public void setCell(Coordinate coordinate, String value) {
+    public void setCell(Coordinate coordinate, String value,String userName) {
         Cell cellToCalculate = createNewEmptyCell(coordinate);
 
         cellToCalculate.setCellOriginalValue(value);
         cellsThatHaveChanged.clear();
         calculateSheetEffectiveValues();
         cellToCalculate.setLastModifiedVersion(sheetVersion);
+        cellToCalculate.setReviserName(userName);
     }
 
     @Override

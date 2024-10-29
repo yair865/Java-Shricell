@@ -21,7 +21,7 @@ public class TemporaryCellDataProvider implements CellDataProvider {
     @Override
     public BasicCellData getCellData(Coordinate coordinate) {
         return temporaryCellDataMap.getOrDefault(coordinate, new BasicCellData("", "",
-                coordinate.toString(),null , null , false , CellType.EMPTY));
+                coordinate.toString(),null , null , false , CellType.EMPTY, ""));
     }
 
     public Map<Coordinate, BasicCellData> getTemporaryCellDataMap() {
