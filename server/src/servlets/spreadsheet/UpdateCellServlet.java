@@ -1,6 +1,7 @@
 package servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import constant.Constants;
 import dto.dtoPackage.CellDTO;
 import engine.engineimpl.Engine;
 import engine.exception.OutdatedVersionException;
@@ -26,7 +27,6 @@ public class UpdateCellServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
 
         String cellId = request.getParameter("cellId");
         String newValue = request.getParameter("newValue");
@@ -49,7 +49,7 @@ public class UpdateCellServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
-            String jsonResponse = gson.toJson(cellsThatHaveChanged);
+            String jsonResponse = Constants.GSON_INSTANCE.toJson(cellsThatHaveChanged);
             response.getWriter().write(jsonResponse);
         }catch (OutdatedVersionException e) {
             sendErrorResponse(response,e.getMessage());

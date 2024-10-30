@@ -1,7 +1,6 @@
 package servlets.spreadsheet;
 
-import com.google.gson.Gson;
-import consts.Constants;
+import constant.Constants;
 import dto.dtoPackage.SpreadsheetDTO;
 import engine.engineimpl.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,7 +21,7 @@ public class VersionsServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(request.getServletContext());
         String sheetName = SessionUtils.getSheetName(request);
         String userName = SessionUtils.getUsername(request);
-        Gson gson = new Gson();
+
 
         String versionParam = request.getParameter("version");
         if (versionParam == null || versionParam.isEmpty()) {
@@ -36,7 +35,7 @@ public class VersionsServlet extends HttpServlet {
             if (spreadsheetDTO != null) {
                 response.setContentType("application/json");
                 PrintWriter out = response.getWriter();
-                out.print(gson.toJson(spreadsheetDTO));
+                out.print(Constants.GSON_INSTANCE.toJson(spreadsheetDTO));
                 out.flush();
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);

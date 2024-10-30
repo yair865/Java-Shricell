@@ -11,4 +11,10 @@ import dto.dtoPackage.coordinate.Coordinate;
 
 public class Constants {
     public static final String USERNAME = "username";
+
+    public static final Gson GSON_INSTANCE = new GsonBuilder()
+            .registerTypeAdapter(SpreadsheetDTO.class, new SpreadsheetDTODeserializer())
+            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
+            .registerTypeAdapter(EffectiveValue.class, new EffectiveValueTypeAdapter())
+            .create();
 }
