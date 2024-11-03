@@ -15,7 +15,7 @@ GridPane {
 }
 
 Label {
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-text-fill: rgba(0, 0, 139, 1);
     -fx-font-weight: bold;
     -fx-font-family: 'Cookie', sans-serif;
@@ -90,4 +90,30 @@ ScrollPane {
     -fx-border-color: rgba(0, 0, 139, 0.8); /* Blue border */
     -fx-border-width: 2px;
     -fx-background-radius: 15px;
+}
+
+/* New Version Button Style */
+.new-version-button.button {
+    -fx-background-color: linear-gradient(to right, rgba(255, 69, 0, 0.9), rgba(255, 153, 51, 1));
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Cookie', sans-serif;
+    -fx-background-radius: 50px;
+    -fx-border-color: rgb(0, 64, 255); /* Distinct red-orange border */
+    -fx-border-width: 3px;
+    -fx-border-radius: 50px;
+    -fx-effect: dropshadow(one-pass-box, rgba(255, 69, 0, 0.6), 10, 0, 0, 3); /* Glow effect */
+    -fx-padding: 8px 16px;
+}
+
+/* Hover and Press Effects for New Version Button */
+.new-version-button.button:hover {
+    -fx-background-color: linear-gradient(to right, rgba(255, 153, 51, 1), rgba(255, 215, 0, 1)); /* Orange to gold */
+    -fx-border-color: rgba(255, 140, 0, 1); /* Lighter border */
+}
+
+.new-version-button.button:pressed {
+    -fx-background-color: rgba(255, 69, 0, 1); /* Solid orange-red */
+    -fx-border-color: rgba(139, 0, 0, 1); /* Darker red border */
 }

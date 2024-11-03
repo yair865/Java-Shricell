@@ -72,3 +72,28 @@ ToolBar {
     -fx-background-color: transparent;
     -fx-spacing: 8px;
 }
+
+.new-version-button.button {
+    -fx-background-color: #ff5722;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-color: #d84315;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.4), 5, 0.2, 0, 4);
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+/* Hover and Press Effects for New Version Button */
+#new-version-button.button:hover {
+    -fx-background-color: #ff7043;
+    -fx-border-color: #bf360c;
+}
+
+#new-version-button.button:pressed {
+    -fx-background-color: #e64a19;
+    -fx-border-color: #bf360c;
+}

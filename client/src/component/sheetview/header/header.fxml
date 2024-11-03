@@ -66,7 +66,7 @@
                         </Label>
                      </children>
                   </StackPane>
-                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="25.0" prefWidth="120.0" text="Latest Version" visible="false" />
+                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="50.0" prefWidth="120.0" styleClass="new-version-button" text="Update Version!" textAlignment="CENTER" />
                </children>
             </VBox>
          </children>

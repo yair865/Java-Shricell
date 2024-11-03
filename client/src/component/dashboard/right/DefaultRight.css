@@ -7,7 +7,7 @@
     -fx-border-width: 1px;
 }
 
-.dashboard-right .button {
+.button {
     -fx-background-color: #4caf50;
     -fx-text-fill: white;
     -fx-font-size: 12px;
@@ -17,15 +17,15 @@
     -fx-border-width: 1px;
 }
 
-.dashboard-right .button:hover {
+.button:hover {
     -fx-background-color: #45a049;
 }
 
-.dashboard-right .button:pressed {
+.button:pressed {
     -fx-background-color: #388e3c;
 }
 
-.dashboard-right .label {
+.label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;

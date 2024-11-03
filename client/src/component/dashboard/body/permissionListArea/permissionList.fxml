@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="permissionsListComponent" prefHeight="200.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.permissionListArea.PermissionListController">
+<VBox fx:id="permissionsListComponent" prefHeight="200.0" prefWidth="480.0" styleClass="permission-list-area" stylesheets="@DefaultPermissions.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.permissionListArea.PermissionListController">
    <children>
       <Label alignment="CENTER" prefHeight="17.0" prefWidth="607.0" text="Permissions Table" />
       <TableView fx:id="permissionTableView" prefHeight="200.0" prefWidth="200.0">

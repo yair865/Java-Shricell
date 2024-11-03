@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="sheetsListComponent" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.sheetListArea.SheetsListController">
+<VBox fx:id="sheetsListComponent" styleClass="sheets-list-area" stylesheets="@DefaultSheets.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.body.sheetListArea.SheetsListController">
    <children>
       <Label alignment="CENTER" prefHeight="31.0" prefWidth="600.0" text="Available Sheets" />
       <TableView fx:id="sheetsTableView" prefHeight="200.0" prefWidth="200.0">

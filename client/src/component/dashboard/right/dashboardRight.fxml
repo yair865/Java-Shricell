@@ -10,15 +10,15 @@
 <HBox fx:id="right" maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.right.DashboardRightController">
    <children>
       <Separator maxHeight="1.7976931348623157E308" orientation="VERTICAL" prefHeight="200.0" />
-      <VBox fx:id="dashboardRight" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="340.0" prefWidth="210.0" spacing="15.0">
+      <VBox fx:id="dashboardRight" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="340.0" prefWidth="210.0" spacing="15.0" styleClass="dashboard-right" stylesheets="@DefaultRight.css">
          <children>
             <Label text="Commands" underline="true" />
             <Button fx:id="viewSheetButton" mnemonicParsing="false" onAction="#viewSheetListener" prefHeight="50.0" prefWidth="125.0" text="View sheet" />
-            <Button fx:id="requestPermissionButton" mnemonicParsing="false" onAction="#requestPermissionButtonListener" prefHeight="50.0" prefWidth="125.0" text="Request permission" />
+            <Button fx:id="requestPermissionButton" mnemonicParsing="false" onAction="#requestPermissionButtonListener" prefHeight="50.0" prefWidth="125.0" text="Request permission" textAlignment="CENTER" wrapText="true" />
             <HBox prefHeight="50.0" prefWidth="200.0" spacing="5.0">
                <children>
                   <Button fx:id="permissionApproveButton" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#permissionApproveListener" prefHeight="50.0" prefWidth="100.0" text="Approve Request" textAlignment="CENTER" wrapText="true" />
-                  <Button fx:id="permissionDenyButton" mnemonicParsing="false" onAction="#permissionDenyButtonListener" prefHeight="50.0" prefWidth="100.0" text="Deny Request" />
+                  <Button fx:id="permissionDenyButton" mnemonicParsing="false" onAction="#permissionDenyButtonListener" prefHeight="50.0" prefWidth="100.0" text="Deny Request" textAlignment="CENTER" wrapText="true" />
                </children>
             </HBox>
             <Button fx:id="refreshPermissionTableButton" mnemonicParsing="false" onAction="#refreshPermissionTableButtonListener" prefHeight="50.0" prefWidth="200.0" text="Refresh Permission Table" />

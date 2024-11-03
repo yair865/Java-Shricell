@@ -74,8 +74,37 @@ ChoiceBox .arrow-button {
 }
 
 Label {
+    -fx-font-size: 12px;
     -fx-text-fill: black;
     -fx-font-weight: bold;
     -fx-font-family: 'Arial Black';
 }
+
+
+.new-version-button.button {
+    -fx-background-color: linear-gradient(to right, rgba(255, 69, 0, 1), rgba(255, 0, 0, 1)); /* Bright red-orange gradient */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Arial Black';
+    -fx-background-radius: 20px; /* Rounded corners */
+    -fx-border-color: yellow; /* Bright yellow border for contrast */
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.8), 15, 0, 0, 2); /* Glow effect with yellow */
+}
+
+/* Hover Effect for New Version Button */
+.new-version-button.button:hover {
+    -fx-background-color: linear-gradient(to right, rgba(255, 140, 0, 1), rgba(255, 69, 0, 1)); /* Lighter orange gradient */
+    -fx-border-color: white; /* White border on hover */
+    -fx-cursor: hand;
+}
+
+/* Pressed Effect for New Version Button */
+.new-version-button.button:pressed {
+    -fx-background-color: rgba(139, 0, 0, 1); /* Darker red when pressed */
+    -fx-border-color: rgba(255, 215, 0, 1); /* Maintain yellow border */
+}
+
 
