@@ -1,7 +1,6 @@
 package application.left.filter;
 
 import application.app.ShticellController;
-import engine.api.EffectiveValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -18,9 +17,7 @@ import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class FilterController {
 

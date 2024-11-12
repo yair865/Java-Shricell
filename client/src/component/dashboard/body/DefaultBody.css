@@ -1,0 +1,7 @@
+/* Dashboard Body */
+.dashboard-body {
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-background-color: #f4f9f3;
+}
+

@@ -1,260 +1,220 @@
 package engine.engineimpl;
 
-import dto.converter.SheetConverter;
+import dto.converter.SheetInfoConverter;
 import dto.dtoPackage.CellDTO;
+import dto.dtoPackage.PermissionInfoDTO;
+import dto.dtoPackage.SheetInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.CellReadActions;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.api.Spreadsheet;
-import engine.generated.STLSheet;
-import engine.sheetimpl.SpreadsheetImpl;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
+import engine.exception.OutdatedVersionException;
+import engine.permissionmanager.PermissionManager;
+import engine.permissionmanager.PermissionManagerImpl;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
+import dto.dtoPackage.coordinate.Coordinate;
+import engine.sheetmanager.SheetManager;
+import engine.sheetmanager.SheetManagerImpl;
 
-import java.io.*;
-import java.security.InvalidParameterException;
-import java.util.*;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import static dto.converter.CellConverter.convertCellToDTO;
-import static dto.converter.SheetConverter.convertSheetToDTO;
-import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+public class EngineImpl implements Engine, Serializable {
 
+    private static final EngineImpl instance = new EngineImpl();
+    private final Map<String, SheetManager> sheets;
+    private PermissionManager permissionManager;
 
-public class EngineImpl implements Engine, Serializable{
-
-    public static final int MAX_ROWS = 50;
-    public static final int MAX_COLUMNS = 20;
-    public static final int LOAD_VERSION = 1;
-
-    private Map<Integer, Spreadsheet> spreadsheetsByVersions;
-    int currentSpreadSheetVersion;
-
+    public EngineImpl() {
+        this.sheets = new ConcurrentHashMap<>();
+        this.permissionManager = new PermissionManagerImpl();
+    }
 
     @Override
-    public void loadSpreadsheet(String filePath) throws Exception {
-        validateXmlFile(filePath);
-        STLSheet loadedSheetFromXML = loadSheetFromXmlFile(filePath);
-        validateSTLSheet(loadedSheetFromXML);
-        Spreadsheet loadedSpreadSheet = convertSTLSheet2SpreadSheet(loadedSheetFromXML);
-        spreadsheetsByVersions = new HashMap<>();
-        currentSpreadSheetVersion = LOAD_VERSION;
-        loadedSpreadSheet.setSheetVersion(LOAD_VERSION);
-        spreadsheetsByVersions.put(LOAD_VERSION, convertSTLSheet2SpreadSheet(loadedSheetFromXML));
+    public void addSheet(InputStream fileContent , String userName) {
+        String sheetName = null;
+        SheetManager sheetManager = new SheetManagerImpl(userName);
+
+             sheetName = sheetManager.loadSpreadsheet(fileContent);
+             validateSheetAlreadyExists(sheetName);
+
+        sheets.put(sheetName, sheetManager);
+        permissionManager.assignPermission(sheetName, userName, PermissionType.OWNER);
     }
 
-    private Spreadsheet convertSTLSheet2SpreadSheet(STLSheet loadedSheetFromXML) {
-        Spreadsheet spreadsheet = new SpreadsheetImpl();
-
-        try {
-            spreadsheet.init(loadedSheetFromXML);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            throw new IllegalArgumentException("In file: " + loadedSheetFromXML.getName() + " - " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return spreadsheet;
-    }
-
-    private void validateSTLSheet(STLSheet loadedSheetFromXML) {
-        int rows = loadedSheetFromXML.getSTLLayout().getRows();
-        int columns = loadedSheetFromXML.getSTLLayout().getColumns();
-        validateSheetLimits(rows, columns);
-    }
-
-    private void validateSheetLimits(int rows, int columns) {
-        if (rows < 1 || rows > MAX_ROWS) {
-            throw new IllegalArgumentException("Invalid number of rows: " + rows + ". Rows must be between 1 and 50.");
-        }
-
-        if (columns < 1 || columns > MAX_COLUMNS) {
-            throw new IllegalArgumentException("Invalid number of columns: " + columns + ". Columns must be between 1 and 20.");
+    private void validateSheetAlreadyExists(String sheetName) {
+        if (sheets.containsKey(sheetName)) {
+            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' already exists.");
         }
     }
 
-    private void validateXmlFile(String filePath) throws Exception {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new Exception("File not found.");
-        }
-        if (!filePath.endsWith(".xml")) {
-            throw new Exception(file.getName() + " is not an XML file.\n");
-        }
-    }
-
-    private STLSheet loadSheetFromXmlFile(String filePath) {
-        try {
-            File file = new File(filePath);
-            JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return (STLSheet) jaxbUnmarshaller.unmarshal(file);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Failed to load the data from the XML file."); // consider creating special Exception to throw.
+    private void ValidateSheetName(String sheetName) {
+        if (!sheets.containsKey(sheetName)) {
+            throw new IllegalArgumentException("Sheet with name '" + sheetName + "' doesnt exists.");
         }
     }
 
     @Override
-    public SpreadsheetDTO getSpreadsheetState() {
-        validateSheetIsLoaded();
-        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
-    }
-
-    @Override
-    public SpreadsheetDTO pokeCellAndReturnSheet(String cellId) {
-        validateSheetIsLoaded();
-        Coordinate cellCoordinate = createCoordinate(cellId);
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
-        return convertSheetToDTO(spreadsheetsByVersions.get(currentSpreadSheetVersion));
-    }
-
-    @Override
-    public CellDTO getCellInfo(String cellId) {
-        validateSheetIsLoaded();
-        Coordinate cellCoordinate = createCoordinate(cellId);
-        CellReadActions cellToDTO = spreadsheetsByVersions.get(currentSpreadSheetVersion).getCell(cellCoordinate);
-
-        return convertCellToDTO(cellToDTO);
-    }
-
-    @Override
-    public void updateCell(String cellId, String newValue) {
-        validateSheetIsLoaded();
-        Coordinate coordinate = CoordinateFactory.createCoordinate(cellId);
-        Spreadsheet currentSpreadsheet = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
-
-        try {
-            currentSpreadSheetVersion++;
-            currentSpreadsheet.setSheetVersion(currentSpreadSheetVersion);
-            spreadsheetsByVersions.put(currentSpreadSheetVersion,currentSpreadsheet);
-            spreadsheetsByVersions.get(currentSpreadSheetVersion).setCell(coordinate, newValue); // consider set before put
-        } catch (InvalidParameterException e) { //roll-back only.
-            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
-            currentSpreadSheetVersion--;
-        } catch (Exception e) {
-            spreadsheetsByVersions.remove(currentSpreadSheetVersion);
-            currentSpreadSheetVersion--;
-            throw e;
-        }
-    }
-
-    private void validateSheetIsLoaded() {
-        if (spreadsheetsByVersions == null) {
-            throw new IllegalStateException("File is not loaded yet.");
-        }
-        if (spreadsheetsByVersions.get(LOAD_VERSION) == null) {
-            throw new IllegalStateException("File is not loaded yet.");
-        }
-    }
-
-
-    @Override
-    public Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory() {
-        validateSheetIsLoaded();
-        Map<Integer, SpreadsheetDTO> spreadSheetByVersionDTO = new HashMap<>();
-
-        for (Map.Entry<Integer, Spreadsheet> entry : spreadsheetsByVersions.entrySet()) {
-            spreadSheetByVersionDTO.put(entry.getKey(), convertSheetToDTO(spreadsheetsByVersions.get(entry.getKey())));
+    public synchronized SheetManager getSheet(String sheetName) {
+        if (!sheets.containsKey(sheetName)) {
+            throw new IllegalArgumentException("No sheet found with name '" + sheetName + "'.");
         }
 
-        return spreadSheetByVersionDTO;
+        return sheets.get(sheetName);
     }
 
+    @Override
+    public synchronized List<SheetInfoDTO> getSheets(String user) {
+        System.out.println("Current sheets size: " + sheets.size());
+        sheets.forEach((key, value) -> System.out.println("Sheet Key: " + key + ", Value: " + value));
+
+        List<SheetInfoDTO> sheetInfoDTOs = sheets.values().stream()
+                .map(sheet -> {
+                    String sheetName = sheet.getSheetTitle();
+                    PermissionType permissionType = permissionManager.getPermission(sheetName, user);
+                    return SheetInfoConverter.convertSheetsInformationToDTO(sheet, permissionType);
+                })
+                .collect(Collectors.toList());
+
+        System.out.println("Sheets list size: " + sheetInfoDTOs.size());
+
+        return sheetInfoDTOs;
+    }
 
     @Override
-    public void saveSystemToFile(String fileName) throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
-            out.writeObject(this); // Save the current instance of the Engine
-            out.flush();
+    public synchronized void requestPermission(String userName, PermissionType permissionType, String sheetName) {
+        ValidateSheetName(sheetName);
+        permissionManager.createRequest(userName , permissionType , sheetName);
+    }
+
+    @Override
+    public List<PermissionInfoDTO> getPermissions(String sheetName) {
+       return permissionManager.getAllPermissionsForSheet(sheetName);
+    }
+
+    @Override
+    public void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus) {
+        permissionManager.updatePermissions(usernameFromSession , sheetName ,requestId ,requestStatus);
+    }
+
+    @Override
+    public synchronized SpreadsheetDTO getExpectedValue(String username, Coordinate coordinate, String value, String sheetName) {
+        permissionManager.validateReaderPermission(username , sheetName);
+
+        return sheets.get(sheetName).getExpectedValue(coordinate, value);
+    }
+
+    @Override
+    public void addRangeToSheet(String rangeName, String coordinates, String sheetName ,String username, int clientVersion) {
+        permissionManager.validateWriterPermission(username , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
+        sheetManager.addRangeToSheet(rangeName, coordinates);
+    }
+
+    @Override
+    public void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName,int clientVersion) {
+        permissionManager.validateWriterPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
+        sheetManager.setSingleCellBackGroundColor(cellId, color);
+    }
+
+    @Override
+    public SpreadsheetDTO getSpreadsheetState(String cellId, String sheetName, String userName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.getSpreadsheetState();
+    }
+
+    @Override
+    public SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, String sheetName, String userName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.filterSheet(selectedColumn, filterArea, selectedValues);
+    }
+
+    @Override
+    public List<Coordinate> getRangeByName(String range, String sheetName, String userName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.getRangeByName(range);
+    }
+
+    @Override
+    public List<String> getUniqueValuesFromColumn(char column, String userName, String sheetName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.getUniqueValuesFromColumn(column);
+    }
+
+    @Override
+    public void removeRangeFromSheet(String selectedRange, String userName, String sheetName, int clientVersion) {
+        permissionManager.validateWriterPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
+        sheetManager.removeRangeFromSheet(selectedRange);
+    }
+
+    @Override
+    public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns, String userName, String sheetName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.sort(cellsRange, selectedColumns);
+    }
+
+    @Override
+    public void setSingleCellTextColor(String cellId, String color, String userName, String sheetName,int clientVersion) {
+        permissionManager.validateWriterPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
+        sheetManager.setSingleCellTextColor(cellId, color);
+    }
+
+    @Override
+    public List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName, int clientVersion) {
+        permissionManager.validateWriterPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+        validateUpdatedSheet(sheetManager,clientVersion);
+        return sheetManager.updateCell(cellId, newValue , userName);
+    }
+
+    @Override
+    public SpreadsheetDTO getSpreadsheetByVersion(int version, String userName, String sheetName) {
+        permissionManager.validateReaderPermission(userName , sheetName);
+        SheetManager sheetManager = sheets.get(sheetName);
+
+        return sheetManager.getSpreadsheetByVersion(version);
+    }
+
+    @Override
+    public SpreadsheetDTO getLatestVersion(String sheetName, String userName) {
+        permissionManager.validateReaderPermission(userName,sheetName);
+
+        SheetManager sheetManager = sheets.get(sheetName);
+        return sheetManager.getSpreadsheetState();
+    }
+
+    @Override
+    public synchronized int getLatestVersionNumber(String sheetName, String userName) {
+        permissionManager.validateReaderPermission(userName,sheetName);
+
+        SheetManager sheetManager = sheets.get(sheetName);
+        return sheetManager.getCurrentVersion();
+    }
+
+    public void validateUpdatedSheet(SheetManager sheetManager, int clientVersion) throws OutdatedVersionException {
+        int latestVersion = sheetManager.getCurrentVersion();
+
+        if (clientVersion < latestVersion) {
+            throw new OutdatedVersionException("Client version is outdated. Please refresh to the latest version.");
         }
-    }
-
-    @Override
-    public void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
-            EngineImpl loadedEngine = (EngineImpl) in.readObject();
-
-            this.spreadsheetsByVersions = loadedEngine.spreadsheetsByVersions;
-            this.currentSpreadSheetVersion = loadedEngine.currentSpreadSheetVersion;
-        }
-    }
-
-    @Override
-    public void exitProgram() {
-        System.exit(0);
-    }
-
-
-    @Override
-    public SpreadsheetDTO getSpreadSheetByVersion(int version) {
-        validateSheetIsLoaded();
-        return convertSheetToDTO(spreadsheetsByVersions.get(version));
-    }
-
-    @Override
-    public Integer getCurrentVersion() {
-        return currentSpreadSheetVersion;
-    }
-
-    @Override
-    public void setSingleCellTextColor(String cellId, String textColor) {
-        validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).setTextColor(cellId,textColor);
-    }
-
-    @Override
-    public void setSingleCellBackGroundColor(String cellId, String backGroundColor) {
-        validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).setBackgroundColor(cellId,backGroundColor);
-    }
-
-    @Override
-    public void addRangeToSheet(String rangeName, String rangeDefinition) {
-        validateSheetIsLoaded();
-        if (spreadsheetsByVersions.get(currentSpreadSheetVersion).rangeExists(rangeName)) {
-            throw new IllegalArgumentException("A range with the name '" + rangeName + "' already exists.");
-        }
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).addRange(rangeName,rangeDefinition);
-    }
-
-    @Override
-    public void removeRangeFromSheet(String name) {
-        validateSheetIsLoaded();
-        spreadsheetsByVersions.get(currentSpreadSheetVersion).removeRange(name);
-    }
-
-    @Override
-    public List<Coordinate> getRangeByName(final String rangeName) {
-        validateSheetIsLoaded();
-        return spreadsheetsByVersions.get(currentSpreadSheetVersion).getRangeByName(rangeName).getCoordinates();
-    }
-
-    @Override
-    public SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns) {
-        validateSheetIsLoaded();
-         Spreadsheet sheetToSort = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
-         sheetToSort.sortSheet(cellsRange,selectedColumns);
-
-         return SheetConverter.convertSheetToDTO(sheetToSort);
-    }
-
-    @Override
-    public SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues) {
-        validateSheetIsLoaded();
-        Spreadsheet sheetToFilter = spreadsheetsByVersions.get(currentSpreadSheetVersion).copySheet();
-        sheetToFilter.filter(selectedColumn,filterArea,selectedValues);
-
-        return SheetConverter.convertSheetToDTO(sheetToFilter);
-    }
-
-    @Override
-    public List<String> getUniqueValuesFromColumn(char columnNumber) {
-        List<String> uniqueValues = new ArrayList<>();
-        Spreadsheet sheetToScan = spreadsheetsByVersions.get(currentSpreadSheetVersion);
-
-        return sheetToScan.getUniqueValuesFromColumn(columnNumber);
-
     }
 }

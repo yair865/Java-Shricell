@@ -1,16 +1,19 @@
 package engine.sheetimpl;
 
-import engine.api.*;
 import engine.generated.STLCell;
 import engine.generated.STLRange;
 import engine.generated.STLSheet;
+import engine.sheetimpl.api.Spreadsheet;
 import engine.sheetimpl.cellimpl.CellImpl;
 import engine.sheetimpl.cellimpl.EmptyCell;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import engine.sheetimpl.cellimpl.api.Cell;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import engine.sheetimpl.filter.FilterManager;
 import engine.sheetimpl.filter.FilterManagerImpl;
-import engine.sheetimpl.range.Range;
-import engine.sheetimpl.range.RangeImpl;
+import dto.dtoPackage.range.Range;
+import dto.dtoPackage.range.RangeImpl;
 import engine.sheetimpl.sort.SortManager;
 import engine.sheetimpl.sort.SortManagerImpl;
 import engine.sheetimpl.utils.ExpressionUtils;
@@ -22,7 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static engine.sheetimpl.cellimpl.coordinate.CoordinateFactory.createCoordinate;
+import static dto.dtoPackage.coordinate.CoordinateFactory.createCoordinate;
 import static java.lang.Character.toUpperCase;
 
 public class SpreadsheetImpl implements Spreadsheet, Serializable {
@@ -76,7 +79,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
     }
 
     @Override
-    public void init(STLSheet loadedSheetFromXML) {
+    public void init(STLSheet loadedSheetFromXML, String modifiedBy) {
         this.setTitle(loadedSheetFromXML.getName());
         this.setRows(loadedSheetFromXML.getSTLLayout().getRows());
         this.setColumns(loadedSheetFromXML.getSTLLayout().getColumns());
@@ -88,6 +91,7 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
             Coordinate coordinate = createCoordinate(stlCell.getRow(), CoordinateFactory.convertColumnLetterToNumber(stlCell.getColumn().toUpperCase()));
             Cell cell = createNewEmptyCell(coordinate);
             cell.setCellOriginalValue(originalValue);
+            cell.setReviserName(modifiedBy);
             activeCells.put(coordinate, cell);
         }
 
@@ -300,13 +304,14 @@ public class SpreadsheetImpl implements Spreadsheet, Serializable {
 
     //  Setters:
     @Override
-    public void setCell(Coordinate coordinate, String value) {
+    public void setCell(Coordinate coordinate, String value,String userName) {
         Cell cellToCalculate = createNewEmptyCell(coordinate);
 
         cellToCalculate.setCellOriginalValue(value);
         cellsThatHaveChanged.clear();
         calculateSheetEffectiveValues();
         cellToCalculate.setLastModifiedVersion(sheetVersion);
+        cellToCalculate.setReviserName(userName);
     }
 
     @Override

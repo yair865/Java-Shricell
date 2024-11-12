@@ -1,51 +1,50 @@
 package engine.engineimpl;
 
 import dto.dtoPackage.CellDTO;
+import dto.dtoPackage.PermissionInfoDTO;
+import dto.dtoPackage.SheetInfoDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import dto.dtoPackage.PermissionType;
+import dto.dtoPackage.RequestStatus;
+import dto.dtoPackage.coordinate.Coordinate;
+import engine.sheetmanager.SheetManager;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public interface Engine {
+    void addSheet(InputStream fileContent , String userName);
+    SheetManager getSheet(String sheetName);
+    List<SheetInfoDTO> getSheets(String user);
+    void requestPermission(String userName, PermissionType permissionType, String sheetName);
+    List<PermissionInfoDTO> getPermissions(String sheetName);
+    void updatePermissions(String usernameFromSession, String sheetName, int requestId, RequestStatus requestStatus);
 
-    void loadSpreadsheet(String filePath) throws Exception;
+    SpreadsheetDTO getExpectedValue(String username, Coordinate coordinate, String value, String sheetName);
+    void addRangeToSheet(String rangeName, String coordinates, String sheetName , String userName, int clientVersion);
 
-    SpreadsheetDTO getSpreadsheetState();
+    void setSingleCellBackGroundColor(String cellId, String color, String sheetName, String userName, int clientVersion);
 
-    SpreadsheetDTO pokeCellAndReturnSheet(String cellId);
+    SpreadsheetDTO getSpreadsheetState(String cellId, String sheetName, String userName);
 
-    CellDTO getCellInfo(String cellId);
+    SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues, String sheetName, String userName);
 
-    void updateCell(String cellId, String newValue);
+    List<Coordinate> getRangeByName(String range, String sheetName, String userName);
 
-    void exitProgram();
+    List<String> getUniqueValuesFromColumn(char column, String userName, String sheetName);
 
-    void loadSystemFromFile(String fileName) throws IOException, ClassNotFoundException;
+    void removeRangeFromSheet(String selectedRange, String userName, String sheetName, int clientVersion);
 
-   void saveSystemToFile(String fileName) throws IOException;
+    SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns, String userName, String sheetName);
 
-    Map<Integer, SpreadsheetDTO> getSpreadSheetVersionHistory();
+    void setSingleCellTextColor(String cellId, String color, String userName, String sheetName, int clientVersion);
 
-    SpreadsheetDTO getSpreadSheetByVersion(int version);
+    List<CellDTO> updateCell(String cellId, String newValue, String userName, String sheetName, int clientVersion);
 
-    Integer getCurrentVersion();
+    SpreadsheetDTO getSpreadsheetByVersion(int version, String userName, String sheetName);
 
-    void setSingleCellTextColor(String cellId, String textColor);
+    SpreadsheetDTO getLatestVersion(String sheetName, String userName);
 
-    void setSingleCellBackGroundColor(String cellId, String backGroundColor);
+    int getLatestVersionNumber(String sheetName, String userName);
 
-    void addRangeToSheet(String rangeName, String rangeDefinition);
-
-    void removeRangeFromSheet(String name);
-
-    List<Coordinate> getRangeByName(String rangeName);
-    SpreadsheetDTO sort(String cellsRange, List<Character> selectedColumns);
-
-    SpreadsheetDTO filterSheet(Character selectedColumn, String filterArea, List<String> selectedValues);
-
-    List<String> getUniqueValuesFromColumn(char columnNumber);
 }

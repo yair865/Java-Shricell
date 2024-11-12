@@ -2,7 +2,7 @@ package application.body;
 
 import application.app.ShticellController;
 import application.model.CellDataProvider;
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -136,7 +136,7 @@ public class BodyController {
         return columnLetter.toString();
     }
 
-    public void setColumnWidth(int newWidth) {
+    public void setColumnWidth(int newWidth) { //TODO : fix this method !
         int colIndex = getColumnIndex(this.shticellController.getHeaderController().getSelectedCellColumn());
         if (colIndex < 0 || colIndex >= gridPane.getColumnConstraints().size()) {
             System.err.println("Invalid column index: " + colIndex);
@@ -178,7 +178,6 @@ public class BodyController {
                     stackPane.setPrefHeight(newHeight);
                     stackPane.setMaxHeight(newHeight);
                 } else if (node instanceof Label label) {
-
                     label.setPrefHeight(newHeight);
                 }
             }

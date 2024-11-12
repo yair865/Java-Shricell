@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.DashboardController">
+   <content>
+      <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="1100.0">
+         <top>
+            <fx:include fx:id="header" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="185.0" minWidth="1050.0" prefHeight="188.0" prefWidth="1050.0" source="header/dashboardHeader.fxml" />
+         </top>
+         <center>
+            <fx:include fx:id="body" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" source="body/dashboardBody.fxml" />
+         </center>
+      <right>
+         <fx:include fx:id="right" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" source="right/dashboardRight.fxml" />
+      </right>
+   </BorderPane>
+   </content>
+</ScrollPane>

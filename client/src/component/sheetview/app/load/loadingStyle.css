@@ -1,0 +1,15 @@
+.root {
+    -fx-background-color: #2e4a4e; /* Dark blue background */
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.progress-bar {
+    -fx-accent: #4caf50;
+    -fx-pref-height: 20;
+}

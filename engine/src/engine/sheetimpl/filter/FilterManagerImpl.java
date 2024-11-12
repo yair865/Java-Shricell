@@ -1,11 +1,11 @@
 package engine.sheetimpl.filter;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
+import engine.sheetimpl.cellimpl.api.Cell;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
 import engine.sheetimpl.SpreadsheetImpl;
 import engine.sheetimpl.row.RowImpl;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;

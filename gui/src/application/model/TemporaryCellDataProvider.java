@@ -2,7 +2,7 @@ package application.model;
 
 import application.body.BasicCellData;
 import dto.converter.CellDataProviderConverter;
-import engine.api.Coordinate;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;

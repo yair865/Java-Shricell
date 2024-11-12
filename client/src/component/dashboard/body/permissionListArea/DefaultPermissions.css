@@ -1,0 +1,22 @@
+/* Permission List Area */
+.permission-list-area {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10px;
+    -fx-border-color: #daeacd;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* Shared style for TableView in Permission List */
+.permission-list-area .table-view {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.permission-list-area .label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}

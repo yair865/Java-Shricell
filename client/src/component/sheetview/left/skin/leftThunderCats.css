@@ -1,0 +1,75 @@
+VBox {
+    -fx-background-color: rgba(170, 0, 25, 0.9); /* Thundercats red */
+    -fx-border-color: rgba(255, 0, 0, 0.8); /* Light red border */
+    -fx-border-width: 1px;
+    -fx-hgap: 5px;
+    -fx-vgap: 5px;
+}
+
+
+TextField {
+    -fx-background-color: white; /* White background for input */
+    -fx-border-color: rgba(170, 0, 25, 0.8); /* Thundercats red border */
+    -fx-font-size: 12px; /* Font size for text */
+    -fx-text-fill: #333333; /* Dark gray text */
+}
+
+
+Button {
+    -fx-background-color: linear-gradient(to right, rgba(255, 0, 0, 0.8), rgba(170, 0, 25, 1)); /* Gradient background */
+    -fx-text-fill: white; /* White text */
+    -fx-font-size: 12px; /* Font size for buttons */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-background-radius: 3px; /* Rounded corners */
+    -fx-border-color: rgb(12, 12, 12); /* Thundercats red border */
+    -fx-border-width: 1px; /* Border width */
+}
+
+/* Button hover state */
+Button:hover {
+    -fx-background-color: linear-gradient(to right, rgba(255, 0, 0, 1), rgba(200, 16, 46, 1)); /* Lighter gradient on hover */
+}
+
+/* Button pressed state */
+Button:pressed {
+    -fx-background-color: linear-gradient(to right, rgba(200, 0, 0, 1), rgba(150, 0, 0, 1)); /* Darker gradient on press */
+}
+
+/* Style for ChoiceBox */
+ChoiceBox {
+    -fx-background-color: rgba(170, 0, 25, 0.9); /* Thundercats red */
+    -fx-font-size: 12px; /* Font size for choice box */
+    -fx-border-color: rgba(170, 0, 25, 0.8); /* Thundercats red border */
+}
+
+/* Arrow button style for ChoiceBox */
+ChoiceBox .arrow-button {
+    -fx-background-color: rgba(200, 200, 200, 0.5); /* Light gray with opacity for arrow button */
+}
+
+/* Style for StackPane labels */
+/*StackPane .label {
+    -fx-text-fill: white; !* White text for labels *!
+    -fx-font-size: 12px; !* Font size for labels *!
+    -fx-font-weight: bold; !* Bold text *!
+}*/
+
+.combo-box-base {
+    -fx-background-color: rgba(170, 0, 25, 0.9);
+    -fx-prompt-text-fill: white; /* White prompt text */
+    -fx-font-size: 12px; /* Font size for combo box */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-background-radius: 3px; /* Rounded corners */
+    -fx-border-color: rgba(170, 0, 25, 0.8); /* Thundercats red border */
+    -fx-border-width: 1px; /* Border width */
+}
+
+/* ComboBox text input style */
+.combo-box .text-input {
+    -fx-prompt-text-fill: white; /* White prompt text */
+}
+
+/* Hover state for ChoiceBox */
+ChoiceBox:hover {
+    -fx-border-color: rgba(255, 0, 0, 1); /* Bright red border on hover */
+}

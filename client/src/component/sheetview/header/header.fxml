@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="199.0" minWidth="1050.0" prefHeight="214.0" prefWidth="1130.0" stylesheets="@skin/headerDefault.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.sheetview.header.HeaderController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="142.0" minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="138.0" minHeight="10.0" prefHeight="138.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="33.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <HBox alignment="TOP_CENTER" prefHeight="84.0" prefWidth="1098.0" spacing="10.0" GridPane.columnSpan="2147483647">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+         <children>
+            <Button fx:id="backToDashBoardButton" alignment="CENTER" mnemonicParsing="false" onAction="#backToDashboardListener" prefHeight="25.0" prefWidth="130.0" text="Back To Dashboard" HBox.hgrow="NEVER">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <VBox alignment="CENTER" minWidth="138.0" prefHeight="56.0" prefWidth="138.0" spacing="10.0">
+               <children>
+                  <Label text="Change skin" underline="true" />
+                  <ComboBox fx:id="skinComboBox" />
+               </children>
+            </VBox>
+            <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" prefHeight="56.0" prefWidth="819.0" styleClass="header-label" text="Shticell" underline="true" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="151.0" prefWidth="1108.0" spacing="15.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+         <children>
+            <Label fx:id="cellIdLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="85.0" prefHeight="25.0" prefWidth="85.0" text="Selected Cell Id" textAlignment="CENTER" />
+            <Label fx:id="cellOriginalValueLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" minHeight="25.0" minWidth="134.0" prefHeight="25.0" prefWidth="134.0" text="Original Cell Value" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="newValueTextField" prefHeight="25.0" prefWidth="250.0" promptText="Enter new value" HBox.hgrow="ALWAYS" />
+            <Button fx:id="updateNewValueBTN" mnemonicParsing="false" onAction="#updateValueButtonListener" prefHeight="25.0" prefWidth="125.0" text="Update value" />
+            <Label fx:id="cellVersionLabel" alignment="CENTER" contentDisplay="CENTER" minHeight="25.0" minWidth="108.0" prefHeight="25.0" prefWidth="114.0" styleClass="ActionLine" text="Last modified version" textAlignment="CENTER" />
+            <Label fx:id="modifiedByLabel" alignment="CENTER" prefHeight="17.0" prefWidth="139.0" text="Modified by" />
+            <VBox alignment="TOP_CENTER" prefWidth="120.0" spacing="20.0">
+               <children>
+                  <StackPane fx:id="selectVersionSP" prefWidth="150.0">
+                     <children>
+                        <ChoiceBox fx:id="selectVersionChoiceBox" prefHeight="25.0" prefWidth="120.0">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </ChoiceBox>
+                        <Label mouseTransparent="true" text="Select Version">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <Button fx:id="latestVersionButton" mnemonicParsing="false" onAction="#latestVersionButtonListener" prefHeight="50.0" prefWidth="120.0" styleClass="new-version-button" text="Update Version!" textAlignment="CENTER" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</GridPane>

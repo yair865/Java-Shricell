@@ -1,0 +1,13 @@
+.header {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}
+
+.left {
+    -fx-background-color: #c0392b;
+}
+
+.button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}

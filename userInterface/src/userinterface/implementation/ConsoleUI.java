@@ -2,10 +2,11 @@ package userinterface.implementation;
 
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
 import engine.engineimpl.Engine;
-import engine.engineimpl.EngineImpl;
+import engine.sheetimpl.cellimpl.coordinate.Coordinate;
+import engine.sheetimpl.cellimpl.api.EffectiveValue;
+import engine.sheetmanager.SheetManager;
+import engine.sheetmanager.SheetManagerImpl;
 import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
 import engine.sheetimpl.utils.CellType;
 import userinterface.api.UI;
@@ -18,13 +19,13 @@ import java.util.stream.Collectors;
 
 
 public class ConsoleUI implements UI {
-    private Engine engine;
+    private SheetManager engine;
     private Scanner scanner;
 
     @Override
     public void executeProgram()
     {
-        engine = new EngineImpl();
+        engine = new SheetManagerImpl(null);
         scanner = new Scanner(System.in);
 
         while (true) {

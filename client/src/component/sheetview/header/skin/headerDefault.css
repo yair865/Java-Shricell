@@ -1,0 +1,99 @@
+GridPane {
+    -fx-background-color: #e4f1db;
+    -fx-border-color: #daeacd;
+    -fx-border-width: 1px;
+    -fx-hgap: 5px;
+    -fx-vgap: 5px;
+}
+
+.header-label{
+    -fx-font-family: "Aharoni";
+    -fx-font-size: 35px;
+    -fx-font-weight: bold;
+}
+
+
+TextField {
+    -fx-background-color: white;
+    -fx-border-color: #d9d9d9;
+    -fx-font-size: 12px;
+    -fx-text-fill: #333333;
+}
+
+TextField:focused {
+    -fx-border-color: #4caf50;
+}
+
+Button {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+    -fx-border-color: #388e3c;
+    -fx-border-width: 1px;
+}
+
+Button:hover {
+    -fx-background-color: #45a049;
+}
+
+Button:pressed {
+    -fx-background-color: #388e3c;
+}
+
+ChoiceBox  {
+    -fx-background-color: #4caf50;
+    -fx-border-color: #388e3c;
+    -fx-border-width: 1px;
+}
+
+ComboBox  {
+    -fx-background-color: #4caf50;
+    -fx-border-color: #388e3c;
+    -fx-border-width: 1px;
+}
+
+/*StackPane .label{
+    !*-fx-text-fill: white;*!
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}*/
+
+ChoiceBox .arrow-button{
+    -fx-background-color: #e6e6e6;
+}
+
+ChoiceBox:hover {
+    -fx-border-color: #4caf50;
+}
+
+ToolBar {
+    -fx-background-color: transparent;
+    -fx-spacing: 8px;
+}
+
+.new-version-button.button {
+    -fx-background-color: #ff5722;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-color: #d84315;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.4), 5, 0.2, 0, 4);
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+/* Hover and Press Effects for New Version Button */
+#new-version-button.button:hover {
+    -fx-background-color: #ff7043;
+    -fx-border-color: #bf360c;
+}
+
+#new-version-button.button:pressed {
+    -fx-background-color: #e64a19;
+    -fx-border-color: #bf360c;
+}

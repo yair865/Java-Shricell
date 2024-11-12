@@ -1,12 +1,13 @@
 package dto.converter;
 
-import application.body.BasicCellData;
+import component.sheetview.body.BasicCellData;
+
 import dto.dtoPackage.CellDTO;
 import dto.dtoPackage.SpreadsheetDTO;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.coordinate.CoordinateFactory;
+import dto.dtoPackage.CellType;
 
 import java.util.Map;
 
@@ -28,10 +29,13 @@ public class CellDataProviderConverter {
                                 cellDTO.originalValue(),
                                 coord.toString(),
                                 cellDTO.cellStyle().getTextColor(),
-                                cellDTO.cellStyle().getBackgroundColor()
+                                cellDTO.cellStyle().getBackgroundColor(),
+                                cellDTO.containsFunction(),
+                                cellDTO.cellType(),
+                                cellDTO.modifiedBy()
                         );
                     } else {
-                        return new BasicCellData("", "", coord.toString(),null,null);
+                        return new BasicCellData("", "", coord.toString(),null,null , false , CellType.EMPTY,"");
                     }
                 });
             }

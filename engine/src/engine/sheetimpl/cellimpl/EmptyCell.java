@@ -1,9 +1,10 @@
 package engine.sheetimpl.cellimpl;
 
-import engine.api.Cell;
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.sheetimpl.utils.CellType;
+import engine.sheetimpl.cellimpl.api.Cell;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import dto.dtoPackage.CellType;
+import dto.dtoPackage.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
 
@@ -36,6 +37,16 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public String getReviserName() {
+        return "";
+    }
+
+    @Override
+    public boolean getContainsFunction() {
+        return false;
+    }
+
+    @Override
     public void setCellOriginalValue(String value) {
         throw new UnsupportedOperationException();
     }
@@ -49,6 +60,9 @@ public enum EmptyCell implements Cell, Serializable {
     public void setLastModifiedVersion(int sheetVersion) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void setReviserName(String reviserName) {throw new UnsupportedOperationException();}
 
     @Override
     public void setTextColor(String textColor) {

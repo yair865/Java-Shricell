@@ -1,9 +1,9 @@
 package engine.sheetimpl.utils;
 
-import engine.api.Coordinate;
-import engine.api.Expression;
+import dto.dtoPackage.coordinate.Coordinate;
+import engine.sheetimpl.expression.Expression;
 import engine.exception.InvalidOperationException;
-import engine.sheetimpl.cellimpl.coordinate.CoordinateFactory;
+import dto.dtoPackage.coordinate.CoordinateFactory;
 import engine.sheetimpl.expression.type.Bool;
 import engine.sheetimpl.expression.type.Number;
 import engine.sheetimpl.expression.type.Text;

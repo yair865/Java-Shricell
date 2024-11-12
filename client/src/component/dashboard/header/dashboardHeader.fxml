@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="1000.0" styleClass="dashboard-header" stylesheets="@DefaultHeader.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="component.dashboard.header.DashboardHeaderController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="405.0" minWidth="10.0" prefWidth="223.0" />
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="755.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="119.0" minHeight="10.0" prefHeight="74.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="46.0" minHeight="1.0" prefHeight="46.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <VBox alignment="CENTER_LEFT" prefHeight="111.0" prefWidth="206.0" spacing="25.0">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+         <children>
+            <HBox prefHeight="36.0" prefWidth="188.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="42.0" styleClass="greeting-label" text="Hello," />
+                  <Label fx:id="userNameLabel" />
+               </children>
+            </HBox>
+            <Button fx:id="loadFileButton" alignment="CENTER" minHeight="40.0" minWidth="30.0" mnemonicParsing="false" onAction="#loadFileListener" prefHeight="40.0" prefWidth="110.0" text="Load File" />
+         </children>
+         <padding>
+            <Insets left="20.0" top="10.0" />
+         </padding>
+      </VBox>
+      <Label alignment="CENTER" prefHeight="17.0" prefWidth="500.0" styleClass="header-label" text="Shticell" underline="true" wrapText="true" GridPane.columnIndex="1">
+         <GridPane.margin>
+            <Insets bottom="50.0" />
+         </GridPane.margin>
+      </Label>
+      <Separator maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="978.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
+   </children>
+</GridPane>

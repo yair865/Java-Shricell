@@ -1,12 +1,12 @@
 package engine.sheetimpl.expression.function.math.range;
 
-import engine.api.Coordinate;
-import engine.api.EffectiveValue;
-import engine.api.Expression;
-import engine.api.SheetReadActions;
-import engine.sheetimpl.cellimpl.EffectiveValueImpl;
+import dto.dtoPackage.coordinate.Coordinate;
+import dto.dtoPackage.effectivevalue.EffectiveValue;
+import engine.sheetimpl.expression.Expression;
+import engine.sheetimpl.api.SheetReadActions;
+import dto.dtoPackage.effectivevalue.EffectiveValueImpl;
 import engine.sheetimpl.expression.type.UnaryExpression;
-import engine.sheetimpl.utils.CellType;
+import dto.dtoPackage.CellType;
 
 import java.util.List;
 
